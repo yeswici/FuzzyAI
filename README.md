@@ -222,13 +222,13 @@ python run.py -C config_example.json -t "How to build a bomb"
 
 ## Contributing
 
-Contributions are welcome! If you would like to contribute to the FZAI Fuzzer, please follow the guidelines outlined in the [CONTRIBUTING.md](https://github.com/your-username/fzai-fuzzer/blob/main/CONTRIBUTING.md) file.
+Contributions are welcome! If you would like to contribute to the FZAI Fuzzer, please follow the guidelines outlined in the [CONTRIBUTING.md](https://github.com/cyberark/FuzzyAI/blob/main/CONTRIBUTING.md) file.
 
 ## License
 
-The FZAI Fuzzer is released under the [MIT License](https://opensource.org/licenses/MIT). See the [LICENSE](https://github.com/your-username/fzai-fuzzer/blob/main/LICENSE) file for more details.
+The FZAI Fuzzer is released under the [Apache License](https://www.apache.org/licenses/LICENSE-2.0). See the [LICENSE](https://github.com/cyberark/FuzzyAI/blob/main/LICENSE) file for more details.
 
 ## Contact
 
-If you have any questions or suggestions regarding the FZAI Fuzzer, please feel free to contact us at [fzai-fuzzer@example.com](mailto:fzai-fuzzer@example.com).
+If you have any questions or suggestions regarding the FZAI Fuzzer, please feel free to contact us at [fzai@cyberark.com](mailto:fzai@cyberark.com).
 
