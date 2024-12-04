@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Providers</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      body {
+            background-color: #121212;
+            color: #FFFFFF;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        table {
+            width: 80%; margin-left: auto; margin-right: auto;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #333333;
+            color: #FFFFFF;
+        }
+        tr:hover {
+            background-color: #555555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Providers</h1>
+            <p>We support a wide range of providers. Use the following table as a guideline when selecting the provider of your choice.</p>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>openai</td>
+                    <td>You must set the environment variable OPENAI_API_KEY</td>
+                </tr>
+                <tr>
+                    <td>anthropic</td>
+                    <td>You must set the environment variable ANTHROPIC_API_KEY</td>
+                </tr>
+                <tr>
+                    <td>gemini</td>
+                    <td>You must set the environment variable API_KEY</td>
+                </tr>
+                <tr>
+                    <td>azure</td>
+                    <td>You must set the environment variables AZURE_OPENAI_API_KEY, AZURE_OPENAI_ENDPOINT</td>
+                </tr>
+                <tr>
+                    <td>aws bedrock</td>
+                    <td>You must set the environment variables AWS_SECRET_ACCESS_KEY, AWS_ACCESS_KEY_ID, AWS_REGION</td>
+                </tr>
+                <tr>
+                    <td>ollama</td>
+                    <td>You'll need to download and install <a href="https://ollama.com/" target="_blank">ollama</a>, including downloading the required models</td>
+                </tr>
+                <tr>
+                    <td>Huggingface (local models)</td>
+                    <td>Model name must be absolute path to model directory. See <a href="https://huggingface.co/docs/hub/en/models-downloading" target='_blank'>here</a> on how to download models</td>
+                </tr>
+                <tr>
+                    <td>Custom REST API</td>
+                    <td>You must set add the extra args (using -e): host, raw_http_file, response_jsonpath. see <a href="../fuzzy/llm/providers/rest/handler.py" target="_blank">RestProvider docstring</a> for a teardown</td>
+                </tr>
+            </tbody>
+        </table>
+        <br/>
+        <p>Please note that we have specified the models tested for each implementation. If you attempt to use a model not listed, you will receive an error indicating that the provider does not support that model. However, <a href="diy/new_models.html">you can add the model to the implementation's list of supported models</a>, and it will then function as expected.
+        </p>
+    </div>
+</body>
+</html>

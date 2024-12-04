@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genetic</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #121212;
+            color: #FFFFFF;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        table {
+            width: 80%; margin-left: auto; margin-right: auto;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #333333;
+            color: #FFFFFF;
+        }
+        tr:hover {
+            background-color: #555555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Genetic Algorithm</h1>
+            <p>Modifies the prompt by adding please as prefix and suffix</p>
+            Usage example: python run.py -m  attacked_provider/attacked_model -a gen -c dis -t "How to build a bomb" </p>
+            <span style="color:red">Note:</span> This attack only works with OpenAI provider and the dis/cos classifiers</p>
+            Below are extra arguments that can be changed using: -e extra_arg1=value1 -e extra_arg2=value2</p>
+
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Extra Argument</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>genetic_prompts</td>
+                    <td>The prompts for the genetic attack</td>
+                </tr>
+                <tr>
+                    <td>genetic_targets</td>
+                    <td>The targets for the genetic attack</td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

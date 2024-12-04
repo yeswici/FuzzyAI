@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adding Support for New Models</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="../css/prism.css" rel="stylesheet"/>
+    <style>
+      body {
+            background-color: #121212;
+            color: #FFFFFF;
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Adding Support for New Models</h1>
+        </div>
+        <div class="content">
+            <p>To add support for newer models, you need to modify the corresponding cloud API provider handler. Each LLM provider <a href="/fuzzy/llm/providers/base.py#L54">implements a function</a> that returns a list of supported models. Here's the function signature:</p>
+            <pre><code class="language-py">@classmethod
+def get_supported_models(cls) -> list[str]:
+    return ["gpt-35-turbo", "gpt-4-preview"]
+</code></pre>
+            <p>To add a new model, simply include the model name in the returned list according to the provider's specifications. It is crucial to ensure the naming is accurate. Once added, you will be able to use the new model when running the fuzzer.</p>
+            <br>
+            <h2>Example</h2>
+            <p>Let's add qwen2.5 model to Ollama.</p>
+            <p>we will go to the fuzzy folder->llm->providers->ollama->models.py</p>
+            <p><span style="color:red">Note:</span> Only in Ollama the models are in the models.py file. On other providers you will need to add the model name to the 'get_supported_models' function as explained above. You can find the function in the handler file.</p>
+            <p>Now looking at the list of models, we can add any model we like to the list as it is named at the Ollama <a href="https://ollama.com/search" target="_blank">website</a></p>
+            Before:
+            <pre><code class="language-py">OllamaModels = Literal['llama2', 'llama2-uncensored', 'llama2:70b', 'llama3', "dolphin-llama3", "llama3.1", "llama3.2", 'vicuna','mistral', 'mixtral',
+                       'gemma', "gemma2", 'zephyr', 'phi', 'phi3', "qwen"]
+</code></pre>
+            After:
+            <pre><code class="language-py">OllamaModels = Literal['llama2', 'llama2-uncensored', 'llama2:70b', 'llama3', "dolphin-llama3", "llama3.1", "llama3.2", 'vicuna','mistral', 'mixtral',
+                       'gemma', "gemma2", 'zephyr', 'phi', 'phi3', "qwen", "qwen2.5"]
+</code></pre>
+        </div>
+    </div>
+    <script src="../js/prism.js"></script>
+</body>
+</html>

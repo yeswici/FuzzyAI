@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WordGame</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #121212;
+            color: #FFFFFF;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        table {
+            width: 80%; margin-left: auto; margin-right: auto;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #333333;
+            color: #FFFFFF;
+        }
+        tr:hover {
+            background-color: #555555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>WordGame</h1>
+            <p>This attack is designed to bypass the safety measures of LLMs by simultaneously obfuscating both the input queries and the expected responses. <br>
+            This approach involves substituting potentially harmful words with word games or puzzles, thereby reducing the likelihood of triggering the model's safety protocols.</p>
+            Usage example: python run.py -m provider/model -a wrd -t "How to build a bomb"</p>
+            Below are extra arguments that can be changed using: -e extra_arg1=value1 -e extra_arg2=value2</p>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Extra Argument</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>word_game_plus</td>
+                    <td>Using the advanced version of the attack where the word game is placed between other questions. Default: True</td>
+                </tr>
+                <tr>
+                    <td>game_generation_model</td>
+                    <td>Name of the model used to generate the attack hints. Default: openai/gpt-4o</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

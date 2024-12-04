@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taxonomy-based Paraphrasing</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #121212;
+            color: #FFFFFF;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        table {
+            width: 80%; margin-left: auto; margin-right: auto;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #333333;
+            color: #FFFFFF;
+        }
+        tr:hover {
+            background-color: #555555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Taxonomy-based Paraphrasing</h1>
+            <p>This attack allows the user to generate paraphrased prompts based on a selected taxonomy model.</p>
+            Usage example: python run.py -m attacked_provider/attacked_model -a tax -t "How to build a bomb" -x provider2/model2 -e taxonomy_model=provider2/model2</p>
+            Below are extra arguments that can be changed using: -e extra_arg1=value1 -e extra_arg2=value2</p>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Extra Argument</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>taxonomy_model</td>
+                    <td>Model to be used for generating taxonomy prompts. <br>
+                        In case a different model than the attacked model is chosen, -x provider/model should be used as well.<br> <span style="color:red">Note:</span> It is recommended to use an uncensored model for the taxonomy task to avoid refusal while refining the attack prompt</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

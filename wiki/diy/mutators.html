@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Implement Your Own Mutator</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+      body {
+            background-color: #121212;
+            color: #FFFFFF;
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .section {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+    </style>
+    <link href="../css/prism.css" rel="stylesheet"/>
+</head>
+<body>
+    <div class="container">
+        <section id="implement-your-own-mutator" class="section">
+            <h2>Implement your own mutator</h2>
+            <p>For a simple reference, See any of the existing mutators.</p>
+            <ol>
+                <li>Implement the <code>mutate</code> function:</li>
+                <pre><code class="language-py">async def mutate(self, prompt: str) -&gt; str:
+  # Implement mutation logic here
+</code></pre>
+                <li>Add the flavor constant to <a href="../../fuzzy/handlers/mutators/enums.py">MutatorType</a>.</li>
+                <li>Import your new mutator in the <a href="../../fuzzy/handlers/mutators/__init__.py">init file</a> of the mutators module.</li>
+            </ol>
+        </section>
+        <section id="mutator-example" class="section">
+            <br/>
+            <h2>Example</h2>
+            <h5>Let's create a mutator that reverses the input text</h5>
+            <pre><code class="language-py">
+import logging
+import random
+from typing import Any
+
+from fuzzy.handlers.mutators.base import BaseMutator, mutators_fm
+from fuzzy.handlers.mutators.enums import MutatorType
+
+logger = logging.getLogger(__name__)
+
+@mutators_fm.flavor(MutatorType.REVERSE) # Don't forget to define your mutator in enums.py
+class ReverseMutator(BaseMutator):
+    def __init__(self, **extra: Any):
+        super().__init__(name=MutatorType.REVERSE, **extra)
+        
+    async def mutate(self, prompt: str) -> str:
+        logger.debug("Reversing prompt: %s", prompt)
+        return prompt[::-1]
+            </code></pre>
+        </section>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script src="../js/prism.js"></script>
+</body>
+</html>

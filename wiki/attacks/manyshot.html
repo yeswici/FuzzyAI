@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ManyShot Jailbreaking</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #121212;
+            color: #FFFFFF;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        table {
+            width: 80%; margin-left: auto; margin-right: auto;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #333333;
+            color: #FFFFFF;
+        }
+        tr:hover {
+            background-color: #555555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>ManyShot Jailbreaking</h1>
+            <p>This attack leverages a many-shot technique to jailbreak language models.<br>
+            Usage example: python run.py -m attacked_provider/attacked_model -a man -t "How to build a bomb" -e shot_count=100</p>
+            Below are extra arguments that can be changed using: -e extra_arg1=value1 -e extra_arg2=value2</p>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Extra Argument</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>shot_count</td>
+                    <td>Number of shots to use for the attack. Default: 256</td>
+                </tr>
+                <tr>
+                    <td>shot_answer_truncate_length</td>
+                    <td>Truncate length for the answer in each shot. Default: 0 (don't truncate)</td>
+                </tr>
+                <tr>
+                    <td>context_window</td>
+                    <td>Maximum number of tokens to include in the context window. Default: 4096</td>
+                </tr>
+                <tr>
+                    <td>question_placeholder</td>
+                    <td>Question placeholder in the many-shot prompt. Default: "Human"</td>
+                </tr>
+                <tr>
+                    <td>answer_placeholder</td>
+                    <td>Answer placeholder in the many-shot prompt. Default: "Assistant"</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

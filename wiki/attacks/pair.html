@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Persuasive Paraphrasing</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #121212;
+            color: #FFFFFF;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        table {
+            width: 80%; margin-left: auto; margin-right: auto;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #333333;
+            color: #FFFFFF;
+        }
+        tr:hover {
+            background-color: #555555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>PAIR</h1>
+            <p>This attack method utilizes persuasive paraphrasing to generate adversarial prompts.</p>
+            <span style="color:red">Note:</span> This attack requires a large context window</p>
+            Usage example: python run.py -m attacked_provider/attacked_model -a per -t "How to build a bomb" -e attack_model=provider2/model2 -x provider2/model2 -e target_model=provider/model -e judge_model=provider3/model3 -x provider3/model </p>
+                Below are extra arguments that can be changed using: -e extra_arg1=value1 -e extra_arg2=value2</p>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Extra Argument</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>attack_model</td>
+                    <td>The model to use for the attacker. <br> <span style="color:red">Note:</span> You must set this argument. If you set this arg to a different model than the attacked model, use -x provider/model as well (as in usage example)</td>
+                </tr>
+                <tr>
+                    <td>target_model</td>
+                    <td>The model to use for the target. <br> <span style="color:red">Note:</span> You must set this argument. If you set this arg to a different model than the attacked model, use -x provider/model as well (as in usage example)</td>
+                </tr>
+                <tr>
+                    <td>judge_model</td>
+                    <td>The model to use for the judge. <br> <span style="color:red">Note:</span> You must set this argument. If you set this arg to a different model than the attacked model, use -x provider/model as well (as in usage example)</td>
+                </tr>
+                <tr>
+                    <td>max_messages</td>
+                    <td>Number of messages to include in history when generating a new adversarial prompt. Default: 12</td>
+                </tr>
+                <tr>
+                    <td>n_iters</td>
+                    <td>Number of iterations. Default: 5</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
