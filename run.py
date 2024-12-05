@@ -111,19 +111,15 @@ async def main() -> None:
     parser.add_argument('-I', '--improve-attempts', help='Attempts to refine the LLM response up to n times following a successful jailbreak. Default: 0 (no refinement attempts)', type=int, default=0)
     args = parser.parse_args()
 
-    for req_arg in ['attack_modes', 'model']:
-        if not getattr(args, req_arg):
-            logger.error(f"Required argument: --{req_arg}")
-            return
-        
     if args.verbose:
         logger.info('Verbose logging ON')
         logging.getLogger().setLevel(logging.DEBUG)
         logging.getLogger().propagate = True
 
-    if not args.target_prompt and not args.target_prompts_file:
-        logger.error('Please provide a target prompt (-t) or a file with target prompts (-T)')
-        return
+    for req_arg in ['attack_modes']:
+        if not getattr(args, req_arg):
+            logger.error(f"Required argument: --{req_arg}")
+            return
 
     if hasattr(args, 'list_extra') and args.list_extra:
         for attack_mode in args.attack_modes:
@@ -131,6 +127,15 @@ async def main() -> None:
             logger.info("Extra arguments can be defined by using -e key=value, i.e -e max_tokens=200")
             logger.info(f"List of extra arguments for {attack_mode}:\n{json.dumps(attack_handler_cls.extra_args(), indent=2)}")
 
+        return
+    
+    for req_arg in ['model']:
+        if not getattr(args, req_arg):
+            logger.error(f"Required argument: --{req_arg}")
+            return
+        
+    if not args.target_prompt and not args.target_prompts_file:
+        logger.error('Please provide a target prompt (-t) or a file with target prompts (-T)')
         return
     
     if hasattr(args, 'extra') and args.extra:
