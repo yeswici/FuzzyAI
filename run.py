@@ -148,7 +148,7 @@ async def main() -> None:
     if hasattr(args, 'target_prompts_file') and args.target_prompts_file:
         with open(args.target_prompts_file, 'r') as f:
             prompts = f.readlines()
-        prompts = [prompt.strip() for prompt in prompts]
+        prompts = [prompt.strip() for prompt in prompts if prompt.strip()]
     else:
         prompts = [args.target_prompt]
 
