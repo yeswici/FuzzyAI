@@ -49,7 +49,7 @@ class OpenAIProvider(BaseLLMProvider):
     def get_supported_models(cls) -> list[str]:
         return ["gpt-3.5-turbo", "gpt-4", "gpt-4-turbo", "gpt-4o", "o1-mini", "o1-preview"]
 
-    @backoff.on_exception(backoff.expo, BaseLLMProviderRateLimitException, max_value=10)
+    
     @api_endpoint("/chat/completions")
     async def generate(self, prompt: str, url: str, system_prompt: Optional[str] = None, **extra: Any) -> Optional[BaseLLMProviderResponse]:
         messages = [BaseLLMMessage(role=ROLE_USER, content=prompt)]
@@ -58,6 +58,7 @@ class OpenAIProvider(BaseLLMProvider):
 
         return await self.chat(messages=messages, **extra) # type: ignore
 
+    @backoff.on_exception(backoff.expo, BaseLLMProviderRateLimitException, max_value=10)
     @api_endpoint("/chat/completions")
     async def chat(self, messages: list[BaseLLMMessage], url: str, system_prompt: Optional[str] = None, **extra: Any) -> BaseLLMProviderResponse:
         error: dict[str, Any]
