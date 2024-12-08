@@ -159,7 +159,7 @@ For more detailed instructions, please refer to the [documentation](wiki/index.h
 
 To get started with the FZAI Fuzzer, follow these steps:
 
-1. Clone the repository: `git clone https://github.com/your-username/fzai-fuzzer.git`
+1. Clone the repository: `git clone git@github.com:cyberark/FuzzyAI.git`
 2. Install the required dependencies using [poetry](https://python-poetry.org/) : `poetry update`<br/>
 this will create a [venv](https://docs.python.org/3/library/venv.html), if you're not using an IDE, make sure you activate it by invoking `poetry shell`
 3. Run the fuzzer: `python run.py -h`
