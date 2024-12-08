@@ -1,4 +1,8 @@
 # FZAI Fuzzer
+<div style="text-align: center;">
+<img src="resources/logo.png" alt="Project Logo" width="200" style="vertical-align:middle; margin-right:10px;" />
+</div>
+<br><br>
 
 The FZAI Fuzzer is a powerful tool for automated LLM fuzzing. It is designed to help developers and security researchers identify and mitigate potential security vulnerabilities in their LLM APIs. 
 
@@ -141,14 +145,16 @@ We've included a few datasets you can use, they're to be found under the resourc
 <br>
 <span style="color:#cc6666;">Note:</span> Some of the prompts may be grammatically incorrect; this is intentional, as it appears to be more effective against the models.
 
-| File name                                     | Description                                                                                               |
-|-----------------------------------------------|-----------------------------------------------------------------------------------------------------------|
+| File name                                     | Description                                                                                              |
+|-----------------------------------------------|----------------------------------------------------------------------------------------------------------|
 | pandoras_prompts.txt                          | Harmful prompts - created by us                                                                           |
-| adv_prompts.txt                               | Harmful prompts                                                                                           |
-| harmful_behaviors.csv                         | Harmful prompts                                                                                           |
-| adv_suffixes.txt                              | Random prompt suffixes                                                                                    |
-| alpaca_data_instructions.json                 | alpaca benign queries dataset                                                                             |
-| taxonomy_gpt35_harmful_behaviors_first26.json | persuasive prompts                                                                                        |
+| adv_prompts.txt                               | Harmful prompts                                                                                          |
+| benign_prompts.txt                            | Regular prompts                                                                                          |
+| history_prompts.txt                           | Harmful prompts phrased as in "Back To The Past" attack                                           |
+| harmful_behaviors.csv                         | Harmful prompts                                                                                          |
+| adv_suffixes.txt                              | Random prompt suffixes                                                                                   |
+| alpaca_data_instructions.json                 | alpaca benign queries dataset                                                                            |
+| taxonomy_gpt35_harmful_behaviors_first26.json | persuasive prompts                                                                                       |
 | finetuned_summarizer_train_dataset.jsonl      | Dataset used to train a GPT fine-tuned summarizer (See [Paper](https://arxiv.org/pdf/2401.06373) page 20) 
 
 ## Documentation
