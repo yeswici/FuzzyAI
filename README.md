@@ -147,7 +147,7 @@ We've included a few datasets you can use, they're to be found under the resourc
 
 | File name                                     | Description                                                                                              |
 |-----------------------------------------------|----------------------------------------------------------------------------------------------------------|
-| pandoras_prompts.txt                          | Harmful prompts - created by us                                                                           |
+| pandoras_prompts.txt                          | Harmful prompts                                                                         |
 | adv_prompts.txt                               | Harmful prompts                                                                                          |
 | benign_prompts.txt                            | Regular prompts                                                                                          |
 | history_prompts.txt                           | Harmful prompts phrased as in "Back To The Past" attack                                           |
