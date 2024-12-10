@@ -17,7 +17,7 @@ From here, your pull request will be reviewed, and once you've responded to all 
 
 To start developing and testing using our development scripts, the following tools need to be installed:
 
-- **FuzzyAI** (or any other local Kubernetes setup)
+- **FuzzyAI**
 
 ### Running Tests
 
