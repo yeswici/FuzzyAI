@@ -1,6 +1,6 @@
 # Contributing
 
-Thank you for considering contributing to FuzzyAI! We welcome contributions to improve this project. For general contributions and community guidelines, please see the community repo.
+Thank you for considering contributing to FuzzyAI! We welcome contributions to improve this project. For general contributions and community guidelines, please see the community [repo] (https://github/cyberark/community).
 
 ## General Steps for Contributing
 
