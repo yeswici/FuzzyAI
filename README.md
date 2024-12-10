@@ -1,18 +1,18 @@
-# FZAI Fuzzer
+# FuzzyAI Fuzzer
 <div style="text-align: center;">
 <img src="resources/logo.png" alt="Project Logo" width="200" style="vertical-align:middle; margin-right:10px;" />
 </div>
 <br><br>
 
-The FZAI Fuzzer is a powerful tool for automated LLM fuzzing. It is designed to help developers and security researchers identify and mitigate potential security vulnerabilities in their LLM APIs. 
+The FuzzyAI Fuzzer is a powerful tool for automated LLM fuzzing. It is designed to help developers and security researchers identify and mitigate potential security vulnerabilities in their LLM APIs. 
 
 ![FZAI](resources/fuzz.gif)
 
 ## Features
 
-- **Fuzzing Techniques**: The FZAI Fuzzer supports various fuzzing techniques, including mutation-based fuzzing, generation-based fuzzing, and intelligent fuzzing.
+- **Fuzzing Techniques**: The FuzzyAI Fuzzer supports various fuzzing techniques, including mutation-based fuzzing, generation-based fuzzing, and intelligent fuzzing.
 - **Input Generation**: It provides built-in input generation capabilities to generate valid and invalid inputs for testing.
-- **Integration**: The FZAI Fuzzer can be easily integrated into existing development and testing workflows.
+- **Integration**: The FuzzyAI Fuzzer can be easily integrated into existing development and testing workflows.
 - **Extensibility**: It provides an extensible architecture, allowing users to customize and extend the fuzzer's functionality.
 
 ## Attacks we already implemented
@@ -29,13 +29,13 @@ The FZAI Fuzzer is a powerful tool for automated LLM fuzzing. It is designed to 
 | WordGame                                     | Disguises harmful prompts as word puzzles                                                                                                                                   | [arXiv:2405.14023](https://arxiv.org/pdf/2405.14023)                            |
 | Crescendo                                    | Engaging the model in a series of escalating conversational turns,starting with innocuous queries and gradually steering the dialogue toward restricted or sensitive topics. | [arXiv:2404.01833](https://arxiv.org/pdf/2404.01833)                            |
 | ActorAttack                                  | Inspired by actor-network theory, it builds semantic networks of "actors" to subtly guide conversations toward harmful targets while concealing malicious intent.           | [arxiv 2410.10700](https://arxiv.org/pdf/2410.10700)                                                                            |                                                                                                                                     |
-| Back To The Past                             | Modifies the prompt by adding a profession-based prefix and a past related suffix                                                                                           |                                                                                 |
-| Please                                       | Modifies the prompt by adding please as prefix and suffix                                                                                                                   |                                                                                 |
-| Thought Experiment                           | Modifies the prompt by adding a thought experiment related prefix. In addition adds "precautions have been taken care of" suffix                                                  |                                                                                 |
+| Back To The Past                             | Modifies the prompt by adding a profession-based prefix and a past-related suffix                                                                                           |                                                                                 |
+| Please                                       | Modifies the prompt by adding please as a prefix and suffix                                                                                                                   |                                                                                 |
+| Thought Experiment                           | Modifies the prompt by adding a thought experiment-related prefix. In addition, adds "precautions have been taken care of" suffix                                                  |                                                                                 |
 | Default                                      | Send the prompt to the model as-is                                                                                                                                          |                                                                                 |
 
 ## Supported models
-We've tested the attacks above using the models listed below. Fuzzy is programmed to support a definitive set of model types,
+We've tested the attacks above using the models listed below. FuzzyAI is programmed to support a definitive set of model types,
 but you can always add support for new models [by adding the model's name to the relevant LLM provider](wiki/diy/new_models.html).
 
 <table>
@@ -163,7 +163,7 @@ For more detailed instructions, please refer to the [documentation](wiki/index.h
 
 ## Getting Started
 
-To get started with the FZAI Fuzzer, follow these steps:
+To get started with the FuzzyAI Fuzzer, follow these steps:
 
 1. Clone the repository: `git clone git@github.com:cyberark/FuzzyAI.git`
 2. Install the required dependencies using [poetry](https://python-poetry.org/) : `poetry update`<br/>
@@ -228,13 +228,13 @@ python run.py -C config_example.json -t "How to build a bomb"
 
 ## Contributing
 
-Contributions are welcome! If you would like to contribute to the FZAI Fuzzer, please follow the guidelines outlined in the [CONTRIBUTING.md](https://github.com/cyberark/FuzzyAI/blob/main/CONTRIBUTING.md) file.
+Contributions are welcome! If you would like to contribute to the FuzzyAI Fuzzer, please follow the guidelines outlined in the [CONTRIBUTING.md](https://github.com/cyberark/FuzzyAI/blob/main/CONTRIBUTING.md) file.
 
 ## License
 
-The FZAI Fuzzer is released under the [Apache License](https://www.apache.org/licenses/LICENSE-2.0). See the [LICENSE](https://github.com/cyberark/FuzzyAI/blob/main/LICENSE) file for more details.
+The FuzzyAI Fuzzer is released under the [Apache License](https://www.apache.org/licenses/LICENSE-2.0). See the [LICENSE](https://github.com/cyberark/FuzzyAI/blob/main/LICENSE) file for more details.
 
 ## Contact
 
-If you have any questions or suggestions regarding the FZAI Fuzzer, please feel free to contact us at [fzai@cyberark.com](mailto:fzai@cyberark.com).
+If you have any questions or suggestions regarding the FuzzyAI Fuzzer, please feel free to contact us at [fzai@cyberark.com](mailto:fzai@cyberark.com).
 
