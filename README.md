@@ -47,6 +47,17 @@ but you can always add support for new models [by adding the model's name to the
   </thead>
   <tbody>
     <tr>
+      <td><strong>AI21</strong></td>
+      <td>
+        <ul>
+          <li>jamba-1.5-mini</li>
+          <li>jamba-1.5-large</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+  <tbody>
+    <tr>
       <td><strong>Anthropic</strong></td>
       <td>
         <ul>
@@ -133,6 +144,7 @@ Please note that we have specified the models tested for cloud API. If you attem
 ## Supported Cloud APIs
 - **OpenAI**
 - **Anthropice**
+- **AI21**
 - **Gemini**
 - **Huggingface ([Downloading models](https://huggingface.co/docs/hub/en/models-downloading))**
 - **Azure Cloud**
