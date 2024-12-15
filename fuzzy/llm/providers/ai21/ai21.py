@@ -80,8 +80,8 @@ class AI21Provider(BaseLLMProvider):
             )
 
             async with self._session.post(url, json=request.model_dump()) as response:
-                openai_response = await response.json()
-                if (error := openai_response.get("error")) is not None:
+                ai21_response = await response.json()
+                if (error := ai21_response.get("error")) is not None:
                     if error.get('code') == 'rate_limit_exceeded':
                         logger.debug(f'Rate limit exceeded')
                         raise BaseLLMProviderRateLimitException()
@@ -89,7 +89,7 @@ class AI21Provider(BaseLLMProvider):
                         raise AI21ProviderException(f"AI21 error: {error.get('message')}")
                     
                 return BaseLLMProviderResponse(
-                    response=openai_response["choices"][0]['message']['content']
+                    response=ai21_response["choices"][0]['message']['content']
                 )
         except (BaseLLMProviderRateLimitException, AI21ProviderException) as e:
             raise e
