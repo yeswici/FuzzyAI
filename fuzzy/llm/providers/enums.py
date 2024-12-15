@@ -1,4 +1,4 @@
-from enum import Enum, auto
+from enum import Enum
 
 
 class LLMProvider(str, Enum):
@@ -11,7 +11,8 @@ class LLMProvider(str, Enum):
     LOCAL_LLAMA2 = "local-llama2"
     GEMINI = "gemini"
     REST = "rest"
-    
+    AI21 = "ai21"
+
 
 class LLMProviderExtraParams(str, Enum):
     MAX_LENGTH = "max_length"

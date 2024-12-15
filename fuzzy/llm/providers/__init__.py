@@ -1,3 +1,4 @@
+from .ai21.ai21 import AI21Provider
 from .anthropic.handler import AnthropicProvider
 from .azure.azure import AzureProvider
 from .bedrock.handler import AwsBedrockProvider
