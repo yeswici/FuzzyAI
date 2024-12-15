@@ -47,17 +47,6 @@ but you can always add support for new models [by adding the model's name to the
   </thead>
   <tbody>
     <tr>
-      <td><strong>AI21</strong></td>
-      <td>
-        <ul>
-          <li>jamba-1.5-mini</li>
-          <li>jamba-1.5-large</li>
-        </ul>
-      </td>
-    </tr>
-    <tr>
-  <tbody>
-    <tr>
       <td><strong>Anthropic</strong></td>
       <td>
         <ul>
@@ -109,6 +98,15 @@ but you can always add support for new models [by adding the model's name to the
           <li>anthropic.claude-3-opus-20240229-v1:0</li>
           <li>anthropic.claude-3-haiku-20240307-v1:0</li>
           <li>anthropic.claude-v2:1</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td><strong>AI21</strong></td>
+      <td>
+        <ul>
+          <li>jamba-1.5-mini</li>
+          <li>jamba-1.5-large</li>
         </ul>
       </td>
     </tr>
