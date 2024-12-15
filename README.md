@@ -141,12 +141,12 @@ Please note that we have specified the models tested for cloud API. If you attem
 
 ## Supported Cloud APIs
 - **OpenAI**
-- **Anthropice**
-- **AI21**
+- **Anthropic**
 - **Gemini**
-- **Huggingface ([Downloading models](https://huggingface.co/docs/hub/en/models-downloading))**
 - **Azure Cloud**
 - **AWS Bedrock**
+- **AI21**
+- **Huggingface ([Downloading models](https://huggingface.co/docs/hub/en/models-downloading))**
 - **Ollama**
 - **Custom REST API**
 
