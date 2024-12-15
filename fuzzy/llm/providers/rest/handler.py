@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import os
 from typing import Any, Callable, Optional
@@ -6,7 +7,7 @@ import requests
 from jsonpath_ng import parse
 
 from fuzzy.llm.models import BaseLLMProviderResponse
-from fuzzy.llm.providers.base import BaseLLMProvider, BaseLLMProviderException, llm_provider_fm
+from fuzzy.llm.providers.base import BaseLLMMessage, BaseLLMProvider, BaseLLMProviderException, llm_provider_fm
 from fuzzy.llm.providers.enums import LLMProvider
 from fuzzy.llm.providers.rest.utils import parse_http_request
 
@@ -37,16 +38,21 @@ class RestProvider(BaseLLMProvider):
             ``` 
 
     Args:
+        model (str): The path to the raw HTTP request file.
         host (str): The host of the REST API.
-        raw_http_file (str): The path to the raw HTTP request file.
         response_jsonpath (str): The JSONPath to extract the response from the HTTP response. i.e "$.response".
         prompt_token (str): The token to be replaced with the prompt in the HTTP request body. (default: "<PROMPT>")
         scheme (str): The scheme of the REST API (default: "https").
+        port (int): The port of the REST API (default: 443).
         **extra (Any): Additional arguments to be passed to the BaseLLMProvider constructor.
     """
+    def __init__(self, model: str, host: Optional[str] = None, response_jsonpath: Optional[str] = None, 
+                 prompt_token: str = PROMPT_TOKEN, scheme: str = "https", port: int = 443, **extra: Any):
+        super().__init__(model=model, **extra)
 
-    def __init__(self, host: str, raw_http_file: str, response_jsonpath: str, prompt_token: str = PROMPT_TOKEN, scheme: str = "https", **extra: Any):
-        super().__init__(name=LLMProvider.REST, **extra)
+        if any(x is None for x in [host, response_jsonpath]):
+            raise RuntimeError("host, and response_jsonpath must be provided using -e flag.") 
+        
         self._method: str = str()
         self._path: str = str()
         self._headers: dict[str, Any] = dict()
@@ -54,9 +60,9 @@ class RestProvider(BaseLLMProvider):
 
         self._prompt_token = prompt_token
         self._response_jsonpath = response_jsonpath
-        self._parse_http_file(raw_http_file)
+        self._parse_http_file(model)
 
-        self._url = f"{scheme}://{host}{self._path}"
+        self._url = f"{scheme}://{host}:{port}{self._path}"
 
         self._session = requests.Session()
         self._session.headers = self._headers
@@ -78,6 +84,8 @@ class RestProvider(BaseLLMProvider):
             raise RestProviderException(f"HTTP file not found: {raw_http_file}")
         
         parsed_http = parse_http_request(raw_http_file)
+        logger.debug("Parsed HTTP: %s", parsed_http)
+
         self._method = parsed_http["method"]
         self._path = parsed_http["path"]
         if not self._path.startswith("/"):
@@ -85,8 +93,7 @@ class RestProvider(BaseLLMProvider):
 
         self._headers = parsed_http["headers"]
         self._body = parsed_http["body"]
-
-
+    
     async def generate(self, prompt: str, **extra: Any) -> Optional[BaseLLMProviderResponse]:
         """
         Generates a response from the language model using a REST API.
@@ -107,19 +114,19 @@ class RestProvider(BaseLLMProvider):
             method: Callable[..., requests.Response] = getattr(self._session, self._method.lower())
             payload = self._body.replace(self._prompt_token, prompt)
 
-            async with method(url=self._url, data=payload) as http_response:
-                http_response.raise_for_status()
-                raw_response = await http_response.json()
-                jsonpath_expr = parse(self._response_jsonpath)
+            http_response = await asyncio.to_thread(method, url=self._url, data=payload)
+            http_response.raise_for_status()
+            raw_response = await http_response.json()
+            jsonpath_expr = parse(self._response_jsonpath)
 
-                # Extract the data
-                result = [match.value for match in jsonpath_expr.find(raw_response)]
-                # Since we expect only one result, we can just get the first one
-                if result:
-                    response = BaseLLMProviderResponse(response=result[0])
-                else:
-                    logger.warning("No response found in the JSONPath: %s", self._response_jsonpath)
-                    response = None
+            # Extract the data
+            result = [match.value for match in jsonpath_expr.find(raw_response)]
+            # Since we expect only one result, we can just get the first one
+            if result:
+                response = BaseLLMProviderResponse(response=result[0])
+            else:
+                logger.warning("No response found in the JSONPath: %s", self._response_jsonpath)
+                response = None
         except requests.HTTPError as e:
             raise e
         except Exception as e:
@@ -128,3 +135,9 @@ class RestProvider(BaseLLMProvider):
         
         logger.debug("Generated response: %s", response)
         return response
+
+    async def close(self) -> None:
+        self._session.close()
+    
+    async def chat(self, messages: list[BaseLLMMessage], **extra: Any) -> BaseLLMProviderResponse | None:
+        raise NotImplementedError

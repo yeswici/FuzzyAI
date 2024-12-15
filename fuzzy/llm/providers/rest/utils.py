@@ -1,4 +1,3 @@
-import json
 from typing import Any, Dict
 
 
@@ -8,14 +7,14 @@ def parse_http_request(file_path: str) -> Dict[str, Any]:
     
     method, path, _ = lines[0].split()
     headers = {}
-    for line in lines[1:]:
+    for idx, line in enumerate(lines[1:]):
         if line == '\n':
             break
         key, value = line.strip().split(': ')
         headers[key] = value
     
-    body = json.loads(lines[-1])
-    
+    body = "".join(lines[idx+2:])
+
     return {
         "method": method,
         "path": path,

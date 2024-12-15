@@ -1,4 +1,5 @@
 import abc
+import asyncio
 from typing import Any, Callable, Optional, Type, TypeVar, Union, overload
 
 from pydantic import BaseModel
@@ -43,15 +44,7 @@ class BaseLLMProvider(abc.ABC):
         ...
         
     @abc.abstractmethod
-    def sync_generate(self, prompt: str, **extra: Any) -> Optional[BaseLLMProviderResponse]:
-        ...
-
-    @abc.abstractmethod
     async def chat(self, messages: list[BaseLLMMessage], **extra: Any) -> Optional[BaseLLMProviderResponse]:
-        ...
-    
-    @abc.abstractmethod
-    def sync_chat(self, messages: list[BaseLLMMessage], **extra: Any) -> Optional[BaseLLMProviderResponse]:
         ...
     
     @abc.abstractmethod
@@ -63,6 +56,12 @@ class BaseLLMProvider(abc.ABC):
     def get_supported_models(cls) -> list[str]:
         ...
 
+    def sync_generate(self, prompt: str, **extra: Any) -> Optional[BaseLLMProviderResponse]:
+        return asyncio.run(self.generate(prompt, **extra))
+
+    def sync_chat(self, messages: list[BaseLLMMessage], **extra: Any) -> Optional[BaseLLMProviderResponse]:
+        return asyncio.run(self.chat(messages, **extra))
+    
     def add_to_history(self, responses: list[BaseLLMProviderResponse]) -> None:
         self._history.extend(responses)
     
