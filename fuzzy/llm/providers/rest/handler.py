@@ -1,9 +1,8 @@
-import asyncio
 import logging
 import os
 from typing import Any, Callable, Optional
 
-import requests
+import aiohttp
 from jsonpath_ng import parse
 
 from fuzzy.llm.models import BaseLLMProviderResponse
@@ -64,7 +63,7 @@ class RestProvider(BaseLLMProvider):
 
         self._url = f"{scheme}://{host}:{port}{self._path}"
 
-        self._session = requests.Session()
+        self._session = aiohttp.ClientSession(headers=self._headers)
         self._session.headers = self._headers
 
     @classmethod
@@ -110,12 +109,12 @@ class RestProvider(BaseLLMProvider):
         
         logger.debug("Generating prompt: %s", prompt)
         try:
-            http_response: requests.Response
-            method: Callable[..., requests.Response] = getattr(self._session, self._method.lower())
+            http_response: aiohttp.ClientResponse
+            method: Callable[..., aiohttp.ClientResponse] = getattr(self._session, self._method.lower())
             payload = self._body.replace(self._prompt_token, prompt)
-
-            http_response = await asyncio.to_thread(method, url=self._url, data=payload)
+            http_response = await method(url=self._url, data=payload)
             http_response.raise_for_status()
+
             raw_response = await http_response.json()
             jsonpath_expr = parse(self._response_jsonpath)
 
@@ -127,8 +126,6 @@ class RestProvider(BaseLLMProvider):
             else:
                 logger.warning("No response found in the JSONPath: %s", self._response_jsonpath)
                 response = None
-        except requests.HTTPError as e:
-            raise e
         except Exception as e:
             logger.error("Error generating response: %s", e)
             raise RestProviderException(f"Error generating prompt: {e}")

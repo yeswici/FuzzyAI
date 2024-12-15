@@ -7,16 +7,10 @@ import backoff
 import requests
 
 from fuzzy.consts import ROLE_ASSISTANT, ROLE_SYSTEM, ROLE_USER
-from fuzzy.handlers.tokenizers.handler import TokensHandler  # type: ignore
 from fuzzy.llm.models import BaseLLMProviderResponse
 from fuzzy.llm.providers.ai21.models import AI21ChatRequest
-from fuzzy.llm.providers.base import (
-    BaseLLMMessage,
-    BaseLLMProvider,
-    BaseLLMProviderException,
-    BaseLLMProviderRateLimitException,
-    llm_provider_fm,
-)
+from fuzzy.llm.providers.base import (BaseLLMMessage, BaseLLMProvider, BaseLLMProviderException,
+                                      BaseLLMProviderRateLimitException, llm_provider_fm)
 from fuzzy.llm.providers.enums import LLMProvider, LLMProviderExtraParams
 from fuzzy.llm.providers.shared.decorators import api_endpoint
 

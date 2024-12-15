@@ -4,7 +4,6 @@ from typing import Any, Optional
 
 import aiohttp
 import backoff
-import requests
 import tiktoken
 
 from fuzzy.consts import ROLE_ASSISTANT, ROLE_SYSTEM, ROLE_USER
@@ -39,6 +38,7 @@ class OpenAIProvider(BaseLLMProvider):
             "Content-Type": "application/json",
             "Authorization": f"Bearer {api_key}"
         }
+        
         self._session = aiohttp.ClientSession(headers=self._headers)
 
         self._base_url = OPENAI_API_BASE_URL
@@ -94,27 +94,6 @@ class OpenAIProvider(BaseLLMProvider):
         
         chat_extra_params = {k:v for k, v in extra.items() if k not in [LLMProviderExtraParams.APPEND_LAST_RESPONSE]}
         return self.sync_chat(messages, **chat_extra_params)
-        
-    def sync_chat(self, messages: list[BaseLLMMessage], **extra: Any) -> BaseLLMProviderResponse:
-        error: dict[str, Any]
-
-        try:
-            request = OpenAIChatRequest(model=self._model_name, messages=messages, **extra)
-            response = requests.post(self.CHAT_COMPLETIONS_URL, headers=self._headers,  json=request.model_dump())
-            openai_response = response.json()
-            if (error := openai_response.get("error")) is not None:
-                if error.get('code') == 'rate_limit_exceeded':
-                    logger.debug(f'Rate limit exceeded')
-                    raise BaseLLMProviderRateLimitException()
-                else:
-                    raise OpenAIProviderException('OpenAI error: ' + error.get('message'))
-                
-            return BaseLLMProviderResponse(response=openai_response["choices"][0]['message']['content'])
-        except (BaseLLMProviderRateLimitException, OpenAIProviderException) as e:
-            raise e
-        except Exception as e:            
-            logger.error(f'Error generating text: {e}')
-            raise OpenAIProviderException('Cant generate text')
 
     async def close(self) -> None:
         await self._session.close()
