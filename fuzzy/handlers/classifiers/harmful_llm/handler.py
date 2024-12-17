@@ -31,7 +31,7 @@ class HarmfulLLMClassifier(BaseClassifier):
         response = await llm.generate(full_prompt, top_k=1, temperature=0, max_tokens=10)
         logger.info(f"classifier {self._name} response {response.response if response else None}")
 
-        if not response or any(response.response.lower().startswith(x) for x in ["sorry", "no", "i cannot", "i apologize", "i'm sorry"]):
+        if not response or any(response.response.lower().startswith(x) for x in ["sorry", "i cannot", "i apologize", "i'm sorry"]):
             return self._harmful
         
         if response.response.lower().startswith("yes"):
