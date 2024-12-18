@@ -4,7 +4,7 @@
 </div>
 <br><br>
 
-The FuzzyAI Fuzzer is a powerful tool for automated LLM fuzzing. It is designed to help developers and security researchers identify and mitigate potential security vulnerabilities in their LLM APIs. 
+The FuzzyAI Fuzzer is a powerful tool for automated LLM fuzzing. It is designed to help developers and security researchers identify jailbreaks and mitigate potential security vulnerabilities in their LLM APIs. 
 
 ![FZAI](resources/fuzz.gif)
 
