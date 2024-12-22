@@ -115,7 +115,6 @@ async def main_genetic_predefined_prompts_and_targets():
     fuzzer = Fuzzer(max_workers=num_workers, db_address="127.0.0.1")
     # llama2
     model = "/home/user/Inno/models/llama/llama-2-7b-chat-hf"
-    # model = "/Users/nivrabin/code/LLM/models/llama/llama-2-7b-chat-hf"
     qualified_name = f"{LLMProvider.LOCAL_LLAMA2.value}/{model}"
     fuzzer.add_llm(qualified_name, device="cuda:1")
     fuzzer.add_classifier(DisapprovalClassifier())
