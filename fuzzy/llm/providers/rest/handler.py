@@ -39,13 +39,13 @@ class RestProvider(BaseLLMProvider):
     Args:
         model (str): The path to the raw HTTP request file.
         host (str): The host of the REST API.
-        response_jsonpath (str): The JSONPath to extract the response from the HTTP response. i.e "$.response".
+        response_jsonpath (str): The JSONPath to extract the response from the HTTP response. (default: "$.response").
         prompt_token (str): The token to be replaced with the prompt in the HTTP request body. (default: "<PROMPT>")
         scheme (str): The scheme of the REST API (default: "https").
         port (int): The port of the REST API (default: 443).
         **extra (Any): Additional arguments to be passed to the BaseLLMProvider constructor.
     """
-    def __init__(self, model: str, host: Optional[str] = None, response_jsonpath: Optional[str] = None, 
+    def __init__(self, model: str, host: Optional[str] = None, response_jsonpath: str = "$.response", 
                  prompt_token: str = PROMPT_TOKEN, scheme: str = "https", port: int = 443, **extra: Any):
         super().__init__(model=model, **extra)
 
@@ -64,7 +64,6 @@ class RestProvider(BaseLLMProvider):
         self._url = f"{scheme}://{host}:{port}{self._path}"
 
         self._session = aiohttp.ClientSession(headers=self._headers)
-        self._session.headers = self._headers
 
     @classmethod
     def get_supported_models(cls) -> list[str]:
@@ -112,11 +111,14 @@ class RestProvider(BaseLLMProvider):
             http_response: aiohttp.ClientResponse
             method: Callable[..., aiohttp.ClientResponse] = getattr(self._session, self._method.lower())
             payload = self._body.replace(self._prompt_token, prompt)
-            http_response = await method(url=self._url, data=payload)
+            http_response = await method(url=self._url, data=payload) # type: ignore
             http_response.raise_for_status()
 
             raw_response = await http_response.json()
             jsonpath_expr = parse(self._response_jsonpath)
+
+            logger.debug("Raw response: %s", raw_response)
+            logger.debug("Extracting response using JSONPath: %s", self._response_jsonpath)
 
             # Extract the data
             result = [match.value for match in jsonpath_expr.find(raw_response)]
@@ -134,7 +136,7 @@ class RestProvider(BaseLLMProvider):
         return response
 
     async def close(self) -> None:
-        self._session.close()
+        await self._session.close()
     
     async def chat(self, messages: list[BaseLLMMessage], **extra: Any) -> BaseLLMProviderResponse | None:
         raise NotImplementedError

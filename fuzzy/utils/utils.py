@@ -96,8 +96,10 @@ def print_report(report: FuzzerResult) -> None:
             for successful_prompts in model_entry.harmful_prompts:
                 table_data.append([successful_prompts.original_prompt, model_entry.name, entry.attack_mode, successful_prompts.harmful_prompt, successful_prompts.harmful_response, green])
             
-    print(tabulate(table_data, headers, tablefmt="simple_grid", maxcolwidths=[40, 20, 20, 40, 50, 10], colalign=("center", "center", "center", "center", "center", "center")))
-
+    try:
+        print(tabulate(table_data, headers, tablefmt="simple_grid", maxcolwidths=[40, 20, 20, 40, 50, 10], colalign=("center", "center", "center", "center", "center", "center")))
+    except Exception as e:
+        logger.error("Can't generating report")
 
 def generate_report(report: FuzzerResult) -> None:
     template = "plotly_dark"

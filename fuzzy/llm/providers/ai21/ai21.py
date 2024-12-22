@@ -99,7 +99,7 @@ class AI21Provider(BaseLLMProvider):
 
     @backoff.on_exception(backoff.expo, BaseLLMProviderRateLimitException, max_value=10)
     def sync_generate(
-        self, prompt: str, url: str, **extra: Any
+        self, prompt: str, **extra: Any
     ) -> Optional[BaseLLMProviderResponse]:
         messages = [BaseLLMMessage(role=ROLE_USER, content=prompt)]
 
@@ -117,7 +117,7 @@ class AI21Provider(BaseLLMProvider):
         return self.sync_chat(messages, **chat_extra_params)
 
     def sync_chat(
-        self, messages: list[BaseLLMMessage], url: str, **extra: Any
+        self, messages: list[BaseLLMMessage], **extra: Any
     ) -> BaseLLMProviderResponse:
         try:
             request = AI21ChatRequest(
