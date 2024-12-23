@@ -98,6 +98,9 @@ async def main() -> None:
     parser.add_argument('-N', f'--{PARAMETER_MAX_TOKENS}', help='Max tokens to generate when generating LLM response (default: 100)', 
                         type=int, default=100)
 
+    parser.add_argument('-b', f'--benign_prompts', help='Adds n benign prompts to the attack (default: 0)', 
+                        type=int, default=0)
+    
     group = parser.add_mutually_exclusive_group()
     group.add_argument('-t', '--target-prompt', help='Prompt to attack (One or more)', action="append", type=str, default=[])
     group.add_argument('-T', '--target-prompts-file', help='Prompts to attack (from file, line separated)', type=str, default=None)
@@ -152,6 +155,13 @@ async def main() -> None:
     else:
         prompts = args.target_prompt
 
+    if hasattr(args, 'benign_prompts') and args.benign_prompts:
+        logger.info(f"Adding {args.benign_prompts} benign prompts to the attack")
+        with open('resources/benign_prompts.txt', 'r') as f:
+            benign_prompts = f.readlines()[:args.benign_prompts]
+
+        prompts += [prompt.strip() for prompt in benign_prompts if prompt.strip()]
+        
     fuzzer = Fuzzer(db_address=args.db_address)
     
     if hasattr(args, 'classifier') and args.classifier:
