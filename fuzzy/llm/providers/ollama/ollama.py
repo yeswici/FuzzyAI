@@ -22,14 +22,15 @@ class OllamaProviderException(BaseLLMProviderException):
 
 @llm_provider_fm.flavor(LLMProvider.OLLAMA)
 class OllamaProvider(BaseLLMProvider):
-    def __init__(self, llm_address: Optional[str] = None, port: int = OLLAMA_BASE_PORT, 
+    def __init__(self, llm_address: Optional[str] = None, 
+                 ollama_port: int = OLLAMA_BASE_PORT, 
                  seed: int = 0, **extra: Any):
         super().__init__(**extra)
         
         if llm_address is None:
             llm_address = "localhost"
         
-        self._base_url = f"http://{llm_address}:{int(port) + int(seed)}/api"
+        self._base_url = f"http://{llm_address}:{int(ollama_port) + int(seed)}/api"
         
         random.seed(seed)
         self._seed = random.randint(42, 1024)

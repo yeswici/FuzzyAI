@@ -102,84 +102,88 @@ def print_report(report: FuzzerResult) -> None:
         logger.error("Can't generating report")
 
 def generate_report(report: FuzzerResult) -> None:
-    template = "plotly_dark"
-    model_total_prompts: dict[str, int] = {}
-    model_success: dict[str, int] = {}
-    heatmap_matrix: dict[str, dict[str, float]] = {}
+    try:
+        template = "plotly_dark"
+        model_total_prompts: dict[str, int] = {}
+        model_success: dict[str, int] = {}
+        heatmap_matrix: dict[str, dict[str, float]] = {}
 
-    # Calculate model success rate
-    for entry in report.attacking_techniques or []:
-        for model_entry in entry.models:
-            model_total_prompts[model_entry.name] = model_total_prompts.get(model_entry.name, 0) + len(model_entry.harmful_prompts) + len(model_entry.failed_prompts)
-            model_success[model_entry.name] = model_success.get(model_entry.name, 0) + len(model_entry.harmful_prompts)
+        # Calculate model success rate
+        for entry in report.attacking_techniques or []:
+            for model_entry in entry.models:
+                model_total_prompts[model_entry.name] = model_total_prompts.get(model_entry.name, 0) + len(model_entry.harmful_prompts) + len(model_entry.failed_prompts)
+                model_success[model_entry.name] = model_success.get(model_entry.name, 0) + len(model_entry.harmful_prompts)
 
-            # Calculate the success rate per attack mode per model
-            if model_total_prompts.get(model_entry.name, 0) > 0:
-                heatmap_matrix[model_entry.name] = heatmap_matrix.get(model_entry.name, {})
-                heatmap_matrix[model_entry.name][entry.attack_mode] = model_success[model_entry.name] / model_total_prompts[model_entry.name]
+                # Calculate the success rate per attack mode per model
+                if model_total_prompts.get(model_entry.name, 0) > 0:
+                    heatmap_matrix[model_entry.name] = heatmap_matrix.get(model_entry.name, {})
+                    heatmap_matrix[model_entry.name][entry.attack_mode] = model_success[model_entry.name] / model_total_prompts[model_entry.name]
 
-    data = [[heatmap_matrix[model][attack.attack_mode] for model in heatmap_matrix.keys()] for attack in report.attacking_techniques] # type: ignore
+        data = [[heatmap_matrix[model][attack.attack_mode] for model in heatmap_matrix.keys()] for attack in report.attacking_techniques] # type: ignore
 
-    heatmap = px.imshow(data,
-                labels=dict(x="MODEL NAME", y="ATTACK MODE", color="ASR"),
-                x=list(heatmap_matrix.keys()),
-                y=[attack.attack_mode for attack in report.attacking_techniques], # type: ignore
-               )
+        heatmap = px.imshow(data,
+                    labels=dict(x="MODEL NAME", y="ATTACK MODE", color="ASR"),
+                    x=list(heatmap_matrix.keys()),
+                    y=[attack.attack_mode for attack in report.attacking_techniques], # type: ignore
+                )
+            
+        # Plot a bar graph with plotly.express
+        model_success_rate = {model: (success / total if total > 0 else 1) * 100 for model, success in model_success.items() for model2, total in model_total_prompts.items() if model == model2}
+        model_success_graph = px.bar(x=list(model_success_rate.keys()), y=list(model_success_rate.values()), labels=["SUCCESS RATE", "MODEL NAME"], title="MODEL ASR")
         
-    # Plot a bar graph with plotly.express
-    model_success_rate = {model: (success / total if total > 0 else 1) * 100 for model, success in model_success.items() for model2, total in model_total_prompts.items() if model == model2}
-    model_success_graph = px.bar(x=list(model_success_rate.keys()), y=list(model_success_rate.values()), labels=["SUCCESS RATE", "MODEL NAME"], title="MODEL ASR")
-    
-    # Calculate success rate by attack mode
-    attack_total: dict[str, int] = {}
-    attack_success: dict[str, int] = {}
+        # Calculate success rate by attack mode
+        attack_total: dict[str, int] = {}
+        attack_success: dict[str, int] = {}
 
-    for entry in report.attacking_techniques or []:
-        attack_total[entry.attack_mode] = 0
-        attack_success[entry.attack_mode] = 0
-        for model_entry in entry.models:
-            attack_total[entry.attack_mode] += len(model_entry.harmful_prompts) + len(model_entry.failed_prompts)
-            attack_success[entry.attack_mode] += len(model_entry.harmful_prompts)
+        for entry in report.attacking_techniques or []:
+            attack_total[entry.attack_mode] = 0
+            attack_success[entry.attack_mode] = 0
+            for model_entry in entry.models:
+                attack_total[entry.attack_mode] += len(model_entry.harmful_prompts) + len(model_entry.failed_prompts)
+                attack_success[entry.attack_mode] += len(model_entry.harmful_prompts)
 
-    # Plot a bar graph with plotly.express
-    attack_success_rate = {attack: (success / total if total > 0 else 1) * 100 for attack, success in attack_success.items() for attack2, total in attack_total.items() if attack == attack2}
-    attack_success_graph = px.bar(x=list(attack_success_rate.keys()), y=list(attack_success_rate.values()), labels=["SUCCESS RATE", "ATTACK MODE"], title="ASR by attack mode")
+        # Plot a bar graph with plotly.express
+        attack_success_rate = {attack: (success / total if total > 0 else 1) * 100 for attack, success in attack_success.items() for attack2, total in attack_total.items() if attack == attack2}
+        attack_success_graph = px.bar(x=list(attack_success_rate.keys()), y=list(attack_success_rate.values()), labels=["SUCCESS RATE", "ATTACK MODE"], title="ASR by attack mode")
 
-    # Curate a table of harmful_prompts with plotly
-    harmful_prompts = []
-    for entry in report.attacking_techniques or []:
-        for model_entry in entry.models:
-            for prompt in model_entry.harmful_prompts:
-                harmful_prompts.append((prompt.original_prompt, prompt.harmful_prompt))
+        # Curate a table of harmful_prompts with plotly
+        harmful_prompts = []
+        for entry in report.attacking_techniques or []:
+            for model_entry in entry.models:
+                for prompt in model_entry.harmful_prompts:
+                    harmful_prompts.append((prompt.original_prompt, prompt.harmful_prompt))
 
-    success_table = go.Figure(data=[go.Table(header=dict(values=['ORIGINAL PROMPTS', 'ADVERSARIAL PROMPTS'],), name="JAILBROKEN PROMPTS",
-                    cells=dict(values=[[x[0] for x in harmful_prompts], [x[1] for x in harmful_prompts]]))
+        success_table = go.Figure(data=[go.Table(header=dict(values=['ORIGINAL PROMPTS', 'ADVERSARIAL PROMPTS'],), name="JAILBROKEN PROMPTS",
+                        cells=dict(values=[[x[0] for x in harmful_prompts], [x[1] for x in harmful_prompts]]))
+                            ])
+
+        failed_prompts = []
+        for entry in report.attacking_techniques or []:
+            for model_entry in entry.models:
+                for prompt in model_entry.failed_prompts:
+                    failed_prompts.append((prompt.original_prompt, prompt.harmful_prompt or "-"))
+
+        fail_table = go.Figure(data=[go.Table(header=dict(values=['ORIGINAL', 'ADVERSARIAL PROMPT'],), name="FAILED PROMPTS",
+                    cells=dict(values=[[x[0] for x in failed_prompts], [x[1] for x in failed_prompts]]))
                         ])
+        
+        for fig in [model_success_graph, attack_success_graph, success_table, fail_table, heatmap]:
+            fig.update_layout(template=template)
+        
+        content = str()
+        content += "<h1>JAILBROKEN PROMPTS</h1>"
+        content += success_table.to_html(full_html=False, include_plotlyjs='cdn')
+        content += heatmap.to_html(full_html=False, include_plotlyjs=False)
+        content += model_success_graph.to_html(full_html=False, include_plotlyjs=False)
+        content += attack_success_graph.to_html(full_html=False, include_plotlyjs=False)
+        content += "<h1>FAILED PROMPTS</h1>"
+        content += fail_table.to_html(full_html=False, include_plotlyjs=False)
 
-    failed_prompts = []
-    for entry in report.attacking_techniques or []:
-        for model_entry in entry.models:
-            for prompt in model_entry.failed_prompts:
-                failed_prompts.append((prompt.original_prompt, prompt.harmful_prompt or "-"))
-
-    fail_table = go.Figure(data=[go.Table(header=dict(values=['ORIGINAL', 'ADVERSARIAL PROMPT'],), name="FAILED PROMPTS",
-                cells=dict(values=[[x[0] for x in failed_prompts], [x[1] for x in failed_prompts]]))
-                    ])
-    
-    for fig in [model_success_graph, attack_success_graph, success_table, fail_table, heatmap]:
-        fig.update_layout(template=template)
-    
-    content = str()
-    content += "<h1>JAILBROKEN PROMPTS</h1>"
-    content += success_table.to_html(full_html=False, include_plotlyjs='cdn')
-    content += heatmap.to_html(full_html=False, include_plotlyjs=False)
-    content += model_success_graph.to_html(full_html=False, include_plotlyjs=False)
-    content += attack_success_graph.to_html(full_html=False, include_plotlyjs=False)
-    content += "<h1>FAILED PROMPTS</h1>"
-    content += fail_table.to_html(full_html=False, include_plotlyjs=False)
-
-    html_data = REPORT_TEMPLATE.format(content=content)
-    with open(f'results/{CURRENT_TIMESTAMP}/report.html', 'w') as f:
-        f.write(html_data)
+        html_data = REPORT_TEMPLATE.format(content=content)
+        with open(f'results/{CURRENT_TIMESTAMP}/report.html', 'w') as f:
+            f.write(html_data)
+    except Exception as ex:
+        logger.error("Error generating report")
+        return
     
     logger.info(f"Report generated at results/{CURRENT_TIMESTAMP}/report.html")
