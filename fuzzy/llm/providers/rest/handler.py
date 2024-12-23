@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 from typing import Any, Callable, Optional
@@ -24,10 +25,12 @@ class RestProvider(BaseLLMProvider):
     This provider is used to communicate with any language model that exposes a REST API, or a REST API which utilizes an LLM behind the scene.
 
     caveats:
+        * REST API request must be in JSON format.
         * REST API response must be in JSON format.
         * We assume that the raw http request file is in the following format:
             ```
             METHOD /path HTTP/1.1
+            Content-type: application/json
             key: value
             key: value
             
@@ -110,8 +113,9 @@ class RestProvider(BaseLLMProvider):
         try:
             http_response: aiohttp.ClientResponse
             method: Callable[..., aiohttp.ClientResponse] = getattr(self._session, self._method.lower())
-            payload = self._body.replace(self._prompt_token, prompt)
-            http_response = await method(url=self._url, data=payload) # type: ignore
+            sanitized_prompt = json.dumps(prompt)[:-1][1:]
+            payload = self._body.replace(self._prompt_token, sanitized_prompt)
+            http_response = await method(url=self._url, json=json.loads(payload)) # type: ignore
             http_response.raise_for_status()
 
             raw_response = await http_response.json()

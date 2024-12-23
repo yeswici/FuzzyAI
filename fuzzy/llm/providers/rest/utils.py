@@ -13,7 +13,7 @@ def parse_http_request(file_path: str) -> Dict[str, Any]:
         key, value = line.strip().split(': ')
         headers[key] = value
     
-    body = "".join(lines[idx+2:])
+    body = "".join([x.strip() for x in lines[idx+2:]])
 
     return {
         "method": method,
