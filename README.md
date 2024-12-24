@@ -169,7 +169,7 @@ We've included a few datasets you can use, they're to be found under the resourc
 
 ## Documentation
 
-For more detailed instructions, please refer to the [documentation](wiki/index.html).
+For more detailed instructions, please refer to the [wiki](https://github.com/cyberark/FuzzyAI/wiki).
 
 ## Getting Started
 
