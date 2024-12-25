@@ -1,21 +1,21 @@
 import logging
-from typing import Any, Optional
+from typing import Any, Callable, Optional, Sequence, Type
 
 from pydantic import BaseModel, Field
 
-from fuzzy.handlers.attacks.ban.utils import character_noising, character_scrambling, random_capitalization
 from fuzzy.handlers.attacks.base import BaseAttackTechniqueHandler, attack_handler_fm
+from fuzzy.handlers.attacks.bon.utils import character_noising, character_scrambling, random_capitalization
 from fuzzy.handlers.attacks.enums import FuzzerAttackMode
 from fuzzy.handlers.attacks.models import AttackResultEntry
 from fuzzy.llm.providers.base import BaseLLMProvider
 
 logger = logging.getLogger(__name__)
 
-class BanAttackHandlerExtraParams(BaseModel):
-    num_augmentations: int = Field(5, description="Number of augmentations to be used for the attack. Default: 5")
+class BonAttackHandlerExtraParams(BaseModel):
+    num_augmentations: int = Field(5, description="Number of augmentations iterations for the attack. Default: 5")
 
-@attack_handler_fm.flavor(FuzzerAttackMode.BAN)
-class BanAttackHandler(BaseAttackTechniqueHandler[BanAttackHandlerExtraParams]):
+@attack_handler_fm.flavor(FuzzerAttackMode.BON)
+class BonAttackHandler(BaseAttackTechniqueHandler[BonAttackHandlerExtraParams]):
     """
     Best-Of-N jailbreak attack handler (https://arxiv.org/pdf/2412.03556)
     """
@@ -30,8 +30,8 @@ class BanAttackHandler(BaseAttackTechniqueHandler[BanAttackHandlerExtraParams]):
 
         for _ in range(self._extra_args.num_augmentations):
             augmented_prompt = prompt
-            
-            for f in [character_noising, character_scrambling, random_capitalization]:
+            aug_funcs: Sequence[Callable[..., str]] = character_noising, character_scrambling, random_capitalization
+            for f in aug_funcs:
                 augmented_prompt = f(augmented_prompt)
             logger.debug("Trying augmented prompt: %s", augmented_prompt)
 
@@ -56,6 +56,6 @@ class BanAttackHandler(BaseAttackTechniqueHandler[BanAttackHandlerExtraParams]):
         return result
     
     @classmethod
-    def extra_args_cls(cls) -> BaseModel:
-        return BanAttackHandlerExtraParams
+    def extra_args_cls(cls) -> Type[BaseModel]:
+        return BonAttackHandlerExtraParams
     

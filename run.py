@@ -124,6 +124,11 @@ async def main() -> None:
             logger.error(f"Required argument: --{req_arg}")
             return
 
+    for attack_mode in args.attack_modes:
+            if attack_mode not in set(FuzzerAttackMode):
+                logger.error(f"Attack method '{attack_mode}' not found")
+                return
+            
     if hasattr(args, 'list_extra') and args.list_extra:
         for attack_mode in args.attack_modes:
             attack_handler_cls = attack_handler_fm[FuzzerAttackMode(attack_mode)]
@@ -161,7 +166,7 @@ async def main() -> None:
             benign_prompts = f.readlines()[:args.benign_prompts]
 
         prompts += [prompt.strip() for prompt in benign_prompts if prompt.strip()]
-        
+
     fuzzer = Fuzzer(db_address=args.db_address)
     
     if hasattr(args, 'classifier') and args.classifier:
