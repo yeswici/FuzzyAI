@@ -1,6 +1,7 @@
 from .actor_attack.handler import ActorAttackHandler
 from .artprompt.handler import ArtPromptAttackHandler
 from .back_to_the_past.handler import BackToThePastAttackHandler
+from .ban.handler import BanAttackHandler
 from .crescendo.handler import CrescendoAttackHandler
 from .dan.handler import DanAttackHandler
 from .default.handler import DefaultAttackHandler
