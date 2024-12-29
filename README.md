@@ -8,136 +8,47 @@ The FuzzyAI Fuzzer is a powerful tool for automated LLM fuzzing. It is designed 
 
 ![FZAI](resources/fuzz.gif)
 
-## Features
+## Key Features
 
-- **Fuzzing Techniques**: The FuzzyAI Fuzzer supports various fuzzing techniques, including mutation-based fuzzing, generation-based fuzzing, and intelligent fuzzing.
-- **Input Generation**: It provides built-in input generation capabilities to generate valid and invalid inputs for testing.
-- **Integration**: The FuzzyAI Fuzzer can be easily integrated into existing development and testing workflows.
-- **Extensibility**: It provides an extensible architecture, allowing users to customize and extend the fuzzer's functionality.
+- **Comprehensive Fuzzing Techniques**: Leverage mutation-based, generation-based, and intelligent fuzzing.
+- **Built-in Input Generation**: Generate valid and invalid inputs for exhaustive testing.
+- **Seamless Integration**: Easily incorporate into your development and testing workflows.
+- **Extensible Architecture**: Customize and expand the fuzzer to meet your unique requirements.
 
 ## Attacks we already implemented
 
 | Attack Type                                  | Title                                                                                                                                                                       | Reference                                                                       |
 |----------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------|
 | ArtPrompt                                    | ASCII Art-based jailbreak attacks against aligned LLMs                                                                                                                      | [arXiv:2402.11753](https://arxiv.org/pdf/2402.11753)                            |
-| Taxonomy-based paraphrasing                  | Uses persuasive language techniques like emotional appeal and social proof to jailbreak LLMs                                                                                | [arXiv:2401.06373](https://arxiv.org/pdf/2401.06373)                            |
-| PAIR (Prompt Automatic Iterative Refinement) | Automates the generation of adversarial prompts by pairing two LLMs (“attacker” and “target”) to iteratively refine prompts until achieving jailbreak                       | [arXiv:2310.08419](https://arxiv.org/pdf/2310.08419)                            |
-| Many-shot jailbreaking                       | Exploits large context windows in language models by embedding multiple fake dialogue examples, gradually weakening the model's safety responses                            | [Anthropic Research](https://www.anthropic.com/research/many-shot-jailbreaking) |
-| Genetic                                      | Genetic algorithm iteratively modifies prompts to generate an adversarial suffix that coerces large language models into producing restricted content.                      | [arXiv:2309.01446](https://arxiv.org/pdf/2309.01446)                            |
-| Hallucinations                               | Using Hallucinations to Bypass RLHF Filters                                                                                                                                 | [arXiv:2403.04769](https://arxiv.org/pdf/2403.04769.pdf)                        |
+| Taxonomy-based paraphrasing                  | Persuasive language techniques like emotional appeal to jailbreak LLMs                                                                                | [arXiv:2401.06373](https://arxiv.org/pdf/2401.06373)                            |
+| PAIR (Prompt Automatic Iterative Refinement) | Automates adversarial prompt generation by iteratively refining prompts with two LLMs                       | [arXiv:2310.08419](https://arxiv.org/pdf/2310.08419)                            |
+| Many-shot jailbreaking                       | Embeds multiple fake dialogue examples to weaken model safety                            | [Anthropic Research](https://www.anthropic.com/research/many-shot-jailbreaking) |
+| Genetic                                      | Utilizes a genetic algorithm to modify prompts for adversarial outcomes                      | [arXiv:2309.01446](https://arxiv.org/pdf/2309.01446)                            |
+| Hallucinations                               | Bypasses RLHF filters using model-generated                                                                                                                                 | [arXiv:2403.04769](https://arxiv.org/pdf/2403.04769.pdf)                        |
 | DAN (Do Anything Now)                        | Promotes the LLM to adopt an unrestricted persona that ignores standard content filters, allowing it to "Do Anything Now".                                                  | [GitHub Repo](https://github.com/0xk1h0/ChatGPT_DAN)                            |
 | WordGame                                     | Disguises harmful prompts as word puzzles                                                                                                                                   | [arXiv:2405.14023](https://arxiv.org/pdf/2405.14023)                            |
 | Crescendo                                    | Engaging the model in a series of escalating conversational turns,starting with innocuous queries and gradually steering the dialogue toward restricted or sensitive topics. | [arXiv:2404.01833](https://arxiv.org/pdf/2404.01833)                            |
 | ActorAttack                                  | Inspired by actor-network theory, it builds semantic networks of "actors" to subtly guide conversations toward harmful targets while concealing malicious intent.           | [arxiv 2410.10700](https://arxiv.org/pdf/2410.10700)                                                                            |                                                                                                                                     |
-| Best-of-n jailbreaking | BoN Jailbreaking is a black-box algorithm that exploits input augmentations, such as shuffling or capitalization, to repeatedly sample prompts across modalities until harmful responses are elicited, achieving high attack success rates and demonstrating the sensitivity of language and multimodal models to minor input variations. | [arXiv:2412.03556](https://arxiv.org/abs/2412.03556) |
+| Best-of-n jailbreaking | Uses input variations to repeatedly elicit harmful responses, exploiting model sensitivity | [arXiv:2412.03556](https://arxiv.org/abs/2412.03556) |
 | Back To The Past                             | Modifies the prompt by adding a profession-based prefix and a past-related suffix                                                                                           |                                                                                 |
 | Please                                       | Modifies the prompt by adding please as a prefix and suffix                                                                                                                   |                                                                                 |
 | Thought Experiment                           | Modifies the prompt by adding a thought experiment-related prefix. In addition, adds "precautions have been taken care of" suffix                                                  |                                                                                 |
 | Default                                      | Send the prompt to the model as-is                                                                                                                                          |                                                                                 |
 ## Supported models
-We've tested the attacks above using the models listed below. FuzzyAI is programmed to support a definitive set of model types,
-but you can always add support for new models [by adding the model's name to the relevant LLM provider](wiki/diy/new_models.html).
+FuzzyAI supports various models across top providers, including:
 
-<table>
-  <thead>
-    <tr>
-      <th>Provider</th>
-      <th>Models</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><strong>Anthropic</strong></td>
-      <td>
-        <ul>
-          <li>claude-3-5-sonnet-latest</li>
-          <li>claude-3-opus-latest</li>
-          <li>claude-3-haiku-20240307</li>
-          <li>claude-2.1</li>
-        </ul>
-      </td>
-    </tr>
-    <tr>
-      <td><strong>OpenAI</strong></td>
-      <td>
-        <ul>
-          <li>o1-preview</li>
-          <li>o1-mini</li>
-          <li>gpt-4o</li>
-          <li>gpt-4-turbo</li>
-          <li>gpt-4</li>
-          <li>gpt-3.5-turbo</li>
-        </ul>
-      </td>
-    </tr>
-    <tr>
-      <td><strong>Gemini</strong></td>
-      <td>
-        <ul>
-          <li>gemini-1.5-pro</li>
-          <li>gemini-pro</li>
-        </ul>
-      </td>
-    </tr>
-    <tr>
-      <td><strong>Azure</strong></td>
-      <td>
-        <ul>
-          <li>gpt-4o</li>
-          <li>gpt-4</li>
-          <li>gpt-35-turbo</li>
-        </ul>
-      </td>
-    </tr>
-    <tr>
-      <td><strong>Bedrock</strong></td>
-      <td>
-        <ul>
-          <li>anthropic.claude-3-5-sonnet-20241022-v2:0</li>
-          <li>anthropic.claude-3-sonnet-20240229-v1:0</li>
-          <li>anthropic.claude-3-opus-20240229-v1:0</li>
-          <li>anthropic.claude-3-haiku-20240307-v1:0</li>
-          <li>anthropic.claude-v2:1</li>
-        </ul>
-      </td>
-    </tr>
-    <tr>
-      <td><strong>AI21</strong></td>
-      <td>
-        <ul>
-          <li>jamba-1.5-mini</li>
-          <li>jamba-1.5-large</li>
-        </ul>
-      </td>
-    </tr>
-    <tr>
-      <td><strong>Ollama</strong></td>
-      <td>
-        <ul>
-          <li>llama3.2</li>
-          <li>llama3.1</li>
-          <li>dolphin-llama3</li>
-          <li>llama3</li>
-          <li>llama2:70b</li>
-          <li>llama2-uncensored</li>
-          <li>llama2</li>
-          <li>vicuna</li>
-          <li>gemma2</li>
-          <li>gemma</li>
-          <li>phi3</li>
-          <li>phi</li>
-          <li>mistral</li>
-          <li>mixtral</li>
-          <li>qwen</li>
-          <li>zephyr</li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
+| Provider     | Models                                                                                                   |
+|--------------|----------------------------------------------------------------------------------------------------------|
+| **Anthropic**| Claude (3.5, 3.0, 2.1)                                                                                   |
+| **OpenAI**   | GPT-4, GPT-3.5 Turbo                                                                                    |
+| **Gemini**   | Gemini Pro, Gemini 1.5                                                                                  |
+| **Azure**    | GPT-4, GPT-3.5 Turbo                                                                                    |
+| **Bedrock**  | Claude (3.5, 3.0), Mistral                                                                             |
+| **AI21**     | Jamba (1.5 Mini, Large)                                                                                |
+| **Ollama**   | LLaMA (3.2, 3.1), Dolphin-LLaMA3, Vicuna                                                               |
 
 ## Adding support for newer models
-Please note that we have specified the models tested for cloud API. If you attempt to use a model not listed, you will receive an error indicating that the provider does not support that model. However, <a href="diy/new_models.html">you can add the model to the implementation's list of supported models</a>, and it will then function as expected.
+Easily add support for additional models by following our <a href="https://github.com/cyberark/FuzzyAI/wiki/DIY#adding-support-for-new-models">DIY guide</a>.
 
 ## Supported Cloud APIs
 - **OpenAI**
