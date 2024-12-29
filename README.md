@@ -135,30 +135,6 @@ OPENAI_API_KEYT=sk-3fa1... python run.py -a def -x openai/gpt-4 -e classifier_mo
   Specifies the test input. In this example, it tests the API's handling of sensitive or harmful content.
 
 ---
-  
-## Persisting Your Settings
-To save your configuration, you can create a JSON-formatted config file where the keys correspond to the long-form command-line flags. For example, see [config_example.json](config_example.json):
-```json
-{
-  "model": [
-    "ollama/mistral"
-  ],
-  "attack_modes": [
-    "def",
-    "art"
-  ],
-  "classifier": [
-    "har"
-  ],
-  "extra": [
-    "blacklisted_words=acid"
-  ]
-}
-```
-Once you've customized the configuration to your needs, you can apply these settings by running the following command:prev
-```bash
-python run.py -C config_example.json -t "Harmful_Prompt"
-```
 
 ## Caveats
 * Some classifiers do more than just evaluate a single output. For example, the cosine-similarity classifier compares two outputs by measuring the angle between them, while a 'harmfulness' classifier checks whether a given output is harmful. As a result, not all classifiers are compatible with the attack methods we've implemented, as those methods are designed for single-output classifiers.
