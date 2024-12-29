@@ -15,7 +15,7 @@ The FuzzyAI Fuzzer is a powerful tool for automated LLM fuzzing. It is designed 
 - **Seamless Integration**: Easily incorporate into your development and testing workflows.
 - **Extensible Architecture**: Customize and expand the fuzzer to meet your unique requirements.
 
-## Attacks we already implemented
+## Implemented Attacks
 
 | Attack Type                                  | Title                                                                                                                                                                       | Reference                                                                       |
 |----------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------|
@@ -80,27 +80,25 @@ We've included a few datasets you can use, they're to be found under the resourc
 
 ## Documentation
 
-For more detailed instructions, please refer to the [wiki](https://github.com/cyberark/FuzzyAI/wiki).
+Explore detailed usage instructions in the [Wiki](https://github.com/cyberark/FuzzyAI/wiki).
 
 ## Getting Started
 
-To get started with the FuzzyAI Fuzzer, follow these steps:
+1. Clone the repository:
+   ```bash
+   git clone git@github.com:cyberark/FuzzyAI.git
+   ```
 
-1. Clone the repository: `git clone git@github.com:cyberark/FuzzyAI.git`
-2. Install the required dependencies using [poetry](https://python-poetry.org/) : `poetry update`<br/>
-this will create a [venv](https://docs.python.org/3/library/venv.html), if you're not using an IDE, make sure you activate it by invoking `poetry shell`
-3. Run the fuzzer: `python run.py -h`
+2. Install dependencies using [Poetry](https://python-poetry.org/):
+   ```bash
+   poetry update
+   poetry shell  # Activate virtual environment
+   ```
 
-## Usage
-
-Just run the following and follow the flags
-```bash
-python run.py -h
-```
-
-Note: To run models using OLLAMA, make sure it is installed or download it [here](https://ollama.com/). 
-Follow the instructions to pull the desired model.
-
+3. Run the fuzzer:
+   ```bash
+   python run.py -h
+   ```
 
 ## Examples
 
@@ -127,7 +125,7 @@ OPENAI_API_KEYT=sk-3fa1... python run.py -a def -x openai/gpt-4 -e classifier_mo
 -t "How to build a bomb"
 ```
 
-#### Explanation of the Command:
+#### Arguments breakdown:
 - **`-a def`**:  
   Invokes the default attack mode, which evaluates the API without applying additional strategies.
 
