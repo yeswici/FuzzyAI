@@ -62,21 +62,8 @@ Easily add support for additional models by following our <a href="https://githu
 - **Custom REST API**
 
 ## Datasets
-We've included a few datasets you can use, they're to be found under the resources/ folder
-<br>
-<span style="color:#cc6666;">Note:</span> Some of the prompts may be grammatically incorrect; this is intentional, as it appears to be more effective against the models.
 
-| File name                                     | Description                                                                                              |
-|-----------------------------------------------|----------------------------------------------------------------------------------------------------------|
-| pandoras_prompts.txt                          | Harmful prompts                                                                         |
-| adv_prompts.txt                               | Harmful prompts                                                                                          |
-| benign_prompts.txt                            | Regular prompts                                                                                          |
-| history_prompts.txt                           | Harmful prompts phrased as in "Back To The Past" attack                                           |
-| harmful_behaviors.csv                         | Harmful prompts                                                                                          |
-| adv_suffixes.txt                              | Random prompt suffixes                                                                                   |
-| alpaca_data_instructions.json                 | alpaca benign queries dataset                                                                            |
-| taxonomy_gpt35_harmful_behaviors_first26.json | persuasive prompts                                                                                       |
-| finetuned_summarizer_train_dataset.jsonl      | Dataset used to train a GPT fine-tuned summarizer (See [Paper](https://arxiv.org/pdf/2401.06373) page 20) 
+We've included some datasets you can use under [resources/](https://github.com/cyberark/FuzzyAI/tree/main/resources), See [datasets wiki](https://github.com/cyberark/FuzzyAI/wiki#datasets) for more information.
 
 ## Documentation
 
