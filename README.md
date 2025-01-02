@@ -78,7 +78,7 @@ Explore detailed usage instructions in the [Wiki](https://github.com/cyberark/Fu
 
 2. Install dependencies using [Poetry](https://python-poetry.org/):
    ```bash
-   poetry update
+   poetry install
    poetry shell  # Activate virtual environment
    ```
 
