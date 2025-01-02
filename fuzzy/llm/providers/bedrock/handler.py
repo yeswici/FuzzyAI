@@ -1,10 +1,9 @@
-import asyncio
 import logging
 import os
 from typing import Any, Optional
 
 import anthropic_bedrock
-from anthropic_bedrock import AnthropicBedrock
+from anthropic_bedrock import AsyncAnthropicBedrock
 from anthropic_bedrock.types import Completion
 
 from fuzzy.llm.models import BaseLLMProviderResponse
@@ -37,7 +36,7 @@ class AwsBedrockProvider(BaseLLMProvider):
         if (aws_region := os.environ.get(self.AWS_REGION)) is None:
             raise AwsBedrockException(f"{self.AWS_REGION} not in os.environ")
 
-        self._client = AnthropicBedrock(
+        self._client = AsyncAnthropicBedrock(
             aws_region=aws_region,
         )
 
@@ -54,10 +53,10 @@ class AwsBedrockProvider(BaseLLMProvider):
     async def generate(self, prompt: str, **extra: Any) -> Optional[BaseLLMProviderResponse]:
         try:
             options = AnthropicGenerateOptions.model_validate(extra)
-            completion: Completion = await asyncio.to_thread(self._client.completions.create, # type: ignore
+            completion: Completion = await self._client.completions.create(
                                                              model=self._model_name,
                                                              prompt=f"{anthropic_bedrock.HUMAN_PROMPT} {prompt} {anthropic_bedrock.AI_PROMPT}",
-                                                             **options
+                                                             **options.model_dump()
                                                              ) 
 
             return BaseLLMProviderResponse(response=completion.completion)
@@ -79,4 +78,4 @@ class AwsBedrockProvider(BaseLLMProvider):
         raise NotImplementedError
 
     async def close(self) -> None:
-        await asyncio.to_thread(self._client.close)
+        await self._client.close()

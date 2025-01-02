@@ -1,14 +1,15 @@
 
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
+from fuzzy.consts import PARAMETER_MAX_TOKENS
 from fuzzy.llm.providers.base import BaseLLMMessage
 from fuzzy.models.base_models import RemoveNoneModel
 
 
 class AnthropicGenerateOptions(BaseModel):
-    max_tokens: int = 100
+    max_tokens_to_sample: int = Field(100, alias=PARAMETER_MAX_TOKENS)
     
 class AnthropicMessage(BaseModel):
     type: str
