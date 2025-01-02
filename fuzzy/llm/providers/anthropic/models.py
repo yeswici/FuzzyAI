@@ -9,7 +9,7 @@ from fuzzy.models.base_models import RemoveNoneModel
 
 
 class AnthropicGenerateOptions(BaseModel):
-    max_tokens_to_sample: int = Field(100, alias=PARAMETER_MAX_TOKENS)  # type: ignore
+    max_tokens: int = 100
     
 class AnthropicMessage(BaseModel):
     type: str
