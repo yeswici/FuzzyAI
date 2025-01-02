@@ -2,9 +2,8 @@ import logging
 import os
 from typing import Any, Optional
 
-import anthropic_bedrock
-from anthropic_bedrock import AsyncAnthropicBedrock
-from anthropic_bedrock.types import Completion
+from anthropic import AI_PROMPT, HUMAN_PROMPT, AsyncAnthropicBedrock
+from anthropic.types import Completion
 
 from fuzzy.llm.models import BaseLLMProviderResponse
 from fuzzy.llm.providers.anthropic.models import AnthropicGenerateOptions
@@ -55,7 +54,7 @@ class AwsBedrockProvider(BaseLLMProvider):
             options = AnthropicGenerateOptions.model_validate(extra)
             completion: Completion = await self._client.completions.create(
                                                              model=self._model_name,
-                                                             prompt=f"{anthropic_bedrock.HUMAN_PROMPT} {prompt} {anthropic_bedrock.AI_PROMPT}",
+                                                             prompt=f"{HUMAN_PROMPT} {prompt} {AI_PROMPT}",
                                                              **options.model_dump()
                                                              ) 
 

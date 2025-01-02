@@ -163,26 +163,28 @@ files = [
 ]
 
 [[package]]
-name = "anthropic-bedrock"
-version = "0.6.0"
-description = "The official Python library for the anthropic-bedrock API"
+name = "anthropic"
+version = "0.42.0"
+description = "The official Python library for the anthropic API"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "anthropic_bedrock-0.6.0-py3-none-any.whl", hash = "sha256:a6628737e6a03e5a8642d16cc8873d2c1832b8eaf04570f95eb3fb7ebf4e1a22"},
-    {file = "anthropic_bedrock-0.6.0.tar.gz", hash = "sha256:e42dd9c2a4fa9626a76ec8082d7b66aeaba22a4410a8a16b370619ebad7673f7"},
+    {file = "anthropic-0.42.0-py3-none-any.whl", hash = "sha256:46775f65b723c078a2ac9e9de44a46db5c6a4fabeacfd165e5ea78e6817f4eff"},
+    {file = "anthropic-0.42.0.tar.gz", hash = "sha256:bf8b0ed8c8cb2c2118038f29c58099d2f99f7847296cafdaa853910bfff4edf4"},
 ]
 
 [package.dependencies]
 anyio = ">=3.5.0,<5"
-boto3 = ">=1.28.57"
-botocore = ">=1.31.57"
 distro = ">=1.7.0,<2"
 httpx = ">=0.23.0,<1"
+jiter = ">=0.4.0,<1"
 pydantic = ">=1.9.0,<3"
 sniffio = "*"
-tokenizers = ">=0.13.0"
-typing-extensions = ">=4.7,<5"
+typing-extensions = ">=4.10,<5"
+
+[package.extras]
+bedrock = ["boto3 (>=1.28.57)", "botocore (>=1.31.57)"]
+vertex = ["google-auth (>=2,<3)"]
 
 [[package]]
 name = "anyio"
@@ -4762,4 +4764,4 @@ propcache = ">=0.2.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "4b81f79f0c04e01eeb363bad5ad35af4ac7d4c40d35d72298c4e11b33ce29e1c"
+content-hash = "ef761425250e28e4c7590d97b0787194826355697a3426afdf7e105198963343"
