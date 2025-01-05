@@ -1,17 +1,24 @@
+import asyncio
 import logging
 import os
-from typing import Any, Optional
+from typing import Any, Optional, Type
 
-from anthropic import AI_PROMPT, HUMAN_PROMPT, AsyncAnthropicBedrock
-from anthropic.types import Completion
+import boto3
 
+from fuzzy.consts import ROLE_USER
 from fuzzy.llm.models import BaseLLMProviderResponse
-from fuzzy.llm.providers.anthropic.models import AnthropicGenerateOptions
 from fuzzy.llm.providers.base import BaseLLMMessage, BaseLLMProvider, BaseLLMProviderException, llm_provider_fm
+from fuzzy.llm.providers.bedrock.enums import BedrockModelFamily
+from fuzzy.llm.providers.bedrock.models import (BedrockAnthropicGenerateRequest, BedrockChatMessage,
+                                                BedrockGenerateRequestBase, BedrockMetaGenerateRequest)
 from fuzzy.llm.providers.enums import LLMProvider
 
 logger = logging.getLogger(__name__)
 
+MODEL_FAMILY_MAPPING: dict[BedrockModelFamily, Type[BedrockGenerateRequestBase]] = {
+    BedrockModelFamily.ANTHROPIC: BedrockAnthropicGenerateRequest,
+    BedrockModelFamily.META: BedrockMetaGenerateRequest
+}
 
 class AwsBedrockException(BaseLLMProviderException):
     pass
@@ -21,7 +28,7 @@ class AwsBedrockException(BaseLLMProviderException):
 class AwsBedrockProvider(BaseLLMProvider):
     AWS_SECRET_ACCESS_KEY = "AWS_SECRET_ACCESS_KEY"
     AWS_ACCESS_KEY_ID = "AWS_ACCESS_KEY_ID"
-    AWS_REGION = "AWS_REGION"
+    AWS_DEFAULT_REGION = "AWS_DEFAULT_REGION"
 
     def __init__(self, model: str = "anthropic.claude-v2:1", **extra: Any):
         super().__init__(model=model, **extra)
@@ -32,13 +39,18 @@ class AwsBedrockProvider(BaseLLMProvider):
         if self.AWS_ACCESS_KEY_ID not in os.environ:
             raise AwsBedrockException(f"{self.AWS_ACCESS_KEY_ID} not in os.environ")
 
-        if (aws_region := os.environ.get(self.AWS_REGION)) is None:
-            raise AwsBedrockException(f"{self.AWS_REGION} not in os.environ")
+        if self.AWS_DEFAULT_REGION not in os.environ:
+            raise AwsBedrockException(f"{self.AWS_DEFAULT_REGION} not in os.environ")
+        
+        self._model_family = BedrockModelFamily(model.split(".")[0])
+        if self._model_family not in MODEL_FAMILY_MAPPING:
+            raise AwsBedrockException(f"Model family {self._model_family} is not supported, supported families are {MODEL_FAMILY_MAPPING.keys()}")
+        
+        self._client = boto3.client(service_name='bedrock-runtime')
 
-        self._client = AsyncAnthropicBedrock(
-            aws_region=aws_region,
-        )
-
+    """
+    See model IDs @ https://docs.aws.amazon.com/bedrock/latest/userguide/models-supported.html
+    """
     @classmethod
     def get_supported_models(cls) -> list[str]:
         return [
@@ -47,28 +59,39 @@ class AwsBedrockProvider(BaseLLMProvider):
             "anthropic.claude-3-sonnet-20240229-v1:0",
             "anthropic.claude-3-opus-20240229-v1:0",
             "anthropic.claude-3-haiku-20240307-v1:0",
+            "meta.llama3-8b-instruct-v1:0"
         ]
 
-    async def generate(self, prompt: str, **extra: Any) -> Optional[BaseLLMProviderResponse]:
+    async def generate(self, prompt: str, system_prompt: Optional[str] = None, **extra: Any) -> Optional[BaseLLMProviderResponse]:
+        return await self.chat([BaseLLMMessage(role=ROLE_USER, content=prompt)], system_prompt=system_prompt, **extra)
+
+    async def chat(self, messages: list[BaseLLMMessage], system_prompt: Optional[str] = None,
+                   temperature: float = 0.7, top_k: float = 200, **extra: Any) -> Optional[BaseLLMProviderResponse]:
+        logger.debug(f"Chatting with AWS Bedrock with messages: {messages}")
+
+        bedrock_messages: list[BedrockChatMessage] = [BedrockChatMessage.create(role=message.role, text=message.content) for message in messages]
+
         try:
-            options = AnthropicGenerateOptions.model_validate(extra)
-            completion: Completion = await self._client.completions.create(
-                                                             model=self._model_name,
-                                                             prompt=f"{HUMAN_PROMPT} {prompt} {AI_PROMPT}",
-                                                             **options.model_dump()
-                                                             ) 
+            system_prompts = [{"text": system_prompt}] if system_prompt else []
 
-            return BaseLLMProviderResponse(response=completion.completion)
+            inference_config = {"temperature": temperature}
+            additional_model_fields: dict[str, Any] = {}
+
+            # Send the message.
+            response = self._client.converse(
+                modelId=self._model_name,
+                messages=[m.model_dump() for m in bedrock_messages],
+                system=system_prompts,
+                inferenceConfig=inference_config,
+                additionalModelRequestFields=additional_model_fields
+            )
+
+            content = response['output']['message']['content'][0]['text']
+            logger.debug(f"Chat response from AWS Bedrock: {content}")
+            return BaseLLMProviderResponse(response=content)
         except Exception as e:
-            logger.error(f'Error generating text: {e}')
-            raise AwsBedrockException('Cant generate text')
-
-    async def chat(self, messages: list[BaseLLMMessage], **extra: Any) -> Optional[BaseLLMProviderResponse]:
-        if len(messages) > 1:
-            logger.warning("claude-aws only supports one message at a time, using the first message")
-    
-        return await self.generate(messages[0].content, **extra)
-    
+            raise AwsBedrockException(f"Error while chatting with AWS Bedrock: {e}")
+            
     
     def sync_generate(self, prompt: str, **extra: Any) -> Optional[BaseLLMProviderResponse]:
         raise NotImplementedError
@@ -77,4 +100,5 @@ class AwsBedrockProvider(BaseLLMProvider):
         raise NotImplementedError
 
     async def close(self) -> None:
-        await self._client.close()
+        await asyncio.to_thread(self._client.close)
+    

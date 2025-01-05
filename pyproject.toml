@@ -26,7 +26,6 @@ jsonpath-ng = "^1.6.1"
 torch = "2.2.2"
 numpy = "1.26.4"
 httpx = "0.27.2"
-anthropic = "^0.42.0"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.0"
