@@ -40,12 +40,12 @@ FuzzyAI supports various models across top providers, including:
 | Provider     | Models                                                                                                   |
 |--------------|----------------------------------------------------------------------------------------------------------|
 | **Anthropic**| Claude (3.5, 3.0, 2.1)                                                                                   |
-| **OpenAI**   | GPT-4, GPT-3.5 Turbo                                                                                    |
+| **OpenAI**   | GPT-4o, GPT-4o mini, GPT-4                                                                                 |
 | **Gemini**   | Gemini Pro, Gemini 1.5                                                                                  |
 | **Azure**    | GPT-4, GPT-3.5 Turbo                                                                                    |
 | **Bedrock**  | Claude (3.5, 3.0), Meta (LLaMa)                                                                             |
 | **AI21**     | Jamba (1.5 Mini, Large)                                                                                |
-| **Ollama**   | LLaMA (3.2, 3.1), Dolphin-LLaMA3, Vicuna                                                               |
+| **Ollama**   | LLaMA (3.3, 3.2, 3.1), Dolphin-LLaMA3, Vicuna                                                               |
 
 ## Adding support for newer models
 Easily add support for additional models by following our <a href="https://github.com/cyberark/FuzzyAI/wiki/DIY#adding-support-for-new-models">DIY guide</a>.
@@ -63,7 +63,7 @@ Easily add support for additional models by following our <a href="https://githu
 
 ## Datasets
 
-We've included some datasets you can use under [resources/](https://github.com/cyberark/FuzzyAI/tree/main/resources), See [datasets wiki](https://github.com/cyberark/FuzzyAI/wiki#datasets) for more information.
+We've included some datasets you can use under [resources/](https://github.com/cyberark/FuzzyAI/tree/main/resources). For more information, see [datasets wiki](https://github.com/cyberark/FuzzyAI/wiki#datasets).
 
 ## Documentation
 
