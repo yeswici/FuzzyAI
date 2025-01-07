@@ -39,7 +39,7 @@ class BonAttackHandler(BaseAttackTechniqueHandler[BonAttackHandlerExtraParams]):
                 response = await llm.generate(augmented_prompt, **self._extra)
 
             result = AttackResultEntry(original_prompt=prompt,
-                                    current_prompt=prompt, 
+                                    current_prompt=augmented_prompt, 
                                     response=response.response) if response else None
             logger.debug("Response: %s", response.response if response else "None")
 
