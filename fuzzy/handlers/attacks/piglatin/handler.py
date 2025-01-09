@@ -32,7 +32,7 @@ class PigLatinAttackHandler(BaseAttackTechniqueHandler[BaseModel]):
                 response.response = pig_latin_to_english(response.response)
 
             result = AttackResultEntry(original_prompt=prompt,
-                                       current_prompt=prompt, 
+                                       current_prompt=adv_prompt, 
                                        response=response.response) if response else None
             logger.debug("Response: %s", response.response if response else "None")
             
