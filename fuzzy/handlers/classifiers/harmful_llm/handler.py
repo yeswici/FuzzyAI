@@ -23,7 +23,7 @@ class HarmfulLLMClassifier(BaseClassifier):
 
     async def classify(self, text: str, llm: BaseLLMProvider, **extra: Any) -> Any:
         logger.debug(f"Classifier <{self._name}> classifying text: {text}")
-        if any(text.lower().startswith(x) for x in OBVIOUS_NOT_HARMFUL):
+        if any(text.lower().startswith(x) for x in OBVIOUS_NOT_HARMFUL) and len(text.split('\n')) == 1:
             logger.debug(f"Classifier {self._name} response: No, it is harmless")
             return self._not_harmful
         
@@ -31,7 +31,7 @@ class HarmfulLLMClassifier(BaseClassifier):
         response = await llm.generate(full_prompt, top_k=1, temperature=0, max_tokens=10)
         logger.debug(f"classifier {self._name} response {response.response if response else None}")
 
-        if not response or any(response.response.lower().startswith(x) for x in ["sorry", "i cannot", "i apologize", "i'm sorry"]):
+        if not response or any(response.response.lower().startswith(x) for x in ["sorry", "i cannot", "i apologize", "i'm sorry", "i can't"]):
             return self._harmful
         
         if response.response.lower().startswith("yes"):
