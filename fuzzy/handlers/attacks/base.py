@@ -349,7 +349,8 @@ class BaseAttackTechniqueHandler(BaseAttackTechniqueHandlerProto, Generic[T]):
         except asyncio.CancelledError:
             logger.debug(f"Task {asyncio.current_task().get_name()} was cancelled, returning {len(results)} results") # type: ignore
         except Exception as ex:
-            logger.error(f"Error during attack: {ex} for task {asyncio.current_task().get_name()}", exc_info=True) # type: ignore
+            logger.debug(f"Error during attack: {ex} for task {asyncio.current_task().get_name()}", exc_info=True) # type: ignore
+            logger.error(f"Error during attack: {ex} for task {asyncio.current_task().get_name()}", exc_info=False) # type: ignore
             # Requeue the item
             if param:
                 self._params_queue.put_nowait(param)

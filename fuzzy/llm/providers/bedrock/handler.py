@@ -1,7 +1,7 @@
 import asyncio
 import logging
 import os
-from typing import Any, Optional, Type
+from typing import Any, Optional, Type, Union
 
 import boto3
 
@@ -52,7 +52,7 @@ class AwsBedrockProvider(BaseLLMProvider):
     See model IDs @ https://docs.aws.amazon.com/bedrock/latest/userguide/models-supported.html
     """
     @classmethod
-    def get_supported_models(cls) -> list[str]:
+    def get_supported_models(cls) -> Union[list[str], str]:
         return [
             "anthropic.claude-v2:1",
             "anthropic.claude-3-5-sonnet-20241022-v2:0",

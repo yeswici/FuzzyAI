@@ -53,7 +53,7 @@ class BaseLLMProvider(abc.ABC):
         
     @classmethod
     @abc.abstractmethod
-    def get_supported_models(cls) -> list[str]:
+    def get_supported_models(cls) -> Union[list[str], str]:
         ...
 
     def sync_generate(self, prompt: str, **extra: Any) -> Optional[BaseLLMProviderResponse]:

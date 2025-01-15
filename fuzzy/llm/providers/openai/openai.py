@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 import aiohttp
 import backoff
@@ -46,7 +46,7 @@ class OpenAIProvider(BaseLLMProvider):
         self.tokens_handler = TokensHandler(tokenizer=self._tokenizer)
 
     @classmethod
-    def get_supported_models(cls) -> list[str]:
+    def get_supported_models(cls) -> Union[list[str], str]:
         return ["gpt-3.5-turbo", "gpt-4", "gpt-4-turbo", "gpt-4o", "o1-mini", "o1-preview"]
 
     

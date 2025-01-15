@@ -16,9 +16,10 @@ from fuzzy.handlers.classifiers.base import classifiers_fm
 from fuzzy.handlers.classifiers.enums import Classifier
 from fuzzy.llm.providers.base import llm_provider_fm
 from fuzzy.llm.providers.enums import LLMProvider
+from fuzzy.utils.custom_logging_formatter import CustomFormatter
 from fuzzy.utils.utils import CURRENT_TIMESTAMP, generate_report, print_report
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(name)s: %(message)s')
+logging.basicConfig(level=logging.INFO)
 
 banner = """\033[31m
    ______  ____________  ___ ___   ____
@@ -27,6 +28,12 @@ banner = """\033[31m
 /_/  \\____/ /___/___/ /_(_)_/ |_/___/  
                                        
 \033[0m"""
+
+root_logger = logging.getLogger()
+root_logger.handlers.clear()
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(CustomFormatter())
+root_logger.addHandler(console_handler)
 
 logger = logging.getLogger(__name__)
 
@@ -68,6 +75,10 @@ async def main() -> None:
     # create models help string
     models: dict[LLMProvider, list[str]] = {}
     for provider in LLMProvider:
+        supported_models = llm_provider_fm[provider].get_supported_models()
+        if isinstance(supported_models, str):
+            models.setdefault(provider, []).append(supported_models)
+            continue
         for model in llm_provider_fm[provider].get_supported_models():
             models.setdefault(provider, []).append(model)
     
@@ -76,9 +87,6 @@ async def main() -> None:
             models_help += f"{provider_name.value}/{model}\n"
         
         models_help += "\n"
-    
-    models_help += "local/<full path to model>\n"
-    models_help += "rest/<full path to raw http request file>\n"
 
     parser.add_argument('-m', '--model', help=f'Model(s) to attack, any of:\n\n{models_help}', 
                         action="append", type=str, default=[])
@@ -205,19 +213,20 @@ async def main() -> None:
 
     await aiofiles.os.makedirs(f'results/{CURRENT_TIMESTAMP}', exist_ok=True)
 
-    if raw_results:
-        logger.info(f"Dumping raw results to results/{CURRENT_TIMESTAMP}/raw.jsonl")
-        async with aiofiles.open(f"results/{CURRENT_TIMESTAMP}/raw.jsonl", 'w', encoding="utf-8") as f:
-            for raw_result in raw_results:    
-                await f.write(raw_result.model_dump_json())
+    if any(atp.total_prompts_count > 0 for atp in report.attacking_techniques):
+        if raw_results:
+            logger.info(f"Dumping raw results to results/{CURRENT_TIMESTAMP}/raw.jsonl")
+            async with aiofiles.open(f"results/{CURRENT_TIMESTAMP}/raw.jsonl", 'w', encoding="utf-8") as f:
+                for raw_result in raw_results:    
+                    await f.write(raw_result.model_dump_json())
 
-    if report:
-        logger.info(f"Dumping results to results/{CURRENT_TIMESTAMP}/report.json")
-        async with aiofiles.open(f"results/{CURRENT_TIMESTAMP}/report.json", 'w', encoding="utf-8") as f:
-            await f.write(report.model_dump_json())
-        
-        generate_report(report)
-        print_report(report)
+        if report:
+            logger.info(f"Dumping results to results/{CURRENT_TIMESTAMP}/report.json")
+            async with aiofiles.open(f"results/{CURRENT_TIMESTAMP}/report.json", 'w', encoding="utf-8") as f:
+                await f.write(report.model_dump_json())
+            
+            generate_report(report)
+            print_report(report)
 
 if __name__ == "__main__":
     try:

@@ -1,7 +1,7 @@
 import json
 import logging
 from datetime import datetime
-from typing import Any, Optional, Type
+from typing import Any, Optional, Type, Union
 
 import plotly.express as px
 import plotly.graph_objects as go
@@ -28,8 +28,8 @@ def llm_provider_model_sanity(provider: str, model: str) -> None:
         ValueError: If the model is not supported by the provider.
     """
     provider_class: Type[BaseLLMProvider] = llm_provider_fm[provider]
-    supported_models: list[str] = provider_class.get_supported_models()
-    if supported_models and model not in supported_models:
+    supported_models: Union[str, list[str]] = provider_class.get_supported_models()
+    if supported_models and isinstance(supported_models, list) and model not in supported_models:
         raise ValueError(f"Model {model} not supported by provider {provider}, supported models: {supported_models}")  
     
 def llm_provider_factory(provider: LLMProvider, model: str, **extra: Any) -> BaseLLMProvider:

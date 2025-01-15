@@ -1,7 +1,7 @@
 import json
 import logging
 import os
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Optional, Union
 
 import aiohttp
 from jsonpath_ng import parse
@@ -69,8 +69,8 @@ class RestProvider(BaseLLMProvider):
         self._session = aiohttp.ClientSession(headers=self._headers)
 
     @classmethod
-    def get_supported_models(cls) -> list[str]:
-        return []
+    def get_supported_models(cls) -> Union[list[str], str]:
+        return "<Path to raw HTTP request file>"
     
     def _parse_http_file(self, raw_http_file: str) -> None:
         """

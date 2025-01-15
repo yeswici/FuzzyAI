@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 import aiohttp
 
@@ -41,7 +41,7 @@ class AzureProvider(BaseLLMProvider):
         })
 
     @classmethod
-    def get_supported_models(cls) -> list[str]:
+    def get_supported_models(cls) -> Union[list[str], str]:
         return ["gpt-35-turbo", "gpt-4", "gpt-4o"]
     
     async def generate(self, prompt: str, system_prompt: Optional[str] = None, **extra: Any) -> Optional[BaseLLMProviderResponse]:

@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 import aiohttp
 import backoff
@@ -39,7 +39,7 @@ class GeminiProvider(BaseLLMProvider):
         self._base_url = GEMINI_API_BASE_URL + self._model_name + ":"
 
     @classmethod
-    def get_supported_models(cls) -> list[str]:
+    def get_supported_models(cls) -> Union[list[str], str]:
         return ["gemini-pro", "gemini-1.5-pro"]
     
     @backoff.on_exception(backoff.expo, BaseLLMProviderRateLimitException, max_value=10)

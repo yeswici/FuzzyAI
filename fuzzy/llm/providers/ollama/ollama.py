@@ -1,7 +1,7 @@
 import asyncio
 import logging
 import random
-from typing import Any, Optional, get_args
+from typing import Any, Optional, Union
 
 import aiohttp
 
@@ -10,8 +10,7 @@ from fuzzy.llm.models import BaseLLMProviderResponse
 from fuzzy.llm.providers.base import BaseLLMMessage, BaseLLMProvider, BaseLLMProviderException, llm_provider_fm
 from fuzzy.llm.providers.enums import LLMProvider
 from fuzzy.llm.providers.ollama.models import (OllamaChatMessage, OllamaChatRequest, OllamaChatResponse,
-                                               OllamaGenerateRequest, OllamaGenerateResponse, OllamaModels,
-                                               OllamaOptions)
+                                               OllamaGenerateRequest, OllamaGenerateResponse, OllamaOptions)
 from fuzzy.llm.providers.shared.decorators import api_endpoint
 
 logger = logging.getLogger(__name__)
@@ -35,16 +34,31 @@ class OllamaProvider(BaseLLMProvider):
         random.seed(seed)
         self._seed = random.randint(42, 1024)
         self._session = aiohttp.ClientSession()
+        self._validate_models_task = asyncio.create_task(self.validate_models())
     
     @classmethod
-    def get_supported_models(cls) -> list[str]:
-        return list(get_args(OllamaModels))
+    def get_supported_models(cls) -> Union[list[str], str]:
+        return "<Model tag>"
 
+    async def validate_models(self) -> None:
+        async with self._session.get(f"{self._base_url}/tags") as response:
+            models = await response.json()
+            if not models:
+                raise OllamaProviderException('No local ollama models found, Trying pulling some')
+            
+            model_names: list[str] = [model['name'] for model in models['models']]
+            target_model = self._model_name if ":" in self._model_name else f"{self._model_name}:latest"
+            if target_model not in model_names:
+                raise OllamaProviderException(f"Model {self._model_name} not found in local ollama models, available models: {model_names}")
+             
+            
     @api_endpoint("/generate") # type: ignore
     async def generate(self, prompt: str, url: str, system_prompt: Optional[str] = None, raw: bool = False, **extra: Any) -> Optional[BaseLLMProviderResponse]:
+        await self._validate_models_task
+
         try:
             options = OllamaOptions(seed=self._seed, **extra)
-            request = OllamaGenerateRequest(model=self._model_name, prompt=prompt, raw=raw, # type: ignore
+            request = OllamaGenerateRequest(model=self._model_name, prompt=prompt, raw=raw,
                                             options=options)
             if system_prompt is not None:
                 request.system = system_prompt
@@ -68,6 +82,8 @@ class OllamaProvider(BaseLLMProvider):
     
     @api_endpoint("/chat") # type: ignore
     async def chat(self, messages: list[BaseLLMMessage], url: str, system_prompt: Optional[str] = None, **extra: Any) -> Optional[BaseLLMProviderResponse]:
+        await self._validate_models_task
+
         try:
             options = OllamaOptions(seed=self._seed, **extra)
             ollama_messages = [OllamaChatMessage.model_validate(m.model_dump()) for m in messages]
@@ -75,7 +91,7 @@ class OllamaProvider(BaseLLMProvider):
             if system_prompt is not None:
                 ollama_messages.insert(0, OllamaChatMessage(role=ROLE_SYSTEM, content=system_prompt))
 
-            request = OllamaChatRequest(model=self._model_name, # type: ignore
+            request = OllamaChatRequest(model=self._model_name,
                                         messages=ollama_messages,
                                         options=options)
             

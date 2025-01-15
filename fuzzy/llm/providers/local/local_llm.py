@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -37,8 +37,8 @@ class LocalProvider(BaseLLMProvider):
         self._text_gen_handler = LLMTextGenerationHandler(self._auto_model, self._tokenizer)
 
     @classmethod
-    def get_supported_models(cls) -> list[str]:
-        return []  # Like a wildcard!
+    def get_supported_models(cls) -> Union[list[str], str]:
+        return "<Full path to model>"
 
     def sync_generate(self, prompt: str, **extra: Any) -> Optional[BaseLLMProviderResponse]:
         try:

@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 import aiohttp
 import backoff
@@ -40,7 +40,7 @@ class AnthropicProvider(BaseLLMProvider):
         self._base_url = url_override or "https://api.anthropic.com/v1"
 
     @classmethod
-    def get_supported_models(cls) -> list[str]:
+    def get_supported_models(cls) -> Union[list[str], str]:
         return ["claude-2.1", "claude-3-haiku-20240307", "claude-3-opus-latest", "claude-3-sonnet-20240229", "claude-3-5-haiku-latest", "claude-3-5-sonnet-latest"]
 
     @backoff.on_exception(backoff.expo, BaseLLMProviderRateLimitException, max_value=10)

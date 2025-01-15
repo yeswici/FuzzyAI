@@ -5,9 +5,7 @@ from pydantic import BaseModel, Field, field_validator
 from fuzzy.consts import PARAMETER_MAX_TOKENS
 from fuzzy.models.base_models import RemoveNoneModel
 
-OllamaModels = Literal['llama2', 'llama2-uncensored', 'llama2:70b', 'llama3', "dolphin-llama3", "llama3.1", "llama3.2", "llama3.3", 'vicuna','mistral', 'mixtral',
-                       'gemma', "gemma2", 'zephyr', 'phi', 'phi3', "qwen"]
-    
+
 class OllamaOptions(RemoveNoneModel):
     num_predict: int = Field(128, alias=PARAMETER_MAX_TOKENS) # type: ignore
     temperature: float = 1.0
@@ -17,7 +15,7 @@ class OllamaOptions(RemoveNoneModel):
     seed: int = 42
 
 class OllamaGenerateRequest(RemoveNoneModel):
-    model: OllamaModels
+    model: str
     prompt: str
     stream: bool = False
     system: Optional[str] = None
@@ -37,7 +35,7 @@ class OllamaChatMessage(BaseModel):
     role: str = 'user'
 
 class OllamaChatRequest(RemoveNoneModel):
-    model: OllamaModels
+    model: str
     messages: list[OllamaChatMessage]
     stream: bool = False
     options: OllamaOptions = OllamaOptions() # type: ignore

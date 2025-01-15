@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 import boto3
 
@@ -59,7 +59,7 @@ class AWSBedrockClassifier(BaseClassifier):
         self._guardrail_config = guardrail_config
 
     @classmethod
-    def get_supported_models(cls) -> list[str]:
+    def get_supported_models(cls) -> Union[list[str], str]:
         return [
             "anthropic.claude-3-haiku-20240307-v1:0",
             "us.anthropic.claude-3-5-haiku-20241022-v1:0",

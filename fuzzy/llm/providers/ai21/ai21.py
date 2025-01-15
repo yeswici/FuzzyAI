@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 import aiohttp
 import backoff
@@ -42,7 +42,7 @@ class AI21Provider(BaseLLMProvider):
         self._base_url = AI21_API_BASE_URL        
 
     @classmethod
-    def get_supported_models(cls) -> list[str]:
+    def get_supported_models(cls) -> Union[list[str], str]:
         return [
             "jamba-1.5-mini",
             "jamba-1.5-large",
