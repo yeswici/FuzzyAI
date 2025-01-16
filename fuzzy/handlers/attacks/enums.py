@@ -19,3 +19,4 @@ class FuzzerAttackMode(str, Enum):
     CRESCENDO = "crs"
     ACTOR = "act"
     BON = "bon"
+    ASCIISMUGGLING = "asc"

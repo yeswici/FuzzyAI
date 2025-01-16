@@ -1,5 +1,6 @@
 from .actor_attack.handler import ActorAttackHandler
 from .artprompt.handler import ArtPromptAttackHandler
+from .ascii_smuggling.handler import AsciiSmugglingAttackHandler
 from .back_to_the_past.handler import BackToThePastAttackHandler
 from .bon.handler import BonAttackHandler
 from .crescendo.handler import CrescendoAttackHandler
