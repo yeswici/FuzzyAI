@@ -3,6 +3,7 @@ from typing import Any, Final, Optional, Type
 
 from pydantic import BaseModel, Field
 
+from fuzzy.consts import WIKI_LINK
 from fuzzy.handlers.attacks.base import (BaseAttackTechniqueHandler, BaseAttackTechniqueHandlerException,
                                          attack_handler_fm)
 from fuzzy.handlers.attacks.enums import FuzzerAttackMode
@@ -64,9 +65,8 @@ class BackToThePastAttackHandler(BaseAttackTechniqueHandler[BackToThePastAttackH
                     if not tag_extraction_response:
                         raise TagExtractionException("No response from the tag extraction model")
                 except BaseLLMProviderException as e:
-                    raise TagExtractionException("Problem occurred during extraction of prompt tag ", e)
-                except TagExtractionException:
-                    raise
+                    raise TagExtractionException(f"Problem occurred during extraction of prompt tag {e}. Attack wiki: {WIKI_LINK}")
+
                 tag = tag_extraction_response.response
                 profession = TAG_TO_PROFESSION_DICT.get(tag, DEFAULT_PROFESSION)
                 logger.debug(f"Determined profession {profession} for prompt tag {tag}")

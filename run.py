@@ -4,6 +4,7 @@ import json
 import logging
 import shlex
 from typing import Any, Optional
+import subprocess
 
 import aiofiles
 import aiofiles.os
@@ -120,12 +121,29 @@ async def main() -> None:
     parser.add_argument('-x', '--auxiliary-model', help=f'Add auxiliary models which can be used in the attack',
                         action="append", type=str, default=[])
     parser.add_argument('-I', '--improve-attempts', help='Attempts to refine the LLM response up to n times following a successful jailbreak. Default: 0 (no refinement attempts)', type=int, default=0)
+    parser.add_argument('-ol', '--ollama-list', action='store_true',  # Modified to use store_true
+                        help='Shows all the ollama models that are installed on the station')
     args = parser.parse_args()
 
     if args.verbose:
         logger.info('Verbose logging ON')
         logging.getLogger().setLevel(logging.DEBUG)
         logging.getLogger().propagate = True
+
+    if args.ollama_list:
+        try:
+            result = subprocess.run(['ollama', 'list'], capture_output=True, text=True)
+            if result.returncode == 0:
+                print(result.stdout)
+            else:
+                print(f"Error running 'ollama list': {result.stderr}")
+            return
+        except FileNotFoundError:
+            print("Error: 'ollama' command not found. Please make sure to download ollama from ollama.com")
+            return
+        except Exception as e:
+            print(f"An error occurred while running 'ollama list': {e}")
+            return
 
     for req_arg in ['attack_modes']:
         if not getattr(args, req_arg):
@@ -154,12 +172,15 @@ async def main() -> None:
         logger.error('Please provide a target prompt (-t) or a file with target prompts (-T)')
         return
     
-    if hasattr(args, 'extra') and args.extra:
-        extra = {k:v for k,v in (x.split('=') for x in args.extra)}
-        del args.extra
-        extra.update(**vars(args))
-    else:
-        extra = vars(args)
+    try:
+        if hasattr(args, 'extra') and args.extra:
+            extra = {k:v for k,v in (x.split('=') for x in args.extra)}
+            del args.extra
+            extra.update(**vars(args))
+        else:
+            extra = vars(args)
+    except Exception:
+        raise ValueError("Please make sure that when using -e you have: -e key=val")
 
     if hasattr(args, 'target_prompts_file') and args.target_prompts_file:
         with open(args.target_prompts_file, 'r') as f:
@@ -234,3 +255,5 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         logger.info('Exiting...')
         exit(0)
+    except Exception as e:
+        raise Exception(e)
