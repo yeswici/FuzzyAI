@@ -93,6 +93,10 @@ class RestProvider(BaseLLMProvider):
             self._path = f"/{self._path}"
 
         self._headers = parsed_http["headers"]
+        # Ditch Content-length header
+        for header in ["Content-Length", "content-length"]:
+            self._headers.pop(header, None)
+
         self._body = parsed_http["body"]
     
     async def generate(self, prompt: str, **extra: Any) -> Optional[BaseLLMProviderResponse]:
