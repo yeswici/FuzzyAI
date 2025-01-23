@@ -4,7 +4,6 @@ import json
 import logging
 import shlex
 from typing import Any, Optional
-import subprocess
 
 import aiofiles
 import aiofiles.os
@@ -19,6 +18,7 @@ from fuzzy.llm.providers.base import llm_provider_fm
 from fuzzy.llm.providers.enums import LLMProvider
 from fuzzy.utils.custom_logging_formatter import CustomFormatter
 from fuzzy.utils.utils import CURRENT_TIMESTAMP, generate_report, print_report
+from utils import run_ollama_list_command
 
 logging.basicConfig(level=logging.INFO)
 
@@ -131,19 +131,7 @@ async def main() -> None:
         logging.getLogger().propagate = True
 
     if args.ollama_list:
-        try:
-            result = subprocess.run(['ollama', 'list'], capture_output=True, text=True)
-            if result.returncode == 0:
-                print(result.stdout)
-            else:
-                print(f"Error running 'ollama list': {result.stderr}")
-            return
-        except FileNotFoundError:
-            print("Error: 'ollama' command not found. Please make sure to download ollama from ollama.com")
-            return
-        except Exception as e:
-            print(f"An error occurred while running 'ollama list': {e}")
-            return
+        run_ollama_list_command()
 
     for req_arg in ['attack_modes']:
         if not getattr(args, req_arg):
@@ -180,7 +168,7 @@ async def main() -> None:
         else:
             extra = vars(args)
     except Exception:
-        raise ValueError("Please make sure that when using -e you have: -e key=val")
+        raise ValueError("Error adding extra argument, please make sure you use the correct format, i.e -e key=value")
 
     if hasattr(args, 'target_prompts_file') and args.target_prompts_file:
         with open(args.target_prompts_file, 'r') as f:
@@ -252,8 +240,7 @@ async def main() -> None:
 if __name__ == "__main__":
     try:
         asyncio.run(main())
-    except KeyboardInterrupt:
+    except KeyboardInterrupt as e:
         logger.info('Exiting...')
         exit(0)
-    except Exception as e:
         raise Exception(e)

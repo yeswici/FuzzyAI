@@ -113,11 +113,11 @@ class ActorAttackHandler(BaseAttackTechniqueHandler[ActorAttackHandlerExtraParam
                                                                                      ACTOR=actor)
                     questions_generation_response = await llm.generate(questions_generation_prompt)
                     if questions_generation_response is None:
-                        raise QuestionsGenerationException(f"No response from the questions generation model.")
+                        raise QuestionsGenerationException("No response from the questions generation model.")
 
                     single_actor_questions = questions_generation_response.response.split(SPLIT_TOKEN)
                     if single_actor_questions is None:
-                        raise QuestionsGenerationException(f"No response from the questions generation model.")
+                        raise QuestionsGenerationException("No response from the questions generation model.")
 
                     if actor not in actors_questions_dict:
                         actors_questions_dict[actor] = single_actor_questions
