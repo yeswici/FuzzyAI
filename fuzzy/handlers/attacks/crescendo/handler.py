@@ -42,11 +42,11 @@ class CrescendoAttackHandler(BaseAttackTechniqueHandler[CrescendoAttackHandlerEx
     def __init__(self, **extra: Any):
         super().__init__(**extra)
         if (model := self._extra_args.questions_generation_model) not in self._model_queue_map:
-            raise RuntimeError(f"Questions generation model: {model} was not added to the fuzzer,"
+            raise RuntimeError(f"\033[91mQuestions generation model: {model} was not added to the fuzzer,"
                                " please make sure you add it with -x <provider/model> and set"
                                " -e questions_generation_model=<provider/model> accordingly"
                                f" (you can omit -e if using the default questions generation model {DEFAULT_QUESTIONS_GENERATION_MODEL}."
-                               f"  Attack wiki: {WIKI_LINK}")
+                               f"  Attack wiki: {WIKI_LINK}\033[0m")
 
 
     async def _attack(self, prompt: str, **extra: Any) -> Optional[AttackResultEntry]:
@@ -64,9 +64,9 @@ class CrescendoAttackHandler(BaseAttackTechniqueHandler[CrescendoAttackHandlerEx
                 questions_generation_prompt = prompt_template.format(PROMPT=prompt)
                 questions_generation_response = await llm.generate(questions_generation_prompt)
                 if questions_generation_response is None:
-                    raise QuestionsGenerationException("No response from the questions generation model")
+                    raise QuestionsGenerationException("\033[91mNo response from the questions generation model\033[0m")
             except BaseLLMProviderException as e:
-                raise QuestionsGenerationException(f"Problem occurred during extraction of prompt tag {e}.  Attack wiki: {WIKI_LINK}")
+                raise QuestionsGenerationException(f"\033[91mProblem occurred during extraction of prompt tag {e}.  Attack wiki: {WIKI_LINK}\033[0m")
 
         async with self._borrow(self._model) as llm:
             questions = questions_generation_response.response.split(SPLIT_TOKEN)
@@ -77,7 +77,7 @@ class CrescendoAttackHandler(BaseAttackTechniqueHandler[CrescendoAttackHandlerEx
                 last_answer = await llm.chat(chat_messages)
 
                 if last_answer is None:
-                    raise AnswerGenerationException("No response from the target model")
+                    raise AnswerGenerationException("\033[91mNo response from the target model\033[0m")
                 last_answer_response = last_answer.response
                 all_questions_and_answers.append(f"Q-{index}: " + question)
                 all_questions_and_answers.append(f"A-{index}: " + last_answer_response)

@@ -49,10 +49,10 @@ class BackToThePastAttackHandler(BaseAttackTechniqueHandler[BackToThePastAttackH
     def __init__(self, **extra: Any):
         super().__init__(**extra)
         if (model := self._extra_args.tag_extraction_model) not in self._model_queue_map:
-            raise RuntimeError(f"Profession extraction model: {model} was not added to the fuzzer,"
+            raise RuntimeError(f"\033[91mProfession extraction model: {model} was not added to the fuzzer,"
                                " please make sure you add it with -x <provider/model> and set"
                                " -e tag_extraction_model=<provider/model> accordingly"
-                               f" (you can omit -e if using the default extraction model {DEFAULT_TAG_EXTRACTION_MODEL}")
+                               f" (you can omit -e if using the default extraction model {DEFAULT_TAG_EXTRACTION_MODEL}\033[0m")
 
     async def _attack(self, prompt: str, **extra: Any) -> Optional[AttackResultEntry]:
         llm: BaseLLMProvider
@@ -63,9 +63,9 @@ class BackToThePastAttackHandler(BaseAttackTechniqueHandler[BackToThePastAttackH
                 try:
                     tag_extraction_response = await extraction_model.generate(tag_extraction_prompt, **self._extra)
                     if not tag_extraction_response:
-                        raise TagExtractionException("No response from the tag extraction model")
+                        raise TagExtractionException("\033[91mNo response from the tag extraction model\033[0m")
                 except BaseLLMProviderException as e:
-                    raise TagExtractionException(f"Problem occurred during extraction of prompt tag {e}. Attack wiki: {WIKI_LINK}")
+                    raise TagExtractionException(f"\033[91mProblem occurred during extraction of prompt tag {e}. Attack wiki: {WIKI_LINK}\033[0m")
 
                 tag = tag_extraction_response.response
                 profession = TAG_TO_PROFESSION_DICT.get(tag, DEFAULT_PROFESSION)

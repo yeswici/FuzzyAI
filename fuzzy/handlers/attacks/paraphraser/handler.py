@@ -52,13 +52,13 @@ class PresuasiveParaphraser(BaseAttackTechniqueHandler[PersuasiveAttackHandlerEx
         missing_models = [model for model in models if model not in self._model_queue_map]
 
         if missing_models:
-            raise ValueError(f"Auxiliary model not found: {', '.join(missing_models)}, please add it using -x. Attack wiki: {WIKI_LINK}")
+            raise ValueError(f"\033[91mAuxiliary model not found: {', '.join(missing_models)}, please add it using -x. Attack wiki: {WIKI_LINK}\033[0m")
 
         if not self._classifiers:
-            raise ValueError(f"No classifiers found, you must provide at least one classifier for this attack mode. Attack wiki: {WIKI_LINK}")
+            raise ValueError(f"\033[91mNo classifiers found, you must provide at least one classifier for this attack mode. Attack wiki: {WIKI_LINK}\033[0m")
 
         if not any(x.name == Classifier.RATING for x in self._classifiers):
-            raise ValueError(f"This attack requires a RATING classifier, please add it using -c rat. Attack wiki: {WIKI_LINK}")
+            raise ValueError(f"\033[91mThis attack requires a RATING classifier, please add it using -c rat. Attack wiki: {WIKI_LINK}\033[0m")
 
     @classmethod
     def extra_args_cls(cls) -> Type[BaseModel]:

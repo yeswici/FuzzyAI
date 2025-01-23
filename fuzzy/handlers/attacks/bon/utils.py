@@ -36,7 +36,7 @@ def character_noising(text: str, noise_prob: float = 0.06, seed: Optional[int] =
         ValueError: If noise_prob is not between 0 and 1
     """
     if not 0 <= noise_prob <= 1:
-        raise ValueError("noise_prob must be between 0 and 1")
+        raise ValueError("\033[91mnoise_prob must be between 0 and 1\033[0m")
     
     if seed is not None:
         random.seed(seed)

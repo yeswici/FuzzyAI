@@ -26,10 +26,10 @@ class AzureProvider(BaseLLMProvider):
         super().__init__(model=model, **extra)
 
         if (api_key := os.environ.get(self.AZURE_OPENAI_API_KEY)) is None:
-            raise BaseLLMProviderException(f"{self.AZURE_OPENAI_API_KEY} not in os.environ")
+            raise BaseLLMProviderException(f"\033[91m{self.AZURE_OPENAI_API_KEY} not in os.environ\033[0m")
         
         if (endpoint := os.environ.get(self.AZURE_OPENAI_ENDPOINT)) is None:
-            raise BaseLLMProviderException(f"{self.AZURE_OPENAI_ENDPOINT} not in os.environ")
+            raise BaseLLMProviderException(f"\033[91m{self.AZURE_OPENAI_ENDPOINT} not in os.environ\033[0m")
         
         self._base_url = AZURE_ENDPOINT_URL.format(endpoint=endpoint, 
                                                    model=self._model_name, 

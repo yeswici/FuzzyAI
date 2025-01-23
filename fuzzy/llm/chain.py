@@ -26,7 +26,7 @@ class BaseFuzzRunnable(FuzzRunnableProto):
         elif classname == 'BaseLLMProvider':
             return FuzzChain([self, FuzzNode(other, "{input}")]) # type: ignore
         
-        raise ValueError(f"Invalid type for __value: {classname}")
+        raise ValueError(f"\033[91mInvalid type for __value: {classname}\033[0m")
 
 class FuzzNode(BaseFuzzRunnable):
     def __init__(self, llm: 'BaseLLMProvider', prompt: str) -> None:

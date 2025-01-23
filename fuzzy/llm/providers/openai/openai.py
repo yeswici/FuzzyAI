@@ -32,7 +32,7 @@ class OpenAIProvider(BaseLLMProvider):
         super().__init__(model=model, **extra)
 
         if (api_key := os.environ.get(self.OPENAI_API_KEY)) is None:
-            raise BaseLLMProviderException(f"{self.OPENAI_API_KEY} not in os.environ")
+            raise BaseLLMProviderException(f"\033[91m{self.OPENAI_API_KEY} not in os.environ\033[0m")
 
         self._headers = {
             "Content-Type": "application/json",

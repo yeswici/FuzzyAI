@@ -86,9 +86,9 @@ class ActorAttackHandler(BaseAttackTechniqueHandler[ActorAttackHandlerExtraParam
                 behavior_extraction_prompt = BEHAVIOR_EXTRACTION_PROMPT.format(ORIGINAL_PROMPT=prompt)
                 behavior_extraction_response = await llm.generate(behavior_extraction_prompt)
                 if behavior_extraction_response is None:
-                    raise BehaviorExtractionException("No response from the behavior extraction model")
+                    raise BehaviorExtractionException("\033[91mNo response from the behavior extraction model\033[0m")
             except BaseLLMProviderException as e:
-                raise BehaviorExtractionException(f"Problem occurred during behavior extraction. {e}. Attack wiki: {WIKI_LINK}")
+                raise BehaviorExtractionException(f"\033[91mProblem occurred during behavior extraction. {e}. Attack wiki: {WIKI_LINK}\033[0m")
         behavior_response = behavior_extraction_response.response
 
         logger.info("Generating relevant actors to the behavior")
@@ -97,9 +97,9 @@ class ActorAttackHandler(BaseAttackTechniqueHandler[ActorAttackHandlerExtraParam
                 actors_extraction_prompt = ACTORS_GENERATION_PROMPT.format(EXTRACTED_BEHAVIOR=behavior_response)
                 actors_extraction_response = await llm.generate(actors_extraction_prompt)
                 if actors_extraction_response is None:
-                    raise ActorsGenerationException("No response from the actor generation model")
+                    raise ActorsGenerationException("\033[91mNo response from the actor generation model\033[0m")
             except BaseLLMProviderException as e:
-                raise ActorsGenerationException(f"Problem occurred during actor generation. {e}.  Attack wiki: {WIKI_LINK}")
+                raise ActorsGenerationException(f"\033[91mProblem occurred during actor generation. {e}.  Attack wiki: {WIKI_LINK}\033[0m")
         actors_response = actors_extraction_response.response
         all_actors = actors_response.split(SPLIT_TOKEN)
 
@@ -113,16 +113,16 @@ class ActorAttackHandler(BaseAttackTechniqueHandler[ActorAttackHandlerExtraParam
                                                                                      ACTOR=actor)
                     questions_generation_response = await llm.generate(questions_generation_prompt)
                     if questions_generation_response is None:
-                        raise QuestionsGenerationException("No response from the questions generation model.")
+                        raise QuestionsGenerationException("\033[91mNo response from the questions generation model.\033[0m")
 
                     single_actor_questions = questions_generation_response.response.split(SPLIT_TOKEN)
                     if single_actor_questions is None:
-                        raise QuestionsGenerationException("No response from the questions generation model.")
+                        raise QuestionsGenerationException("\033[91mNo response from the questions generation model.\033[0m")
 
                     if actor not in actors_questions_dict:
                         actors_questions_dict[actor] = single_actor_questions
                 except BaseLLMProviderException as e:
-                    raise QuestionsGenerationException(f"Problem occurred during questions generation. {e}. Attack wiki: {WIKI_LINK}")
+                    raise QuestionsGenerationException(f"\033[91mProblem occurred during questions generation. {e}. Attack wiki: {WIKI_LINK}\033[0m")
 
         logger.info("Sending questions to the target model")
         async with self._borrow(self._model) as llm:
@@ -134,7 +134,7 @@ class ActorAttackHandler(BaseAttackTechniqueHandler[ActorAttackHandlerExtraParam
                     chat_messages.append(BaseLLMMessage(role=ROLE_USER, content=question))
                     last_answer = await llm.chat(chat_messages)
                     if last_answer is None:
-                        raise AnswerGenerationException("No response from the target model")
+                        raise AnswerGenerationException("\033[91mNo response from the target model\033[0m")
                     last_answer_response = last_answer.response
                     chat_messages.append(BaseLLMMessage(role=ROLE_ASSISTANT, content=last_answer_response))
                 classifications = await self._classify_llm_response(last_answer, original_prompt=prompt)

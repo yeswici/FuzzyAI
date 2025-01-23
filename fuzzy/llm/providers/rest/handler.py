@@ -53,7 +53,7 @@ class RestProvider(BaseLLMProvider):
         super().__init__(model=model, **extra)
 
         if any(x is None for x in [host, response_jsonpath]):
-            raise RuntimeError("host, and response_jsonpath must be provided using -e flag.") 
+            raise RuntimeError("\033[91mhost, and response_jsonpath must be provided using -e flag.\033[0m")
         
         self._method: str = str()
         self._path: str = str()

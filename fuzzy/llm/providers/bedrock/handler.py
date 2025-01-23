@@ -34,17 +34,17 @@ class AwsBedrockProvider(BaseLLMProvider):
         super().__init__(model=model, **extra)
 
         if self.AWS_SECRET_ACCESS_KEY not in os.environ:
-            raise AwsBedrockException(f"{self.AWS_SECRET_ACCESS_KEY} not in os.environ")
+            raise AwsBedrockException(f"\033[91m{self.AWS_SECRET_ACCESS_KEY} not in os.environ\033[0m")
 
         if self.AWS_ACCESS_KEY_ID not in os.environ:
-            raise AwsBedrockException(f"{self.AWS_ACCESS_KEY_ID} not in os.environ")
+            raise AwsBedrockException(f"\033[91m{self.AWS_ACCESS_KEY_ID} not in os.environ\033[0m")
 
         if self.AWS_DEFAULT_REGION not in os.environ:
-            raise AwsBedrockException(f"{self.AWS_DEFAULT_REGION} not in os.environ")
+            raise AwsBedrockException(f"\033[91m{self.AWS_DEFAULT_REGION} not in os.environ\033[0m")
         
         self._model_family = BedrockModelFamily(model.split(".")[0])
         if self._model_family not in MODEL_FAMILY_MAPPING:
-            raise AwsBedrockException(f"Model family {self._model_family} is not supported, supported families are {MODEL_FAMILY_MAPPING.keys()}")
+            raise AwsBedrockException(f"\033[91mModel family {self._model_family} is not supported, supported families are {MODEL_FAMILY_MAPPING.keys()}\033[0m")
         
         self._client = boto3.client(service_name='bedrock-runtime')
 

@@ -44,7 +44,7 @@ class OllamaProvider(BaseLLMProvider):
         async with self._session.get(f"{self._base_url}/tags") as response:
             models = await response.json()
             if not models:
-                raise OllamaProviderException('No local ollama models found, Trying pulling some')
+                raise OllamaProviderException('\033[91mNo local ollama models found, Trying pulling some\033[0m')
             
             model_names: list[str] = [model['name'] for model in models['models']]
             target_model = self._model_name if ":" in self._model_name else f"{self._model_name}:latest"

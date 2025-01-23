@@ -37,11 +37,11 @@ class WordGameAttackHandler(BaseAttackTechniqueHandler[WordGameAttackHandlerExtr
         self._rephrasing_prompt_response: Optional[BaseLLMProviderResponse] = None
         self._hints_generation_prompt_response: Optional[BaseLLMProviderResponse] = None
         if (model := self._extra_args.game_generation_model) not in self._model_queue_map:
-            raise RuntimeError(f"game_generation_model: {model} was not added to the fuzzer,"
+            raise RuntimeError(f"\033[91mgame_generation_model: {model} was not added to the fuzzer,"
                                " please make sure you add it with -x <provider/model> and set"
                                " -e game_generation_model=<provider/model> accordingly"
                                f" (you can omit -e if using the default generation model {DEFAULT_GAME_GENERATION_MODEL}."
-                               f"Attack wiki: {WIKI_LINK}")
+                               f"Attack wiki: {WIKI_LINK}\033[0m")
 
     async def _attack(self, prompt: str, **extra: Any) -> Optional[AttackResultEntry]:
         chat_messages: list[BaseLLMMessage] = [BaseLLMMessage(role=ROLE_USER, content=WORD_IDENTIFICATION_PROMPT.format(query=prompt))]
@@ -51,19 +51,19 @@ class WordGameAttackHandler(BaseAttackTechniqueHandler[WordGameAttackHandlerExtr
         async with self._borrow(self._extra_args.game_generation_model) as llm:
             self._word_identification_prompt_response = await llm.chat(chat_messages)
             if self._word_identification_prompt_response is None:
-                raise WordGameException("Word identification failed got None instead")
+                raise WordGameException("\033[91mWord identification failed got None instead\033[0m")
             chat_messages.append(BaseLLMMessage(role=ROLE_ASSISTANT, content=self._word_identification_prompt_response.response))
 
             chat_messages.append(BaseLLMMessage(role=ROLE_USER, content=REPHRASING_PROMPT))
             self._rephrasing_prompt_response = await llm.chat(chat_messages)
             if self._rephrasing_prompt_response is None:
-                raise WordGameException("Prompt rephrasing failed got None instead")
+                raise WordGameException("\033[91mPrompt rephrasing failed got None instead\033[0m")
             chat_messages.append(BaseLLMMessage(role=ROLE_ASSISTANT, content=self._rephrasing_prompt_response.response))
 
             chat_messages.append(BaseLLMMessage(role=ROLE_USER, content=HINTS_GENERATION_PROMPT))
             self._hints_generation_prompt_response = await llm.chat(chat_messages)
             if self._hints_generation_prompt_response is None:
-                raise WordGameException("Hints generation failed got None instead")
+                raise WordGameException("\033[91mHints generation failed got None instead\033[0m")
 
         logger.info("Running wordgame")
         async with self._borrow(self._model) as llm:

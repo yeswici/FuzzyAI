@@ -68,12 +68,12 @@ class Fuzzer:
             model (str): Which model to use with the provided provider.
         """
         if '/' not in provider_and_model:
-            raise RuntimeError(f"Model {provider_and_model} not in correct format, please use provider/model_name format")
+            raise RuntimeError(f"\033[91mModel {provider_and_model} not in correct format, please use provider/model_name format\033[0m")
 
         provider_name, model = provider_and_model.split('/', 1)
 
         if provider_name not in LLMProvider.__members__.values():
-            raise RuntimeError(f"Provider {provider_name} not found")
+            raise RuntimeError(f"\033[91mProvider {provider_name} not found\033[0m")
 
         is_valid_model: bool = True
 

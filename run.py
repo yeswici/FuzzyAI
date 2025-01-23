@@ -168,7 +168,7 @@ async def main() -> None:
         else:
             extra = vars(args)
     except Exception:
-        raise ValueError("Error adding extra argument, please make sure you use the correct format, i.e -e key=value")
+        raise ValueError("\033[91mError adding extra argument, please make sure you use the correct format, i.e -e key=value\033[0m")
 
     if hasattr(args, 'target_prompts_file') and args.target_prompts_file:
         with open(args.target_prompts_file, 'r') as f:

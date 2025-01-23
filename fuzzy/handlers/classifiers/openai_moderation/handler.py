@@ -20,7 +20,7 @@ class OpenAIModerationClassifier(BaseClassifier):
         super().__init__(**extra)
         
         if "OPENAI_API_KEY" not in os.environ:
-            raise ValueError("OPENAI_API_KEY not found in env")
+            raise ValueError("\033[91mOPENAI_API_KEY not found in env\033[0m")
         
         self._name = "OPENAI_MODERATION_CLASSIFIER"
         self._negative = rvalues[0]
