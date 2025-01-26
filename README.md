@@ -59,6 +59,7 @@ Easily add support for additional models by following our <a href="https://githu
 - **Azure Cloud**
 - **AWS Bedrock**
 - **AI21**
+- **DeepSeek**
 - **Huggingface ([Downloading models](https://huggingface.co/docs/hub/en/models-downloading))**
 - **Ollama**
 - **Custom REST API**
