@@ -70,7 +70,7 @@ class GeneticAttackTechniqueHandler(BaseAttackTechniqueHandler[GeneticAttackPara
     def _verify_supported_classifiers(self) -> None:
         supported_classifiers = (DisapprovalClassifier, CosineSimilarityClassifier)
         if not self._classifiers:
-            raise ValueError(f"No classifiers found, you must provide at least one classifier for this attack mode.")
+            raise ValueError("No classifiers found, you must provide at least one classifier for this attack mode.")
 
         for classifier in self._classifiers:
             if not isinstance(classifier, supported_classifiers):

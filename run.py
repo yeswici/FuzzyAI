@@ -132,6 +132,7 @@ async def main() -> None:
 
     if args.ollama_list:
         run_ollama_list_command()
+        return
 
     for req_arg in ['attack_modes']:
         if not getattr(args, req_arg):
@@ -243,4 +244,3 @@ if __name__ == "__main__":
     except KeyboardInterrupt as e:
         logger.info('Exiting...')
         exit(0)
-        raise Exception(e)

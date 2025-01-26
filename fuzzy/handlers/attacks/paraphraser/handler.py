@@ -55,10 +55,10 @@ class PresuasiveParaphraser(BaseAttackTechniqueHandler[PersuasiveAttackHandlerEx
             raise ValueError(f"Auxiliary model not found: {', '.join(missing_models)}, please add it using -x.")
 
         if not self._classifiers:
-            raise ValueError(f"No classifiers found, you must provide at least one classifier for this attack mode.")
+            raise ValueError("No classifiers found, you must provide at least one classifier for this attack mode.")
 
         if not any(x.name == Classifier.RATING for x in self._classifiers):
-            raise ValueError(f"This attack requires a RATING classifier, please add it using -c rat.")
+            raise ValueError("This attack requires a RATING classifier, please add it using -c rat.")
 
     @classmethod
     def extra_args_cls(cls) -> Type[BaseModel]:

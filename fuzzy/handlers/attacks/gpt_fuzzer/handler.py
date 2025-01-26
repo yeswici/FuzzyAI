@@ -97,7 +97,7 @@ class GPTFuzzerAttackHandler(BaseAttackTechniqueHandler[GPTFuzzerAttackHandlerEx
                     raise ActionChoiceException(f"Please enter one of the following action using -e action={'/'.join(list(templates_dict.keys()))}.")
 
                 if retry_counter == RETRY_LIMIT:
-                    raise MaxTriesException(f"The mutation model have failed to generate a template with the prompt placeholder. Please consider using a stronger model. (recommended: openai/gpt-4o or ollama/gemma2).")
+                    raise MaxTriesException("The mutation model have failed to generate a template with the prompt placeholder. Please consider using a stronger model. (recommended: openai/gpt-4o or ollama/gemma2).")
 
                 retry_counter += 1
 
