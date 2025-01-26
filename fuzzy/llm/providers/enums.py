@@ -7,11 +7,12 @@ class LLMProvider(str, Enum):
     OPENAI = "openai"
     AWS_BEDROCK = "aws-bedrock"
     ANTHROPIC = "anthropic"
+    GEMINI = "gemini"
+    AI21 = "ai21"
+    DEEPSEEK = "deepseek"
     LOCAL = "local"
     LOCAL_LLAMA2 = "local-llama2"
-    GEMINI = "gemini"
     REST = "rest"
-    AI21 = "ai21"
 
 
 class LLMProviderExtraParams(str, Enum):

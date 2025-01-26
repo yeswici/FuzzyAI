@@ -46,6 +46,7 @@ FuzzyAI supports various models across top providers, including:
 | **Azure**    | GPT-4, GPT-3.5 Turbo                                                                                    |
 | **Bedrock**  | Claude (3.5, 3.0), Meta (LLaMa)                                                                             |
 | **AI21**     | Jamba (1.5 Mini, Large)                                                                                |
+| **DeepSeek** | DeepSeek (DeepSeek-V3, DeepSeek-V1)                                                                  |
 | **Ollama**   | LLaMA (3.3, 3.2, 3.1), Dolphin-LLaMA3, Vicuna                                                               |
 
 ## Adding support for newer models

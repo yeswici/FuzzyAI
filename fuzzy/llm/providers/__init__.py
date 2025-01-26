@@ -8,3 +8,4 @@ from .local.local_llm import LocalProvider
 from .ollama.ollama import OllamaProvider
 from .openai.openai import OpenAIProvider
 from .rest.handler import RestProvider
+from .deepseek.handler import DeepSeekProvider
