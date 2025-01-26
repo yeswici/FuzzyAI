@@ -234,3 +234,6 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         logger.info('Exiting...')
         exit(0)
+    except Exception as e:
+        logger.error(f"Error: {e}", exc_info=False)
+        exit(1)
