@@ -3,7 +3,7 @@ from typing import Any, Final, Optional, Type
 
 from pydantic import BaseModel, Field
 
-from fuzzy.consts import ROLE_USER, ROLE_ASSISTANT, WIKI_LINK, DEFAULT_OPEN_SOURCE_MODEL
+from fuzzy.consts import ROLE_USER, ROLE_ASSISTANT, DEFAULT_OPEN_SOURCE_MODEL
 from fuzzy.handlers.attacks.base import (BaseAttackTechniqueHandler,
                                          attack_handler_fm, BaseAttackTechniqueHandlerException)
 from fuzzy.handlers.attacks.enums import FuzzerAttackMode
@@ -13,8 +13,10 @@ from fuzzy.handlers.attacks.word_game.word_game_prompts import (WORD_IDENTIFICAT
                                                                 WORD_GAME_PROMPT,WORD_GAME_PLUS_PROMPT)
 from fuzzy.llm.models import BaseLLMProviderResponse
 from fuzzy.llm.providers.base import BaseLLMProvider, BaseLLMMessage
+from fuzzy.utils.custom_logging_formatter import CustomFormatter
 
 logger = logging.getLogger(__name__)
+Formatter = CustomFormatter()
 
 DEFAULT_GAME_GENERATION_MODEL: Final[str] = DEFAULT_OPEN_SOURCE_MODEL
 
@@ -37,11 +39,10 @@ class WordGameAttackHandler(BaseAttackTechniqueHandler[WordGameAttackHandlerExtr
         self._rephrasing_prompt_response: Optional[BaseLLMProviderResponse] = None
         self._hints_generation_prompt_response: Optional[BaseLLMProviderResponse] = None
         if (model := self._extra_args.game_generation_model) not in self._model_queue_map:
-            raise RuntimeError(f"\033[91mgame_generation_model: {model} was not added to the fuzzer,"
+            raise RuntimeError(f"game_generation_model: {model} was not added to the fuzzer,"
                                " please make sure you add it with -x <provider/model> and set"
                                " -e game_generation_model=<provider/model> accordingly"
-                               f" (you can omit -e if using the default generation model {DEFAULT_GAME_GENERATION_MODEL}."
-                               f"Attack wiki: {WIKI_LINK}\033[0m")
+                               f" (you can omit -e if using the default generation model {DEFAULT_GAME_GENERATION_MODEL}.")
 
     async def _attack(self, prompt: str, **extra: Any) -> Optional[AttackResultEntry]:
         chat_messages: list[BaseLLMMessage] = [BaseLLMMessage(role=ROLE_USER, content=WORD_IDENTIFICATION_PROMPT.format(query=prompt))]
@@ -51,19 +52,19 @@ class WordGameAttackHandler(BaseAttackTechniqueHandler[WordGameAttackHandlerExtr
         async with self._borrow(self._extra_args.game_generation_model) as llm:
             self._word_identification_prompt_response = await llm.chat(chat_messages)
             if self._word_identification_prompt_response is None:
-                raise WordGameException("\033[91mWord identification failed got None instead\033[0m")
+                raise WordGameException("Word identification failed got None instead")
             chat_messages.append(BaseLLMMessage(role=ROLE_ASSISTANT, content=self._word_identification_prompt_response.response))
 
             chat_messages.append(BaseLLMMessage(role=ROLE_USER, content=REPHRASING_PROMPT))
             self._rephrasing_prompt_response = await llm.chat(chat_messages)
             if self._rephrasing_prompt_response is None:
-                raise WordGameException("\033[91mPrompt rephrasing failed got None instead\033[0m")
+                raise WordGameException("Prompt rephrasing failed got None instead")
             chat_messages.append(BaseLLMMessage(role=ROLE_ASSISTANT, content=self._rephrasing_prompt_response.response))
 
             chat_messages.append(BaseLLMMessage(role=ROLE_USER, content=HINTS_GENERATION_PROMPT))
             self._hints_generation_prompt_response = await llm.chat(chat_messages)
             if self._hints_generation_prompt_response is None:
-                raise WordGameException("\033[91mHints generation failed got None instead\033[0m")
+                raise WordGameException("Hints generation failed got None instead")
 
         logger.info("Running wordgame")
         async with self._borrow(self._model) as llm:

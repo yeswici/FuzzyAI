@@ -4,7 +4,7 @@ import time
 from typing import Any, Final, Optional, Type
 from pydantic import BaseModel, Field
 
-from fuzzy.consts import WIKI_LINK, DEFAULT_OPEN_SOURCE_MODEL
+from fuzzy.consts import DEFAULT_OPEN_SOURCE_MODEL
 from fuzzy.handlers.attacks.gpt_fuzzer.prompt_templates import (GENERATE_ACTION_PROMPT, CROSSOVER_ACTION_PROMPT,
                                                                 EXPAND_ACTION_PROMPT, SHORTEN_ACTION_PROMPT,
                                                                 REPHRASE_ACTION_PROMPT, ATTACKING_PROMPTS_TEMPLATES)
@@ -64,9 +64,9 @@ class GPTFuzzerAttackHandler(BaseAttackTechniqueHandler[GPTFuzzerAttackHandlerEx
         super().__init__(**extra)
 
         if self._extra_args.mutation_model not in self._model_queue_map:
-            raise RuntimeError(f"\033[91mMutation model: {self._extra_args.mutation_model} was not added to the fuzzer,"
+            raise RuntimeError(f"Mutation model: {self._extra_args.mutation_model} was not added to the fuzzer,"
                                " please make sure you add it with -x <provider/model> and set"
-                               f" -e mutation_model=<provider/model> accordingly. Attack wiki: {WIKI_LINK}\033[0m")
+                               " -e mutation_model=<provider/model> accordingly.")
 
     async def _attack(self, prompt: str, **extra: Any) -> Optional[AttackResultEntry]:
         llm: BaseLLMProvider
@@ -94,10 +94,10 @@ class GPTFuzzerAttackHandler(BaseAttackTechniqueHandler[GPTFuzzerAttackHandlerEx
                             seed=ATTACKING_PROMPTS_TEMPLATES[template_index]), **self._extra)
 
                 else:
-                    raise ActionChoiceException(f"\033[91mPlease enter one of the following action using -e action={'/'.join(list(templates_dict.keys()))}. Attack wiki: {WIKI_LINK}\033[0m")
+                    raise ActionChoiceException(f"Please enter one of the following action using -e action={'/'.join(list(templates_dict.keys()))}.")
 
                 if retry_counter == RETRY_LIMIT:
-                    raise MaxTriesException(f"\033[91mThe mutation model have failed to generate a template with the prompt placeholder. Please consider using a stronger model. (recommended: openai/gpt-4o or ollama/gemma2). Attack wiki: {WIKI_LINK}\033[0m")
+                    raise MaxTriesException(f"The mutation model have failed to generate a template with the prompt placeholder. Please consider using a stronger model. (recommended: openai/gpt-4o or ollama/gemma2).")
 
                 retry_counter += 1
 

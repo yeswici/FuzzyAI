@@ -3,7 +3,7 @@ from typing import Any, Final, Optional, Type
 
 from pydantic import BaseModel, Field
 
-from fuzzy.consts import ROLE_USER, ROLE_ASSISTANT, WIKI_LINK, DEFAULT_OPEN_SOURCE_MODEL
+from fuzzy.consts import ROLE_USER, ROLE_ASSISTANT, DEFAULT_OPEN_SOURCE_MODEL
 from fuzzy.handlers.attacks.base import (BaseAttackTechniqueHandler, BaseAttackTechniqueHandlerException,
                                          attack_handler_fm)
 from fuzzy.handlers.attacks.crescendo.prompts import (QUESTION_GENERATION_PROMPT_TEMPLATE_PREFIX,
@@ -42,11 +42,10 @@ class CrescendoAttackHandler(BaseAttackTechniqueHandler[CrescendoAttackHandlerEx
     def __init__(self, **extra: Any):
         super().__init__(**extra)
         if (model := self._extra_args.questions_generation_model) not in self._model_queue_map:
-            raise RuntimeError(f"\033[91mQuestions generation model: {model} was not added to the fuzzer,"
+            raise RuntimeError(f"Questions generation model: {model} was not added to the fuzzer,"
                                " please make sure you add it with -x <provider/model> and set"
                                " -e questions_generation_model=<provider/model> accordingly"
-                               f" (you can omit -e if using the default questions generation model {DEFAULT_QUESTIONS_GENERATION_MODEL}."
-                               f"  Attack wiki: {WIKI_LINK}\033[0m")
+                               f" (you can omit -e if using the default questions generation model {DEFAULT_QUESTIONS_GENERATION_MODEL}.")
 
 
     async def _attack(self, prompt: str, **extra: Any) -> Optional[AttackResultEntry]:
@@ -64,9 +63,9 @@ class CrescendoAttackHandler(BaseAttackTechniqueHandler[CrescendoAttackHandlerEx
                 questions_generation_prompt = prompt_template.format(PROMPT=prompt)
                 questions_generation_response = await llm.generate(questions_generation_prompt)
                 if questions_generation_response is None:
-                    raise QuestionsGenerationException("\033[91mNo response from the questions generation model\033[0m")
+                    raise QuestionsGenerationException("No response from the questions generation model")
             except BaseLLMProviderException as e:
-                raise QuestionsGenerationException(f"\033[91mProblem occurred during extraction of prompt tag {e}.  Attack wiki: {WIKI_LINK}\033[0m")
+                raise QuestionsGenerationException(f"Problem occurred during extraction of prompt tag {e}.")
 
         async with self._borrow(self._model) as llm:
             questions = questions_generation_response.response.split(SPLIT_TOKEN)
@@ -77,7 +76,7 @@ class CrescendoAttackHandler(BaseAttackTechniqueHandler[CrescendoAttackHandlerEx
                 last_answer = await llm.chat(chat_messages)
 
                 if last_answer is None:
-                    raise AnswerGenerationException("\033[91mNo response from the target model\033[0m")
+                    raise AnswerGenerationException("No response from the target model")
                 last_answer_response = last_answer.response
                 all_questions_and_answers.append(f"Q-{index}: " + question)
                 all_questions_and_answers.append(f"A-{index}: " + last_answer_response)

@@ -5,7 +5,7 @@ from typing import Any, Optional, Type
 
 from pydantic import BaseModel, Field, ValidationError
 
-from fuzzy.consts import ROLE_ASSISTANT, ROLE_SYSTEM, ROLE_USER, WIKI_LINK, DEFAULT_OPEN_SOURCE_MODEL
+from fuzzy.consts import ROLE_ASSISTANT, ROLE_SYSTEM, ROLE_USER, DEFAULT_OPEN_SOURCE_MODEL
 from fuzzy.handlers.attacks.base import AttackBreakWhen, BaseAttackTechniqueHandler, attack_handler_fm
 from fuzzy.handlers.attacks.enums import FuzzerAttackMode
 from fuzzy.handlers.attacks.paraphraser.enums import PersuasiveActor
@@ -52,13 +52,13 @@ class PresuasiveParaphraser(BaseAttackTechniqueHandler[PersuasiveAttackHandlerEx
         missing_models = [model for model in models if model not in self._model_queue_map]
 
         if missing_models:
-            raise ValueError(f"\033[91mAuxiliary model not found: {', '.join(missing_models)}, please add it using -x. Attack wiki: {WIKI_LINK}\033[0m")
+            raise ValueError(f"Auxiliary model not found: {', '.join(missing_models)}, please add it using -x.")
 
         if not self._classifiers:
-            raise ValueError(f"\033[91mNo classifiers found, you must provide at least one classifier for this attack mode. Attack wiki: {WIKI_LINK}\033[0m")
+            raise ValueError(f"No classifiers found, you must provide at least one classifier for this attack mode.")
 
         if not any(x.name == Classifier.RATING for x in self._classifiers):
-            raise ValueError(f"\033[91mThis attack requires a RATING classifier, please add it using -c rat. Attack wiki: {WIKI_LINK}\033[0m")
+            raise ValueError(f"This attack requires a RATING classifier, please add it using -c rat.")
 
     @classmethod
     def extra_args_cls(cls) -> Type[BaseModel]:

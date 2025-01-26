@@ -67,7 +67,7 @@ class ArtPromptAttackHandler(BaseAttackTechniqueHandler[ArtPromptAttackHandlerEx
                     logger.debug("Learned font for letter %s:\n%s", let, self._font_map[let])
                 else:
                     logger.error("Failed to learn font for letter %s", let)
-                    raise Exception("\033[91mASCII Font learning process failed\033[0m")
+                    raise Exception("ASCII Font learning process failed")
 
     def _generate_attack_params(self, prompts: list[AdversarialPromptDTO]) -> list[dict[str, Any]]:
         return [{"prompt": prompt.prompt} for prompt in prompts]

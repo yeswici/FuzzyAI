@@ -7,7 +7,6 @@ import pandas as pd
 import pygad
 from pydantic import BaseModel, Field
 
-from fuzzy.consts import WIKI_LINK
 from fuzzy.handlers.attacks.base import BaseAttackTechniqueHandler, attack_handler_fm
 from fuzzy.handlers.attacks.enums import FuzzerAttackMode
 from fuzzy.handlers.attacks.models import AttackResultEntry
@@ -66,17 +65,17 @@ class GeneticAttackTechniqueHandler(BaseAttackTechniqueHandler[GeneticAttackPara
         supported_models = (Llama2Provider, OpenAIProvider)
         for llm in self._llms:
             if not isinstance(llm, supported_models):
-                raise ValueError(f"\033[91mGenetic attack mode supported LLMs are: {supported_models}. {llm.qualified_model_name} is not supported. Attack wiki: {WIKI_LINK}\033[0m")
+                raise ValueError(f"Genetic attack mode supported LLMs are: {supported_models}. {llm.qualified_model_name} is not supported.")
 
     def _verify_supported_classifiers(self) -> None:
         supported_classifiers = (DisapprovalClassifier, CosineSimilarityClassifier)
         if not self._classifiers:
-            raise ValueError(f"\033[91mNo classifiers found, you must provide at least one classifier for this attack mode. Attack wiki: {WIKI_LINK}\033[0m")
+            raise ValueError(f"No classifiers found, you must provide at least one classifier for this attack mode.")
 
         for classifier in self._classifiers:
             if not isinstance(classifier, supported_classifiers):
                 raise ValueError(
-                    f"\033[91mGenetic attack mode supported classifiers are: {supported_classifiers}. {classifier.name} is not supported. Attack wiki: {WIKI_LINK}\033[0m"
+                    f"Genetic attack mode supported classifiers are: {supported_classifiers}. {classifier.name} is not supported."
                 )
 
     def _load_genetic_dataset(self) -> None:

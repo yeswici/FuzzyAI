@@ -2,7 +2,7 @@ import logging
 from typing import Any, Final, Optional, Type
 from pydantic import BaseModel, Field
 
-from fuzzy.consts import ROLE_USER, ROLE_ASSISTANT, WIKI_LINK, DEFAULT_OPEN_SOURCE_MODEL
+from fuzzy.consts import ROLE_USER, ROLE_ASSISTANT, DEFAULT_OPEN_SOURCE_MODEL
 from fuzzy.handlers.attacks.base import (BaseAttackTechniqueHandler, BaseAttackTechniqueHandlerException,
                                          attack_handler_fm)
 from fuzzy.handlers.attacks.enums import FuzzerAttackMode
@@ -86,9 +86,9 @@ class ActorAttackHandler(BaseAttackTechniqueHandler[ActorAttackHandlerExtraParam
                 behavior_extraction_prompt = BEHAVIOR_EXTRACTION_PROMPT.format(ORIGINAL_PROMPT=prompt)
                 behavior_extraction_response = await llm.generate(behavior_extraction_prompt)
                 if behavior_extraction_response is None:
-                    raise BehaviorExtractionException("\033[91mNo response from the behavior extraction model\033[0m")
+                    raise BehaviorExtractionException("No response from the behavior extraction model")
             except BaseLLMProviderException as e:
-                raise BehaviorExtractionException(f"\033[91mProblem occurred during behavior extraction. {e}. Attack wiki: {WIKI_LINK}\033[0m")
+                raise BehaviorExtractionException(f"Problem occurred during behavior extraction. {e}")
         behavior_response = behavior_extraction_response.response
 
         logger.info("Generating relevant actors to the behavior")
@@ -97,9 +97,9 @@ class ActorAttackHandler(BaseAttackTechniqueHandler[ActorAttackHandlerExtraParam
                 actors_extraction_prompt = ACTORS_GENERATION_PROMPT.format(EXTRACTED_BEHAVIOR=behavior_response)
                 actors_extraction_response = await llm.generate(actors_extraction_prompt)
                 if actors_extraction_response is None:
-                    raise ActorsGenerationException("\033[91mNo response from the actor generation model\033[0m")
+                    raise ActorsGenerationException("No response from the actor generation model")
             except BaseLLMProviderException as e:
-                raise ActorsGenerationException(f"\033[91mProblem occurred during actor generation. {e}.  Attack wiki: {WIKI_LINK}\033[0m")
+                raise ActorsGenerationException(f"Problem occurred during actor generation. {e}")
         actors_response = actors_extraction_response.response
         all_actors = actors_response.split(SPLIT_TOKEN)
 
@@ -113,16 +113,16 @@ class ActorAttackHandler(BaseAttackTechniqueHandler[ActorAttackHandlerExtraParam
                                                                                      ACTOR=actor)
                     questions_generation_response = await llm.generate(questions_generation_prompt)
                     if questions_generation_response is None:
-                        raise QuestionsGenerationException("\033[91mNo response from the questions generation model.\033[0m")
+                        raise QuestionsGenerationException("No response from the questions generation model.")
 
                     single_actor_questions = questions_generation_response.response.split(SPLIT_TOKEN)
                     if single_actor_questions is None:
-                        raise QuestionsGenerationException("\033[91mNo response from the questions generation model.\033[0m")
+                        raise QuestionsGenerationException("No response from the questions generation model.")
 
                     if actor not in actors_questions_dict:
                         actors_questions_dict[actor] = single_actor_questions
                 except BaseLLMProviderException as e:
-                    raise QuestionsGenerationException(f"\033[91mProblem occurred during questions generation. {e}. Attack wiki: {WIKI_LINK}\033[0m")
+                    raise QuestionsGenerationException(f"Problem occurred during questions generation. {e}")
 
         logger.info("Sending questions to the target model")
         async with self._borrow(self._model) as llm:
@@ -134,7 +134,7 @@ class ActorAttackHandler(BaseAttackTechniqueHandler[ActorAttackHandlerExtraParam
                     chat_messages.append(BaseLLMMessage(role=ROLE_USER, content=question))
                     last_answer = await llm.chat(chat_messages)
                     if last_answer is None:
-                        raise AnswerGenerationException("\033[91mNo response from the target model\033[0m")
+                        raise AnswerGenerationException("No response from the target model")
                     last_answer_response = last_answer.response
                     chat_messages.append(BaseLLMMessage(role=ROLE_ASSISTANT, content=last_answer_response))
                 classifications = await self._classify_llm_response(last_answer, original_prompt=prompt)

@@ -8,7 +8,7 @@ from typing import Any, Optional
 import aiofiles
 import aiofiles.os
 
-from fuzzy.consts import PARAMETER_MAX_TOKENS
+from fuzzy.consts import PARAMETER_MAX_TOKENS, WIKI_LINK
 from fuzzy.fuzzer import Fuzzer
 from fuzzy.handlers.attacks.base import attack_handler_fm
 from fuzzy.handlers.attacks.enums import FuzzerAttackMode
@@ -168,7 +168,7 @@ async def main() -> None:
         else:
             extra = vars(args)
     except Exception:
-        raise ValueError("\033[91mError adding extra argument, please make sure you use the correct format, i.e -e key=value\033[0m")
+        raise ValueError(f"Error adding extra argument, please make sure you use the correct format, i.e -e key=value. For further help, please check the wiki: {WIKI_LINK}")
 
     if hasattr(args, 'target_prompts_file') and args.target_prompts_file:
         with open(args.target_prompts_file, 'r') as f:
@@ -216,7 +216,7 @@ async def main() -> None:
     try:
         report, raw_results = await fuzzer.fuzz(prompts=prompts, **extra)
     except Exception as e:
-        logger.error(f"Error during attack: {e}", exc_info=True)
+        logger.error(f"Error during attack: {str(e)}.\nFor further help, please check the wiki: {WIKI_LINK}")
         await fuzzer.cleanup()
         return
 
