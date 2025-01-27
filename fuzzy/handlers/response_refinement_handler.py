@@ -26,17 +26,17 @@ class ResponseRefinementHandler:
             logger.debug(f"Generating a response to: {original_prompt}")
             generated_response: Optional[BaseLLMProviderResponse] = await model.chat(messages=chat_messages)
             if generated_response is None or generated_response.response is None:
-                raise RefinementException("\033[91mFailed generating a response from the model, got: None\033[0m")
+                raise RefinementException("Failed generating a response from the model, got: None")
             response = generated_response.response
 
         chat_messages.append(BaseLLMMessage(role=ROLE_ASSISTANT, content=response))
 
-        logger.debug("\033[91mRefining previous response for prompt {original_prompt}\033[0m")
+        logger.debug("Refining previous response for prompt {original_prompt}")
         for _ in range(self._improve_attempts):
             chat_messages.append(BaseLLMMessage(role=ROLE_USER, content=IMPROVE_PROMPT))
             improved_response = await model.chat(messages=chat_messages)
             if improved_response is None or improved_response.response is None:
-                raise RefinementException("\033[91mCannot refine response, got no response from the model\033[0m")
+                raise RefinementException("Cannot refine response, got no response from the model")
             all_responses.append(improved_response.response)
             chat_messages.append(BaseLLMMessage(role=ROLE_ASSISTANT, content=improved_response.response))
 

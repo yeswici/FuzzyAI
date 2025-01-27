@@ -90,7 +90,7 @@ class BaseAttackTechniqueHandler(BaseAttackTechniqueHandlerProto, Generic[T]):
             self._extra_args: T = cast(T, self.extra_args_cls()(**extra))
         except ValidationError as ex:
             logger.error(f"You must provide the following extra arguments: {ex.errors()}", exc_info=True)
-            raise RuntimeError("\033[91mInvalid or missing extra arguments, please use --list-extra or see wiki\033[0m") from ex
+            raise RuntimeError("Invalid or missing extra arguments, please use --list-extra or see wiki") from ex
         
         self._extra = extra # Save raw extra, maybe we need to remove this
 

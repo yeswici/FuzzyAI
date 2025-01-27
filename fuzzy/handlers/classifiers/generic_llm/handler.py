@@ -20,7 +20,7 @@ class LLMEvaluatorClassifier(BaseClassifier):
         self._name = "GENERIC_LLM_CLASSIFIER"
 
         if classifier_prompt is None:
-            raise RuntimeError("\033[91mPrompt must be provided for LLM evaluator classifier, please use -e classifier_prompt=...\033[0m")
+            raise RuntimeError("Prompt must be provided for LLM evaluator classifier, please use -e classifier_prompt=...")
         
         self._prompt = classifier_prompt
         

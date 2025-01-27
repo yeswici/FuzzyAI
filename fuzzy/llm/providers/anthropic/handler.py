@@ -28,7 +28,7 @@ class AnthropicProvider(BaseLLMProvider):
         super().__init__(model=model, **extra)
 
         if (api_key := os.environ.get(self.ANTHROPIC_API_KEY)) is None:
-            raise BaseLLMProviderException(f"\033[91m{self.ANTHROPIC_API_KEY} not in os.environ\033[0m")
+            raise BaseLLMProviderException(f"{self.ANTHROPIC_API_KEY} not in os.environ")
         
         self._session = aiohttp.ClientSession(headers={
             "Content-Type": "application/json",

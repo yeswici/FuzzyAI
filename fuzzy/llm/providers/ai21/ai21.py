@@ -31,7 +31,7 @@ class AI21Provider(BaseLLMProvider):
         super().__init__(model=model, **extra)
 
         if (api_key := os.environ.get(self.AI21_API_KEY)) is None:
-            raise BaseLLMProviderException(f"\033[91m{self.AI21_API_KEY} not in os.environ\033[0m")
+            raise BaseLLMProviderException(f"{self.AI21_API_KEY} not in os.environ")
 
         self._headers = {
             "Content-Type": "application/json",
@@ -86,7 +86,7 @@ class AI21Provider(BaseLLMProvider):
                         logger.debug(f'Rate limit exceeded')
                         raise BaseLLMProviderRateLimitException()
                     else:
-                        raise AI21ProviderException(f"\033[91mAI21 error: {error.get('message')}\033[0m")
+                        raise AI21ProviderException(f"AI21 error: {error.get('message')}")
                     
                 return BaseLLMProviderResponse(
                     response=ai21_response["choices"][0]['message']['content']

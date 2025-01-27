@@ -36,7 +36,7 @@ def get_embedding_layer(model):
     elif isinstance(model, GPTNeoXForCausalLM):
         return model.base_model.embed_in
     else:
-        raise ValueError(f"\033[91mUnknown model type: {type(model)}\033[0m")
+        raise ValueError(f"Unknown model type: {type(model)}")
 
 def get_embedding_matrix(model):
     if isinstance(model, GPTJForCausalLM) or isinstance(model, GPT2LMHeadModel):
@@ -46,7 +46,7 @@ def get_embedding_matrix(model):
     elif isinstance(model, GPTNeoXForCausalLM):
         return model.base_model.embed_in.weight
     else:
-        raise ValueError(f"\033[91mUnknown model type: {type(model)}\033[0m")
+        raise ValueError(f"Unknown model type: {type(model)}")
 
 def get_embeddings(model, input_ids):
     if isinstance(model, GPTJForCausalLM) or isinstance(model, GPT2LMHeadModel):
@@ -56,7 +56,7 @@ def get_embeddings(model, input_ids):
     elif isinstance(model, GPTNeoXForCausalLM):
         return model.base_model.embed_in(input_ids).half()
     else:
-        raise ValueError(f"\033[91mUnknown model type: {type(model)}\033[0m")
+        raise ValueError(f"Unknown model type: {type(model)}")
 
 def get_nonascii_toks(tokenizer, device='cpu'):
 
@@ -262,7 +262,7 @@ class AttackPrompt(object):
     
     def grad(self, model):
         
-        raise NotImplementedError("\033[91mGradient function not yet implemented\033[0m")
+        raise NotImplementedError("Gradient function not yet implemented")
     
     @torch.no_grad()
     def logits(self, model, test_controls=None, return_ids=False):
@@ -287,13 +287,13 @@ class AttackPrompt(object):
             nested_ids = torch.nested.nested_tensor(test_ids)
             test_ids = torch.nested.to_padded_tensor(nested_ids, pad_tok, (len(test_ids), max_len))
         else:
-            raise ValueError(f"\033[91mtest_controls must be a list of strings or a tensor of token ids, got {type(test_controls)}\033[0m")
+            raise ValueError(f"test_controls must be a list of strings or a tensor of token ids, got {type(test_controls)}")
         
         if not(test_ids[0].shape[0] == self._control_slice.stop - self._control_slice.start):
             raise ValueError((
-                f"\033[91mtest_controls must have shape "
+                f"test_controls must have shape "
                 f"(n, {self._control_slice.stop - self._control_slice.start}), " 
-                f"got {test_ids.shape}\033[0m"
+                f"got {test_ids.shape}"
             ))
         
         locs = torch.arange(self._control_slice.start, self._control_slice.stop).repeat(test_ids.shape[0], 1).to(model.device)
@@ -432,9 +432,9 @@ class PromptManager(object):
         """
 
         if len(goals) != len(targets):
-            raise ValueError("\033[91mLength of goals and targets must match\033[0m")
+            raise ValueError("Length of goals and targets must match")
         if len(goals) == 0:
-            raise ValueError("\033[91mMust provide at least one goal, target pair\033[0m")
+            raise ValueError("Must provide at least one goal, target pair")
 
         self.tokenizer = tokenizer
 

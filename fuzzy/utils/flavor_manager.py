@@ -156,4 +156,4 @@ class FlavorManager(Generic[KeyT, ValT]):
         for key, val in self._flavors.items():
             if val == value:
                 return key
-        raise ValueError(f"\033[91mValue {value} not found in flavors\033[0m")
+        raise ValueError(f"Value {value} not found in flavors")

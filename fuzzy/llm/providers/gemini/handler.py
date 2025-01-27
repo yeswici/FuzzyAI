@@ -28,7 +28,7 @@ class GeminiProvider(BaseLLMProvider):
         super().__init__(model=model, **extra)
 
         if (api_key := os.environ.get(self.API_KEY)) is None:
-            raise GeminiProviderException(f"\033[91m{self.API_KEY} not in os.environ\033[0m")
+            raise GeminiProviderException(f"{self.API_KEY} not in os.environ")
 
         self._session = aiohttp.ClientSession(headers={
             "Content-Type": "application/json",

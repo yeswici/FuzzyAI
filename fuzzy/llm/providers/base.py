@@ -87,7 +87,7 @@ class BaseLLMProvider(abc.ABC):
         elif other.__class__ == str:
             return FuzzChain([FuzzNode(self, other)]) # type: ignore
             
-        raise ValueError(f"\033[91mInvalid type for other: {other.__class__}\033[0m")
+        raise ValueError(f"Invalid type for other: {other.__class__}")
 
     def __repr__(self) -> str:
         return f"model: {self._model_name}"
