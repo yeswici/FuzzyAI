@@ -97,6 +97,20 @@ def main():
             final_model = get_model_string(base_model, user_input)
         else:
             final_model = base_model
+
+        if category == LLMProvider.OLLAMA.value:
+            if st.button("List OLLAMA models", type="primary"):
+                command = ["python", "run.py"]
+                
+                command.extend(["--ollama-list"])
+                st.code(" ".join(command), language="bash")
+                try:
+                    result = subprocess.run(command, capture_output=True, text=True)
+                    st.code(result.stdout)
+                    if result.stderr:
+                        st.error(result.stderr)
+                except Exception as e:
+                    st.error(f"Error executing command: {str(e)}")
         
         selected_models.append(category + "/" + final_model)
         
@@ -115,6 +129,23 @@ def main():
         format_func=lambda x: f"{x}: {attack_modes[x]}"
     )
 
+    if st.button("List attack handlers extra", type="primary"):
+        command = ["python", "run.py"]
+
+        # Add attack modes
+        for attack in selected_attacks:
+            command.extend(["-a", attack])
+        
+        command.extend(["--list-extra"])
+        st.code(" ".join(command), language="bash")
+        try:
+            result = subprocess.run(command, capture_output=True, text=True)
+            st.code(result.stdout)
+            if result.stderr:
+                st.error(result.stderr)
+        except Exception as e:
+            st.error(f"Error executing command: {str(e)}")
+            
     # Classifier selection
     st.header("Classifiers")
     classifiers = load_classifiers()
