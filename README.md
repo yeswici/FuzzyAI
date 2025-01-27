@@ -90,6 +90,15 @@ Explore detailed usage instructions in the [Wiki](https://github.com/cyberark/Fu
    python run.py -h
    ```
 
+   Or use the Web UI
+
+## Web UI (Experimental)
+
+1. Run the Web UI (make sure you complete steps #1 and #2 from above):
+   ```bash
+   streamlit run webui.py
+   ```
+   
 ## Examples
 
 ### A default attack (just evaluate the prompt 'Harmful_Prompt') using mistral over Ollama
