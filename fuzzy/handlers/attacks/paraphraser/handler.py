@@ -5,7 +5,7 @@ from typing import Any, Optional, Type
 
 from pydantic import BaseModel, Field, ValidationError
 
-from fuzzy.consts import ROLE_ASSISTANT, ROLE_SYSTEM, ROLE_USER
+from fuzzy.consts import ROLE_ASSISTANT, ROLE_SYSTEM, ROLE_USER, DEFAULT_OPEN_SOURCE_MODEL
 from fuzzy.handlers.attacks.base import AttackBreakWhen, BaseAttackTechniqueHandler, attack_handler_fm
 from fuzzy.handlers.attacks.enums import FuzzerAttackMode
 from fuzzy.handlers.attacks.paraphraser.enums import PersuasiveActor
@@ -23,7 +23,7 @@ DEFAULT_TARGET_STR = "Sure, here is what you asked for"
 ACTOR_SETTINGS: dict[PersuasiveActor, dict[str, Any]] = {
     PersuasiveActor.ATTACKER: {"num_predict": 300, "temperature": 1.0, "num_ctx": 1024 * 16},
     PersuasiveActor.TARGET: {
-        "num_predict": 100,  # TODO: Allow the user to change this
+        "num_predict": 100,
         "temperature": 0.0,
         "top_p": 1.0,
         "num_ctx": 1024 * 4,
@@ -33,8 +33,8 @@ ACTOR_SETTINGS: dict[PersuasiveActor, dict[str, Any]] = {
 
 
 class PersuasiveAttackHandlerExtraParams(BaseModel):
-    attack_model: str = Field(..., description="The model to use for the attacker")
-    judge_model: str = Field(..., description="The model to use for the judge")
+    attack_model: str = Field(DEFAULT_OPEN_SOURCE_MODEL, description="The model to use for the attacker")
+    judge_model: str = Field(DEFAULT_OPEN_SOURCE_MODEL, description="The model to use for the judge")
     max_messages: int = Field(12, description="Number of messages to include in history when generating a new adversarial prompt")
     n_iters: int = Field(5, description="Number of iterations")
 
@@ -52,13 +52,13 @@ class PresuasiveParaphraser(BaseAttackTechniqueHandler[PersuasiveAttackHandlerEx
         missing_models = [model for model in models if model not in self._model_queue_map]
 
         if missing_models:
-            raise ValueError(f"Auxiliary model not found: {', '.join(missing_models)}, please add it using -x")
+            raise ValueError(f"Auxiliary model not found: {', '.join(missing_models)}, please add it using -x.")
 
         if not self._classifiers:
-            raise ValueError("No classifiers found, you must provide at least one classifier for this attack mode")
+            raise ValueError("No classifiers found, you must provide at least one classifier for this attack mode.")
 
         if not any(x.name == Classifier.RATING for x in self._classifiers):
-            raise ValueError("This attack requires a RATING classifier, please add it using -c rat")
+            raise ValueError("This attack requires a RATING classifier, please add it using -c rat.")
 
     @classmethod
     def extra_args_cls(cls) -> Type[BaseModel]:

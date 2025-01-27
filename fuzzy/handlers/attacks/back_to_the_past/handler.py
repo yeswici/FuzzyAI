@@ -64,9 +64,8 @@ class BackToThePastAttackHandler(BaseAttackTechniqueHandler[BackToThePastAttackH
                     if not tag_extraction_response:
                         raise TagExtractionException("No response from the tag extraction model")
                 except BaseLLMProviderException as e:
-                    raise TagExtractionException("Problem occurred during extraction of prompt tag ", e)
-                except TagExtractionException:
-                    raise
+                    raise TagExtractionException(f"Problem occurred during extraction of prompt tag {e}")
+
                 tag = tag_extraction_response.response
                 profession = TAG_TO_PROFESSION_DICT.get(tag, DEFAULT_PROFESSION)
                 logger.debug(f"Determined profession {profession} for prompt tag {tag}")

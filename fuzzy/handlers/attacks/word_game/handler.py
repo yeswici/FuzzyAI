@@ -3,7 +3,7 @@ from typing import Any, Final, Optional, Type
 
 from pydantic import BaseModel, Field
 
-from fuzzy.consts import ROLE_USER, ROLE_ASSISTANT
+from fuzzy.consts import ROLE_USER, ROLE_ASSISTANT, DEFAULT_OPEN_SOURCE_MODEL
 from fuzzy.handlers.attacks.base import (BaseAttackTechniqueHandler,
                                          attack_handler_fm, BaseAttackTechniqueHandlerException)
 from fuzzy.handlers.attacks.enums import FuzzerAttackMode
@@ -13,10 +13,12 @@ from fuzzy.handlers.attacks.word_game.word_game_prompts import (WORD_IDENTIFICAT
                                                                 WORD_GAME_PROMPT,WORD_GAME_PLUS_PROMPT)
 from fuzzy.llm.models import BaseLLMProviderResponse
 from fuzzy.llm.providers.base import BaseLLMProvider, BaseLLMMessage
+from fuzzy.utils.custom_logging_formatter import CustomFormatter
 
 logger = logging.getLogger(__name__)
+Formatter = CustomFormatter()
 
-DEFAULT_GAME_GENERATION_MODEL: Final[str] = "openai/gpt-4o"
+DEFAULT_GAME_GENERATION_MODEL: Final[str] = DEFAULT_OPEN_SOURCE_MODEL
 
 class WordGameException(BaseAttackTechniqueHandlerException):
     pass
@@ -40,7 +42,7 @@ class WordGameAttackHandler(BaseAttackTechniqueHandler[WordGameAttackHandlerExtr
             raise RuntimeError(f"game_generation_model: {model} was not added to the fuzzer,"
                                " please make sure you add it with -x <provider/model> and set"
                                " -e game_generation_model=<provider/model> accordingly"
-                               f" (you can omit -e if using the default generation model {DEFAULT_GAME_GENERATION_MODEL}")
+                               f" (you can omit -e if using the default generation model {DEFAULT_GAME_GENERATION_MODEL}.")
 
     async def _attack(self, prompt: str, **extra: Any) -> Optional[AttackResultEntry]:
         chat_messages: list[BaseLLMMessage] = [BaseLLMMessage(role=ROLE_USER, content=WORD_IDENTIFICATION_PROMPT.format(query=prompt))]

@@ -3,7 +3,7 @@ from typing import Any, Final, Optional, Type
 
 from pydantic import BaseModel, Field
 
-from fuzzy.consts import ROLE_USER, ROLE_ASSISTANT
+from fuzzy.consts import ROLE_USER, ROLE_ASSISTANT, DEFAULT_OPEN_SOURCE_MODEL
 from fuzzy.handlers.attacks.base import (BaseAttackTechniqueHandler, BaseAttackTechniqueHandlerException,
                                          attack_handler_fm)
 from fuzzy.handlers.attacks.crescendo.prompts import (QUESTION_GENERATION_PROMPT_TEMPLATE_PREFIX,
@@ -15,7 +15,7 @@ from fuzzy.llm.providers.base import BaseLLMProvider, BaseLLMProviderException, 
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_QUESTIONS_GENERATION_MODEL: Final[str] = "openai/gpt-4-turbo"
+DEFAULT_QUESTIONS_GENERATION_MODEL: Final[str] = DEFAULT_OPEN_SOURCE_MODEL
 SPLIT_TOKEN = '[SPLIT]'
 
 class QuestionsGenerationException(BaseAttackTechniqueHandlerException):
@@ -45,7 +45,8 @@ class CrescendoAttackHandler(BaseAttackTechniqueHandler[CrescendoAttackHandlerEx
             raise RuntimeError(f"Questions generation model: {model} was not added to the fuzzer,"
                                " please make sure you add it with -x <provider/model> and set"
                                " -e questions_generation_model=<provider/model> accordingly"
-                               f" (you can omit -e if using the default questions generation model {DEFAULT_QUESTIONS_GENERATION_MODEL}")
+                               f" (you can omit -e if using the default questions generation model {DEFAULT_QUESTIONS_GENERATION_MODEL}.")
+
 
     async def _attack(self, prompt: str, **extra: Any) -> Optional[AttackResultEntry]:
         chat_messages: list[BaseLLMMessage] = []
@@ -64,7 +65,7 @@ class CrescendoAttackHandler(BaseAttackTechniqueHandler[CrescendoAttackHandlerEx
                 if questions_generation_response is None:
                     raise QuestionsGenerationException("No response from the questions generation model")
             except BaseLLMProviderException as e:
-                raise QuestionsGenerationException("Problem occurred during extraction of prompt tag ", e)
+                raise QuestionsGenerationException(f"Problem occurred during extraction of prompt tag {e}.")
 
         async with self._borrow(self._model) as llm:
             questions = questions_generation_response.response.split(SPLIT_TOKEN)

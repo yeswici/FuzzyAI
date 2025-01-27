@@ -34,7 +34,8 @@ FIELD_NAME_ATTACK_LABEL: Final[str] = "label"
 FIELD_NAME_ATTACK_SENTIMENT_ANALYSIS: Final[str] = "sentiment_analysis"
 
 # Ollama
-OLLAMA_BASE_PORT = 11434
+OLLAMA_BASE_PORT: Final[int] = 11434
+DEFAULT_OPEN_SOURCE_MODEL: Final[str] = "ollama/qwen2.5"
 
 # LLM Providers extra
 LLM_PROVIDER_EXTRA_SEED: Final[str] = "seed"

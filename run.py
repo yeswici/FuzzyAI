@@ -8,7 +8,7 @@ from typing import Any, Optional
 import aiofiles
 import aiofiles.os
 
-from fuzzy.consts import PARAMETER_MAX_TOKENS
+from fuzzy.consts import PARAMETER_MAX_TOKENS, WIKI_LINK
 from fuzzy.fuzzer import Fuzzer
 from fuzzy.handlers.attacks.base import attack_handler_fm
 from fuzzy.handlers.attacks.enums import FuzzerAttackMode
@@ -18,6 +18,7 @@ from fuzzy.llm.providers.base import llm_provider_fm
 from fuzzy.llm.providers.enums import LLMProvider
 from fuzzy.utils.custom_logging_formatter import CustomFormatter
 from fuzzy.utils.utils import CURRENT_TIMESTAMP, generate_report, print_report
+from utils import run_ollama_list_command
 
 logging.basicConfig(level=logging.INFO)
 
@@ -120,12 +121,18 @@ async def main() -> None:
     parser.add_argument('-x', '--auxiliary-model', help=f'Add auxiliary models which can be used in the attack',
                         action="append", type=str, default=[])
     parser.add_argument('-I', '--improve-attempts', help='Attempts to refine the LLM response up to n times following a successful jailbreak. Default: 0 (no refinement attempts)', type=int, default=0)
+    parser.add_argument('-ol', '--ollama-list', action='store_true',  # Modified to use store_true
+                        help='Shows all the ollama models that are installed on the station')
     args = parser.parse_args()
 
     if args.verbose:
         logger.info('Verbose logging ON')
         logging.getLogger().setLevel(logging.DEBUG)
         logging.getLogger().propagate = True
+
+    if args.ollama_list:
+        run_ollama_list_command()
+        return
 
     for req_arg in ['attack_modes']:
         if not getattr(args, req_arg):
@@ -154,12 +161,15 @@ async def main() -> None:
         logger.error('Please provide a target prompt (-t) or a file with target prompts (-T)')
         return
     
-    if hasattr(args, 'extra') and args.extra:
-        extra = {k:v for k,v in (x.split('=') for x in args.extra)}
-        del args.extra
-        extra.update(**vars(args))
-    else:
-        extra = vars(args)
+    try:
+        if hasattr(args, 'extra') and args.extra:
+            extra = {k:v for k,v in (x.split('=') for x in args.extra)}
+            del args.extra
+            extra.update(**vars(args))
+        else:
+            extra = vars(args)
+    except Exception:
+        raise ValueError(f"Error adding extra argument, please make sure you use the correct format, i.e -e key=value. For further help, please check the wiki: {WIKI_LINK}")
 
     if hasattr(args, 'target_prompts_file') and args.target_prompts_file:
         with open(args.target_prompts_file, 'r') as f:
@@ -207,7 +217,7 @@ async def main() -> None:
     try:
         report, raw_results = await fuzzer.fuzz(prompts=prompts, **extra)
     except Exception as e:
-        logger.error(f"Error during attack: {e}", exc_info=True)
+        logger.error(f"Error during attack: {str(e)}.\nFor further help, please check the wiki: {WIKI_LINK}")
         await fuzzer.cleanup()
         return
 
@@ -231,7 +241,7 @@ async def main() -> None:
 if __name__ == "__main__":
     try:
         asyncio.run(main())
-    except KeyboardInterrupt:
+    except KeyboardInterrupt as e:
         logger.info('Exiting...')
         exit(0)
     except Exception as e:

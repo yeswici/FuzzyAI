@@ -2,7 +2,7 @@ import logging
 from typing import Any, Final, Optional, Type
 from pydantic import BaseModel, Field
 
-from fuzzy.consts import ROLE_USER, ROLE_ASSISTANT
+from fuzzy.consts import ROLE_USER, ROLE_ASSISTANT, DEFAULT_OPEN_SOURCE_MODEL
 from fuzzy.handlers.attacks.base import (BaseAttackTechniqueHandler, BaseAttackTechniqueHandlerException,
                                          attack_handler_fm)
 from fuzzy.handlers.attacks.enums import FuzzerAttackMode
@@ -15,9 +15,10 @@ from fuzzy.handlers.attacks.actor_attack.utils import generate_model_error
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_ACTORS_GENERATION_MODEL: Final[str] = "openai/gpt-4-turbo"
-DEFAULT_BEHAVIOR_EXTRACTION_MODEL: Final[str] = "openai/gpt-4-turbo"
-DEFAULT_QUESTIONS_GENERATION_MODEL: Final[str] = "openai/gpt-4-turbo"
+DEFAULT_ACTORS_GENERATION_MODEL: Final[str] = DEFAULT_OPEN_SOURCE_MODEL
+DEFAULT_BEHAVIOR_EXTRACTION_MODEL: Final[str] = DEFAULT_OPEN_SOURCE_MODEL
+DEFAULT_QUESTIONS_GENERATION_MODEL: Final[str] = DEFAULT_OPEN_SOURCE_MODEL
+
 SPLIT_TOKEN: Final[str] = '[SPLIT]'
 MODELS_TYPES: Final[list[str]] = ["behavior extraction", "actors generation", "questions generation"]
 MODELS_DEFAULTS: Final[list[str]] = [DEFAULT_BEHAVIOR_EXTRACTION_MODEL, DEFAULT_ACTORS_GENERATION_MODEL, DEFAULT_QUESTIONS_GENERATION_MODEL]
@@ -87,7 +88,7 @@ class ActorAttackHandler(BaseAttackTechniqueHandler[ActorAttackHandlerExtraParam
                 if behavior_extraction_response is None:
                     raise BehaviorExtractionException("No response from the behavior extraction model")
             except BaseLLMProviderException as e:
-                raise BehaviorExtractionException("Problem occurred during behavior extraction. ", e)
+                raise BehaviorExtractionException(f"Problem occurred during behavior extraction. {e}")
         behavior_response = behavior_extraction_response.response
 
         logger.info("Generating relevant actors to the behavior")
@@ -98,7 +99,7 @@ class ActorAttackHandler(BaseAttackTechniqueHandler[ActorAttackHandlerExtraParam
                 if actors_extraction_response is None:
                     raise ActorsGenerationException("No response from the actor generation model")
             except BaseLLMProviderException as e:
-                raise ActorsGenerationException("Problem occurred during actor generation. ", e)
+                raise ActorsGenerationException(f"Problem occurred during actor generation. {e}")
         actors_response = actors_extraction_response.response
         all_actors = actors_response.split(SPLIT_TOKEN)
 
@@ -112,16 +113,16 @@ class ActorAttackHandler(BaseAttackTechniqueHandler[ActorAttackHandlerExtraParam
                                                                                      ACTOR=actor)
                     questions_generation_response = await llm.generate(questions_generation_prompt)
                     if questions_generation_response is None:
-                        raise QuestionsGenerationException("No response from the questions generation model")
+                        raise QuestionsGenerationException("No response from the questions generation model.")
 
                     single_actor_questions = questions_generation_response.response.split(SPLIT_TOKEN)
                     if single_actor_questions is None:
-                        raise QuestionsGenerationException("No response from the questions generation model")
+                        raise QuestionsGenerationException("No response from the questions generation model.")
 
                     if actor not in actors_questions_dict:
                         actors_questions_dict[actor] = single_actor_questions
                 except BaseLLMProviderException as e:
-                    raise QuestionsGenerationException("Problem occurred during questions generation. ", e)
+                    raise QuestionsGenerationException(f"Problem occurred during questions generation. {e}")
 
         logger.info("Sending questions to the target model")
         async with self._borrow(self._model) as llm:
