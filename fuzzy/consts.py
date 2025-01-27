@@ -10,6 +10,7 @@ GCG_ATTACK_COLLECTION_NAME: Final[str] = "gcg_attack"
 GENETIC_ATTACK_COLLECTION_NAME: Final[str] = "genetic_attack"
 BENCHMARKS_COLLECTION_NAME: Final[str] = "benchmarks"
 FUZZER_REPORT_COLLECTION_NAME: Final[str] = "reports"
+WIKI_LINK: Final[str] = "https://github.com/cyberark/FuzzyAI/wiki"
 
 # Parameters
 PARAMETER_MAX_TOKENS: Final[str] = "max_tokens"
