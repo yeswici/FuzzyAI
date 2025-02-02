@@ -47,20 +47,23 @@ class BaseLLMProvider(abc.ABC):
     async def chat(self, messages: list[BaseLLMMessage], **extra: Any) -> Optional[BaseLLMProviderResponse]:
         ...
     
+
     @abc.abstractmethod
     async def close(self) -> None:
         ...
+
+    @abc.abstractmethod
+    def sync_generate(self, prompt: str, **extra: Any) -> Optional[BaseLLMProviderResponse]:
+        ...
         
+    @abc.abstractmethod
+    def sync_chat(self, messages: list[BaseLLMMessage], **extra: Any) -> Optional[BaseLLMProviderResponse]:
+        ...
+
     @classmethod
     @abc.abstractmethod
     def get_supported_models(cls) -> Union[list[str], str]:
         ...
-
-    def sync_generate(self, prompt: str, **extra: Any) -> Optional[BaseLLMProviderResponse]:
-        return asyncio.run(self.generate(prompt, **extra))
-
-    def sync_chat(self, messages: list[BaseLLMMessage], **extra: Any) -> Optional[BaseLLMProviderResponse]:
-        return asyncio.run(self.chat(messages, **extra))
     
     def add_to_history(self, responses: list[BaseLLMProviderResponse]) -> None:
         self._history.extend(responses)

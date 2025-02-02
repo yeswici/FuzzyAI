@@ -5,6 +5,7 @@ import logging
 import shlex
 from typing import Any, Optional
 
+from dotenv import load_dotenv
 import aiofiles
 import aiofiles.os
 
@@ -21,6 +22,8 @@ from fuzzy.utils.utils import CURRENT_TIMESTAMP, generate_report, print_report
 from utils import run_ollama_list_command
 
 logging.basicConfig(level=logging.INFO)
+
+load_dotenv()
 
 banner = """\033[31m
    ______  ____________  ___ ___   ____

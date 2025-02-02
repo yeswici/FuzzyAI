@@ -4,6 +4,7 @@ from typing import Any, Optional, Union
 
 import aiohttp
 import backoff
+import requests
 import tiktoken
 
 from fuzzy.consts import ROLE_ASSISTANT, ROLE_SYSTEM, ROLE_USER
@@ -13,7 +14,7 @@ from fuzzy.llm.providers.base import (BaseLLMMessage, BaseLLMProvider, BaseLLMPr
                                       BaseLLMProviderRateLimitException, llm_provider_fm)
 from fuzzy.llm.providers.enums import LLMProvider, LLMProviderExtraParams
 from fuzzy.llm.providers.openai.models import OpenAIChatRequest
-from fuzzy.llm.providers.shared.decorators import api_endpoint
+from fuzzy.llm.providers.shared.decorators import api_endpoint, sync_api_endpoint
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +58,7 @@ class OpenAIProvider(BaseLLMProvider):
             messages = [BaseLLMMessage(role=ROLE_SYSTEM, content=system_prompt)] + messages
 
         return await self.chat(messages=messages, **extra) # type: ignore
-
+    
     @backoff.on_exception(backoff.expo, BaseLLMProviderRateLimitException, max_value=10)
     @api_endpoint("/chat/completions")
     async def chat(self, messages: list[BaseLLMMessage], url: str, system_prompt: Optional[str] = None, **extra: Any) -> BaseLLMProviderResponse:
@@ -93,7 +94,32 @@ class OpenAIProvider(BaseLLMProvider):
                 messages.append(BaseLLMMessage(role=ROLE_ASSISTANT, content=history[-1].response))
         
         chat_extra_params = {k:v for k, v in extra.items() if k not in [LLMProviderExtraParams.APPEND_LAST_RESPONSE]}
-        return self.sync_chat(messages, **chat_extra_params)
+        return self.sync_chat(messages, **chat_extra_params)  # type: ignore
 
+    @sync_api_endpoint("/chat/completions")
+    def sync_chat(self, messages: list[BaseLLMMessage], url: str, system_prompt: Optional[str] = None, **extra: Any) -> Optional[BaseLLMProviderResponse]:
+        error: dict[str, Any]
+        
+        if self._model_name not in O1_FAMILY_MODELS and system_prompt is not None:
+            messages = [BaseLLMMessage(role=ROLE_SYSTEM, content=system_prompt)] + messages
+
+        try:
+            request = OpenAIChatRequest(model=self._model_name, messages=messages, **extra)
+            with requests.post(url, json=request.model_dump(), headers=self._headers) as response:
+                openai_response =  response.json()
+                if (error := openai_response.get("error")) is not None:
+                    if error.get('code') == 'rate_limit_exceeded':
+                        logger.debug(f'Rate limit exceeded')
+                        raise BaseLLMProviderRateLimitException()
+                    else:
+                        raise OpenAIProviderException('OpenAI error: ' + error.get('message'))
+                    
+                return BaseLLMProviderResponse(response=openai_response["choices"][0]['message']['content'])
+        except (BaseLLMProviderRateLimitException, OpenAIProviderException) as e:
+            raise e
+        except Exception as e:            
+            logger.error(f'Error generating text: {e}')
+            raise OpenAIProviderException('Cant generate text')
+    
     async def close(self) -> None:
         await self._session.close()

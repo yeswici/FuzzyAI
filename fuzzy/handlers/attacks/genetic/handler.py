@@ -3,7 +3,6 @@ import logging
 from typing import Any, Optional, Type, Union
 
 import numpy as np
-import pandas as pd
 import pygad
 from pydantic import BaseModel, Field
 
@@ -22,15 +21,11 @@ from fuzzy.llm.providers.openai.openai import OpenAIProvider
 logger = logging.getLogger(__name__)
 
 MAX_RETRY_COUNT = 3
-
-
-class GeneticAttackParams(BaseModel):
-    genetic_prompts: list[str] = Field(None, description="The prompts for the genetic attack")
-    genetic_targets: list[str] = Field(None, description="The targets for the genetic attack")
+SPLIT_TOKEN = ";"
 
 
 @attack_handler_fm.flavor(FuzzerAttackMode.GENETIC)
-class GeneticAttackTechniqueHandler(BaseAttackTechniqueHandler[GeneticAttackParams]):
+class GeneticAttackTechniqueHandler(BaseAttackTechniqueHandler[BaseModel]):
     """
     Genetic attack (https://arxiv.org/abs/2309.01446)
     """
@@ -38,16 +33,6 @@ class GeneticAttackTechniqueHandler(BaseAttackTechniqueHandler[GeneticAttackPara
     def __init__(self, **extra: Any):
         super().__init__(**extra)
 
-        genetic_prompts = self._extra_args.genetic_prompts
-        genetic_targets = self._extra_args.genetic_targets
-
-        self._prompts_and_targets: list[(str, str)] = []
-        if genetic_prompts is not None and genetic_targets is not None:
-            self._prompts_and_targets = list(zip(genetic_prompts, genetic_targets))
-        else:
-            self._load_genetic_dataset()
-
-        # TODO: add as attack parameters?
         self._population_seed = "! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !"
         self._suffixes_batch_size = 16
         self._fitness_batches = 16
@@ -55,11 +40,6 @@ class GeneticAttackTechniqueHandler(BaseAttackTechniqueHandler[GeneticAttackPara
         self._num_parents_mating = 10
         self._mutation_percent_genes = 10
         self._spoon_feeding = True
-        # self._random_seed = 42
-
-    @classmethod
-    def extra_args_cls(cls) -> Type[BaseModel]:
-        return GeneticAttackParams
 
     def _verify_supported_models(self) -> None:
         supported_models = (Llama2Provider, OpenAIProvider)
@@ -67,10 +47,11 @@ class GeneticAttackTechniqueHandler(BaseAttackTechniqueHandler[GeneticAttackPara
             if not isinstance(llm, supported_models):
                 raise ValueError(f"Genetic attack mode supported LLMs are: {supported_models}. {llm.qualified_model_name} is not supported.")
 
+
     def _verify_supported_classifiers(self) -> None:
         supported_classifiers = (DisapprovalClassifier, CosineSimilarityClassifier)
         if not self._classifiers:
-            raise ValueError("No classifiers found, you must provide at least one classifier for this attack mode.")
+            raise ValueError("No classifiers found, you must provide at least one classifier for this attack mode")
 
         for classifier in self._classifiers:
             if not isinstance(classifier, supported_classifiers):
@@ -78,20 +59,24 @@ class GeneticAttackTechniqueHandler(BaseAttackTechniqueHandler[GeneticAttackPara
                     f"Genetic attack mode supported classifiers are: {supported_classifiers}. {classifier.name} is not supported."
                 )
 
-    def _load_genetic_dataset(self) -> None:
-        harmful_behaviors_path = "resources/harmful_behaviors.csv"
-        harmful_behaviors = pd.read_csv(harmful_behaviors_path)
-        self._prompts_and_targets = harmful_behaviors.values.tolist()
-
     def _generate_attack_params(self, prompts: list[AdversarialPromptDTO]) -> list[dict[str, Any]]:
-        return [{"prompt": prompt, "target": target} for prompt, target in self._prompts_and_targets]
+        result: list[dict[str, Any]] = []
+        for prompt in prompts:
+            if SPLIT_TOKEN not in prompt.prompt:
+                logger.warning(f"Prompt {prompt.prompt} does not contain the split token '{SPLIT_TOKEN}'")
+                continue
+
+            prompt, target = prompt.prompt.split(SPLIT_TOKEN)
+            result.append({"prompt": prompt, "target": target})
+
+        return result
 
     async def _attack(self, prompt: str, target: str, **extra: Any) -> Optional[AttackResultEntry]:
-        result: Optional[AttackResultEntry] = None
+        result_entry: Optional[AttackResultEntry] = AttackResultEntry(original_prompt=prompt, response="")
         llm: Union[Llama2Provider, OpenAIProvider]
 
         async with self._borrow_any() as llm:
-            tokens_handler: TokensHandler = llm._tokens_handler
+            tokens_handler: TokensHandler = llm.tokens_handler
             new_enc_suffixes, _ = tokens_handler.generate_suffixes(seed=self._population_seed, batch_size=self._suffixes_batch_size)
             initial_population = new_enc_suffixes.to("cpu").numpy()
             gene_space = range(tokens_handler.vocabulary_size)  # Assuming token IDs start from 0
@@ -113,7 +98,6 @@ class GeneticAttackTechniqueHandler(BaseAttackTechniqueHandler[GeneticAttackPara
 
             def fitness_func(ga_instance, solutions, solution_idx):
                 generation = ga_instance.generations_completed
-
                 decoded_solutions = tokens_handler.batch_decode(solutions)
 
                 logger.debug(f"Gen: {generation}, {solution_idx[0]}-{solution_idx[-1]}")
@@ -151,7 +135,6 @@ class GeneticAttackTechniqueHandler(BaseAttackTechniqueHandler[GeneticAttackPara
                     logger.debug(f"Gen: {generation}, Sln {sln_index}/{solution_idx[-1]}: Loss: {str(loss)}, Response: {model_response}")
                     scores.append(loss)
 
-                # scores = np.array(scores)
                 return scores
 
             def on_generation(ga_instance):
@@ -189,7 +172,6 @@ class GeneticAttackTechniqueHandler(BaseAttackTechniqueHandler[GeneticAttackPara
                 initial_population=initial_population,
                 mutation_by_replacement=True,
                 mutation_type="random",
-                # random_seed=self._random_seed,
                 mutation_percent_genes=self._mutation_percent_genes,
             )
 
@@ -218,13 +200,9 @@ class GeneticAttackTechniqueHandler(BaseAttackTechniqueHandler[GeneticAttackPara
                 "mutation_percent_genes": self._mutation_percent_genes,
             }
 
-            result = AttackResultEntry(
-                original_prompt=prompt,
-                current_prompt=best_prompt,
-                model=llm.qualified_model_name,
-                response=best_loss_response,
-                classifications=best_loss_clf,
-                extra=extra_data,
-            )
+            result_entry.current_prompt = best_prompt
+            result_entry.response = best_loss_response
+            result_entry.classifications = best_loss_clf
+            result_entry.extra = extra_data
 
-            return result
+            return result_entry
