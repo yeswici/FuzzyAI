@@ -1,6 +1,6 @@
 from fuzzy.llm.providers.base import BaseLLMProvider, BaseLLMMessage, BaseLLMProviderResponse
 from typing import Optional
-from fuzzy.consts import ROLE_USER, ROLE_ASSISTANT
+from fuzzy.enums import LLMRole
 import logging
 
 logger = logging.getLogger(__name__)
@@ -19,7 +19,7 @@ class ResponseRefinementHandler:
         self._improve_attempts = improve_attempts
 
     async def refine_response(self, model: BaseLLMProvider, original_prompt: str, response: Optional[str] = None) -> list[str]:
-        chat_messages: list[BaseLLMMessage] = [BaseLLMMessage(role=ROLE_USER, content=original_prompt)]
+        chat_messages: list[BaseLLMMessage] = [BaseLLMMessage(role=LLMRole.USER, content=original_prompt)]
         all_responses: list[str] = []
 
         if response is None:
@@ -29,15 +29,15 @@ class ResponseRefinementHandler:
                 raise RefinementException("Failed generating a response from the model, got: None")
             response = generated_response.response
 
-        chat_messages.append(BaseLLMMessage(role=ROLE_ASSISTANT, content=response))
+        chat_messages.append(BaseLLMMessage(role=LLMRole.ASSISTANT, content=response))
 
         logger.debug("Refining previous response for prompt {original_prompt}")
         for _ in range(self._improve_attempts):
-            chat_messages.append(BaseLLMMessage(role=ROLE_USER, content=IMPROVE_PROMPT))
+            chat_messages.append(BaseLLMMessage(role=LLMRole.USER, content=IMPROVE_PROMPT))
             improved_response = await model.chat(messages=chat_messages)
             if improved_response is None or improved_response.response is None:
                 raise RefinementException("Cannot refine response, got no response from the model")
             all_responses.append(improved_response.response)
-            chat_messages.append(BaseLLMMessage(role=ROLE_ASSISTANT, content=improved_response.response))
+            chat_messages.append(BaseLLMMessage(role=LLMRole.ASSISTANT, content=improved_response.response))
 
         return all_responses

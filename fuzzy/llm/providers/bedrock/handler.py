@@ -5,7 +5,7 @@ from typing import Any, Optional, Type, Union
 
 import boto3
 
-from fuzzy.consts import ROLE_USER
+from fuzzy.enums import LLMRole
 from fuzzy.llm.models import BaseLLMProviderResponse
 from fuzzy.llm.providers.base import BaseLLMMessage, BaseLLMProvider, BaseLLMProviderException, llm_provider_fm
 from fuzzy.llm.providers.bedrock.enums import BedrockModelFamily
@@ -63,7 +63,7 @@ class AwsBedrockProvider(BaseLLMProvider):
         ]
 
     async def generate(self, prompt: str, system_prompt: Optional[str] = None, **extra: Any) -> Optional[BaseLLMProviderResponse]:
-        return await self.chat([BaseLLMMessage(role=ROLE_USER, content=prompt)], system_prompt=system_prompt, **extra)
+        return await self.chat([BaseLLMMessage(role=LLMRole.USER, content=prompt)], system_prompt=system_prompt, **extra)
 
     async def chat(self, messages: list[BaseLLMMessage], system_prompt: Optional[str] = None,
                    temperature: float = 0.7, top_k: float = 200, **extra: Any) -> Optional[BaseLLMProviderResponse]:

@@ -5,7 +5,7 @@ from typing import Any, Optional, Union
 import aiohttp
 import backoff
 
-from fuzzy.consts import ROLE_ASSISTANT, ROLE_SYSTEM, ROLE_USER
+from fuzzy.enums import LLMRole
 from fuzzy.llm.models import BaseLLMProviderResponse
 from fuzzy.llm.providers.base import BaseLLMMessage, BaseLLMProvider, BaseLLMProviderException, BaseLLMProviderRateLimitException, llm_provider_fm
 from fuzzy.llm.providers.deepseek.models import DeepSeekChatRequest
@@ -45,9 +45,9 @@ class DeepSeekProvider(BaseLLMProvider):
 
     @api_endpoint("/chat/completions")
     async def generate(self, prompt: str, url: str, system_prompt: Optional[str] = None, **extra: Any) -> Optional[BaseLLMProviderResponse]:
-        messages = [BaseLLMMessage(role=ROLE_USER, content=prompt)]
+        messages = [BaseLLMMessage(role=LLMRole.USER, content=prompt)]
         if system_prompt is not None:
-            messages = [BaseLLMMessage(role=ROLE_SYSTEM, content=system_prompt)] + messages
+            messages = [BaseLLMMessage(role=LLMRole.SYSTEM, content=system_prompt)] + messages
 
         return await self.chat(messages=messages, **extra) # type: ignore
 
@@ -57,7 +57,7 @@ class DeepSeekProvider(BaseLLMProvider):
         error: dict[str, Any]
         
         if system_prompt is not None:
-            messages = [BaseLLMMessage(role=ROLE_SYSTEM, content=system_prompt)] + messages
+            messages = [BaseLLMMessage(role=LLMRole.SYSTEM, content=system_prompt)] + messages
 
         try:
             request = DeepSeekChatRequest(model=self._model_name, messages=messages, **extra)
@@ -79,11 +79,11 @@ class DeepSeekProvider(BaseLLMProvider):
     
     @backoff.on_exception(backoff.expo, BaseLLMProviderRateLimitException, max_value=10)
     def sync_generate(self, prompt: str, **extra: Any) -> Optional[BaseLLMProviderResponse]:
-        messages = [BaseLLMMessage(role=ROLE_USER, content=prompt)]
+        messages = [BaseLLMMessage(role=LLMRole.USER, content=prompt)]
         
         if extra.get(LLMProviderExtraParams.APPEND_LAST_RESPONSE):
             if history := self.get_history():
-                messages.append(BaseLLMMessage(role=ROLE_ASSISTANT, content=history[-1].response))
+                messages.append(BaseLLMMessage(role=LLMRole.ASSISTANT, content=history[-1].response))
         
         chat_extra_params = {k:v for k, v in extra.items() if k not in [LLMProviderExtraParams.APPEND_LAST_RESPONSE]}
         return self.sync_chat(messages, **chat_extra_params)

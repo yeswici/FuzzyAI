@@ -5,7 +5,8 @@ from typing import Any, Optional, Union
 
 import aiohttp
 
-from fuzzy.consts import OLLAMA_BASE_PORT, ROLE_SYSTEM
+from fuzzy.consts import OLLAMA_BASE_PORT
+from fuzzy.enums import LLMRole
 from fuzzy.llm.models import BaseLLMProviderResponse
 from fuzzy.llm.providers.base import BaseLLMMessage, BaseLLMProvider, BaseLLMProviderException, llm_provider_fm
 from fuzzy.llm.providers.enums import LLMProvider
@@ -89,7 +90,7 @@ class OllamaProvider(BaseLLMProvider):
             ollama_messages = [OllamaChatMessage.model_validate(m.model_dump()) for m in messages]
 
             if system_prompt is not None:
-                ollama_messages.insert(0, OllamaChatMessage(role=ROLE_SYSTEM, content=system_prompt))
+                ollama_messages.insert(0, OllamaChatMessage(role=LLMRole.SYSTEM, content=system_prompt))
 
             request = OllamaChatRequest(model=self._model_name,
                                         messages=ollama_messages,

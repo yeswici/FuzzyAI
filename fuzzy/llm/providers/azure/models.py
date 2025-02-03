@@ -1,15 +1,15 @@
-from typing import Literal
 
 from pydantic import BaseModel, Field
 
-from fuzzy.consts import PARAMETER_MAX_TOKENS, ROLE_USER
+from fuzzy.enums import LLMRole
+from fuzzy.consts import PARAMETER_MAX_TOKENS
 
 
 class AzureGenerateOptions(BaseModel):
     max_tokens: int = Field(0, alias=PARAMETER_MAX_TOKENS) # type: ignore
     
 class AzureMessage(BaseModel):
-    role: str = ROLE_USER
+    role: str = LLMRole.USER
     content: str
     
 class AzureRequest(BaseModel):

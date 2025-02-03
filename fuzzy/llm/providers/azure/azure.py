@@ -4,7 +4,7 @@ from typing import Any, Optional, Union
 
 import aiohttp
 
-from fuzzy.consts import ROLE_SYSTEM
+from fuzzy.enums import LLMRole
 from fuzzy.llm.models import BaseLLMProviderResponse
 from fuzzy.llm.providers.azure.models import AzureGenerateOptions, AzureMessage, AzureRequest
 from fuzzy.llm.providers.base import BaseLLMMessage, BaseLLMProvider, BaseLLMProviderException, llm_provider_fm
@@ -49,7 +49,7 @@ class AzureProvider(BaseLLMProvider):
             options = AzureGenerateOptions.model_validate(extra)
             request = AzureRequest(messages=[AzureMessage(content=prompt)], **options.model_dump())
             if system_prompt:
-                request.messages.insert(0, AzureMessage(role=ROLE_SYSTEM, content=system_prompt))
+                request.messages.insert(0, AzureMessage(role=LLMRole.SYSTEM, content=system_prompt))
 
             async with self._session.post(self._base_url, json=request.model_dump()) as response:
                 azure_response = await response.json()

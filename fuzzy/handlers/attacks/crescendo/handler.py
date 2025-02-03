@@ -3,7 +3,8 @@ from typing import Any, Final, Optional, Type
 
 from pydantic import BaseModel, Field
 
-from fuzzy.consts import ROLE_USER, ROLE_ASSISTANT, DEFAULT_OPEN_SOURCE_MODEL
+from fuzzy.enums import LLMRole
+from fuzzy.consts import DEFAULT_OPEN_SOURCE_MODEL
 from fuzzy.handlers.attacks.base import (BaseAttackTechniqueHandler, BaseAttackTechniqueHandlerException,
                                          attack_handler_fm)
 from fuzzy.handlers.attacks.crescendo.prompts import (QUESTION_GENERATION_PROMPT_TEMPLATE_PREFIX,
@@ -72,7 +73,7 @@ class CrescendoAttackHandler(BaseAttackTechniqueHandler[CrescendoAttackHandlerEx
             all_questions_and_answers: list[str] = []
             for index, question in enumerate(questions,start=1):
                 logger.info(f"Running question: {question}")
-                chat_messages.append(BaseLLMMessage(role=ROLE_USER, content=question))
+                chat_messages.append(BaseLLMMessage(role=LLMRole.USER, content=question))
                 last_answer = await llm.chat(chat_messages)
 
                 if last_answer is None:
@@ -80,7 +81,7 @@ class CrescendoAttackHandler(BaseAttackTechniqueHandler[CrescendoAttackHandlerEx
                 last_answer_response = last_answer.response
                 all_questions_and_answers.append(f"Q-{index}: " + question)
                 all_questions_and_answers.append(f"A-{index}: " + last_answer_response)
-                chat_messages.append(BaseLLMMessage(role=ROLE_ASSISTANT, content=last_answer_response))
+                chat_messages.append(BaseLLMMessage(role=LLMRole.ASSISTANT, content=last_answer_response))
             result = AttackResultEntry(original_prompt=prompt,
                                        current_prompt="\n".join(questions),
                                        response=last_answer_response) if last_answer else None

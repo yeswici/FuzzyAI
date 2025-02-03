@@ -6,7 +6,7 @@ import aiohttp
 import backoff
 import requests
 
-from fuzzy.consts import ROLE_ASSISTANT, ROLE_SYSTEM, ROLE_USER
+from fuzzy.enums import LLMRole
 from fuzzy.llm.models import BaseLLMProviderResponse
 from fuzzy.llm.providers.ai21.models import AI21ChatRequest
 from fuzzy.llm.providers.base import (BaseLLMMessage, BaseLLMProvider, BaseLLMProviderException,
@@ -52,10 +52,10 @@ class AI21Provider(BaseLLMProvider):
     async def generate(
         self, prompt: str, url: str, system_prompt: Optional[str] = None, **extra: Any
     ) -> Optional[BaseLLMProviderResponse]:
-        messages = [BaseLLMMessage(role=ROLE_USER, content=prompt)]
+        messages = [BaseLLMMessage(role=LLMRole.USER, content=prompt)]
         if system_prompt is not None:
             messages = [
-                BaseLLMMessage(role=ROLE_SYSTEM, content=system_prompt)
+                BaseLLMMessage(role=LLMRole.SYSTEM, content=system_prompt)
             ] + messages
 
         return await self.chat(messages=messages, **extra)  # type: ignore
@@ -72,7 +72,7 @@ class AI21Provider(BaseLLMProvider):
         try:
             if system_prompt is not None:
                 messages = [
-                    BaseLLMMessage(role=ROLE_SYSTEM, content=system_prompt)
+                    BaseLLMMessage(role=LLMRole.SYSTEM, content=system_prompt)
                 ] + messages
 
             request = AI21ChatRequest(
@@ -101,12 +101,12 @@ class AI21Provider(BaseLLMProvider):
     def sync_generate(
         self, prompt: str, **extra: Any
     ) -> Optional[BaseLLMProviderResponse]:
-        messages = [BaseLLMMessage(role=ROLE_USER, content=prompt)]
+        messages = [BaseLLMMessage(role=LLMRole.USER, content=prompt)]
 
         if extra.get(LLMProviderExtraParams.APPEND_LAST_RESPONSE):
             if history := self.get_history():
                 messages.append(
-                    BaseLLMMessage(role=ROLE_ASSISTANT, content=history[-1].response)
+                    BaseLLMMessage(role=LLMRole.ASSISTANT, content=history[-1].response)
                 )
 
         chat_extra_params = {

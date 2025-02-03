@@ -5,7 +5,7 @@ from typing import Any, Optional, Union
 import aiohttp
 import backoff
 
-from fuzzy.consts import ROLE_SYSTEM, ROLE_USER
+from fuzzy.enums import LLMRole
 from fuzzy.llm.models import BaseLLMProviderResponse
 from fuzzy.llm.providers.base import (BaseLLMMessage, BaseLLMProvider, BaseLLMProviderException,
                                       BaseLLMProviderRateLimitException, llm_provider_fm)
@@ -45,11 +45,11 @@ class GeminiProvider(BaseLLMProvider):
     @backoff.on_exception(backoff.expo, BaseLLMProviderRateLimitException, max_value=10)
     @api_endpoint("generateContent")
     async def generate(self, prompt: str, url: str, system_prompt: Optional[str] = None, **extra: Any) -> Optional[BaseLLMProviderResponse]:
-        messages = [BaseLLMMessage(role=ROLE_USER, content=prompt)]
+        messages = [BaseLLMMessage(role=LLMRole.USER, content=prompt)]
         if system_prompt is not None:
-            messages.insert(0, BaseLLMMessage(role=ROLE_SYSTEM, content=system_prompt))
+            messages.insert(0, BaseLLMMessage(role=LLMRole.SYSTEM, content=system_prompt))
 
-        return await self.chat([BaseLLMMessage(role=ROLE_USER, content=prompt)], **extra) # type: ignore
+        return await self.chat([BaseLLMMessage(role=LLMRole.USER, content=prompt)], **extra) # type: ignore
     
     def sync_generate(self, prompt: str, **extra: Any) -> Optional[BaseLLMProviderResponse]:
         raise NotImplementedError
@@ -57,8 +57,8 @@ class GeminiProvider(BaseLLMProvider):
     @api_endpoint("generateContent")
     async def chat(self, messages: list[BaseLLMMessage], url: str, system_prompt: Optional[str] = None, **extra: Any) -> BaseLLMProviderResponse:
         try:
-            if system_prompt is not None and not any(m.role == ROLE_SYSTEM for m in messages):
-                messages.insert(0, BaseLLMMessage(role=ROLE_SYSTEM, content=system_prompt))
+            if system_prompt is not None and not any(m.role == LLMRole.SYSTEM for m in messages):
+                messages.insert(0, BaseLLMMessage(role=LLMRole.SYSTEM, content=system_prompt))
 
             request = GenerateContentRequest.from_messages(messages, **extra)
             if self._safety_settings:

@@ -41,8 +41,3 @@ DEFAULT_OPEN_SOURCE_MODEL: Final[str] = "ollama/qwen2.5"
 # LLM Providers extra
 LLM_PROVIDER_EXTRA_SEED: Final[str] = "seed"
 LLM_PROVIDER_EXTRA_SYSTEM_PROMPT: Final[str] = "system_prompt"
-
-# APIs
-ROLE_USER: Final[str] = "user"
-ROLE_SYSTEM: Final[str] = "system"
-ROLE_ASSISTANT: Final[str] = "assistant"

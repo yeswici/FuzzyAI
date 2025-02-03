@@ -2,7 +2,8 @@ import logging
 from typing import Any, Final, Optional, Type
 from pydantic import BaseModel, Field
 
-from fuzzy.consts import ROLE_USER, ROLE_ASSISTANT, DEFAULT_OPEN_SOURCE_MODEL
+from fuzzy.enums import LLMRole
+from fuzzy.consts import DEFAULT_OPEN_SOURCE_MODEL
 from fuzzy.handlers.attacks.base import (BaseAttackTechniqueHandler, BaseAttackTechniqueHandlerException,
                                          attack_handler_fm)
 from fuzzy.handlers.attacks.enums import FuzzerAttackMode
@@ -131,12 +132,12 @@ class ActorAttackHandler(BaseAttackTechniqueHandler[ActorAttackHandlerExtraParam
                 last_actor = actor
                 for question in actors_questions_dict[actor]:
                     logger.debug(f"Running question {question}")
-                    chat_messages.append(BaseLLMMessage(role=ROLE_USER, content=question))
+                    chat_messages.append(BaseLLMMessage(role=LLMRole.USER, content=question))
                     last_answer = await llm.chat(chat_messages)
                     if last_answer is None:
                         raise AnswerGenerationException("No response from the target model")
                     last_answer_response = last_answer.response
-                    chat_messages.append(BaseLLMMessage(role=ROLE_ASSISTANT, content=last_answer_response))
+                    chat_messages.append(BaseLLMMessage(role=LLMRole.ASSISTANT, content=last_answer_response))
                 classifications = await self._classify_llm_response(last_answer, original_prompt=prompt)
                 if list(classifications.values())[0] != 0:
                     break
