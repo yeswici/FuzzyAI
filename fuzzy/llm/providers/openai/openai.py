@@ -21,19 +21,19 @@ logger = logging.getLogger(__name__)
 class OpenAIProviderException(BaseLLMProviderException):
     pass
 
-OPENAI_API_BASE_URL = "https://api.openai.com/v1"
-O1_FAMILY_MODELS = ["o1-mini","o1-preview"]
+class OpenAIConfig:
+    API_BASE_URL = "https://api.openai.com/v1"
+    CHAT_COMPLETIONS_ENDPOINT = "/chat/completions"
+    API_KEY_ENV_VAR = "OPENAI_API_KEY"
+    O1_FAMILY_MODELS = {"o1-mini", "o1-preview"}
 
 @llm_provider_fm.flavor(LLMProvider.OPENAI)
 class OpenAIProvider(BaseLLMProvider):
-    OPENAI_API_KEY = "OPENAI_API_KEY"
-    CHAT_COMPLETIONS_URL = f"{OPENAI_API_BASE_URL}/chat/completions"
-
     def __init__(self, model: str, **extra: Any):
         super().__init__(model=model, **extra)
 
-        if (api_key := os.environ.get(self.OPENAI_API_KEY)) is None:
-            raise BaseLLMProviderException(f"{self.OPENAI_API_KEY} not in os.environ")
+        if (api_key := os.environ.get(OpenAIConfig.API_KEY_ENV_VAR)) is None:
+            raise BaseLLMProviderException(f"{OpenAIConfig.API_KEY_ENV_VAR} not in os.environ")
 
         self._headers = {
             "Content-Type": "application/json",
@@ -41,8 +41,7 @@ class OpenAIProvider(BaseLLMProvider):
         }
         
         self._session = aiohttp.ClientSession(headers=self._headers)
-
-        self._base_url = OPENAI_API_BASE_URL
+        self._base_url = OpenAIConfig.API_BASE_URL
         self._tokenizer = tiktoken.encoding_for_model(model_name=model)
         self.tokens_handler = TokensHandler(tokenizer=self._tokenizer)
 
@@ -51,32 +50,21 @@ class OpenAIProvider(BaseLLMProvider):
         return ["gpt-3.5-turbo", "gpt-4", "gpt-4-turbo", "gpt-4o", "o1-mini", "o1-preview"]
 
     
-    @api_endpoint("/chat/completions")
+    @api_endpoint(OpenAIConfig.CHAT_COMPLETIONS_ENDPOINT)
     async def generate(self, prompt: str, url: str, system_prompt: Optional[str] = None, **extra: Any) -> Optional[BaseLLMProviderResponse]:
         messages = [BaseLLMMessage(role=LLMRole.USER, content=prompt)]
-        if self._model_name not in O1_FAMILY_MODELS and system_prompt is not None:
-            messages = [BaseLLMMessage(role=LLMRole.SYSTEM, content=system_prompt)] + messages
-
+        messages = self._prepare_messages(messages, system_prompt)
         return await self.chat(messages=messages, **extra) # type: ignore
     
     @backoff.on_exception(backoff.expo, BaseLLMProviderRateLimitException, max_value=10)
-    @api_endpoint("/chat/completions")
+    @api_endpoint(OpenAIConfig.CHAT_COMPLETIONS_ENDPOINT)
     async def chat(self, messages: list[BaseLLMMessage], url: str, system_prompt: Optional[str] = None, **extra: Any) -> BaseLLMProviderResponse:
-        error: dict[str, Any]
-        
-        if self._model_name not in O1_FAMILY_MODELS and system_prompt is not None:
-            messages = [BaseLLMMessage(role=LLMRole.SYSTEM, content=system_prompt)] + messages
-
+        messages = self._prepare_messages(messages, system_prompt)
         try:
             request = OpenAIChatRequest(model=self._model_name, messages=messages, **extra)
             async with self._session.post(url, json=request.model_dump()) as response:
                 openai_response = await response.json()
-                if (error := openai_response.get("error")) is not None:
-                    if error.get('code') == 'rate_limit_exceeded':
-                        logger.debug(f'Rate limit exceeded')
-                        raise BaseLLMProviderRateLimitException()
-                    else:
-                        raise OpenAIProviderException('OpenAI error: ' + error.get('message'))
+                self._handle_error_response(openai_response)
                     
                 return BaseLLMProviderResponse(response=openai_response["choices"][0]['message']['content'])
         except (BaseLLMProviderRateLimitException, OpenAIProviderException) as e:
@@ -89,31 +77,22 @@ class OpenAIProvider(BaseLLMProvider):
     def sync_generate(self, prompt: str, **extra: Any) -> Optional[BaseLLMProviderResponse]:
         messages = [BaseLLMMessage(role=LLMRole.USER, content=prompt)]
         
-        if extra.get(LLMProviderExtraParams.APPEND_LAST_RESPONSE):
-            if history := self.get_history():
-                messages.append(BaseLLMMessage(role=LLMRole.ASSISTANT, content=history[-1].response))
+        if extra.get(LLMProviderExtraParams.APPEND_LAST_RESPONSE) and (history := self.get_history()):
+            messages.append(BaseLLMMessage(role=LLMRole.ASSISTANT, content=history[-1].response))
         
         chat_extra_params = {k:v for k, v in extra.items() if k not in [LLMProviderExtraParams.APPEND_LAST_RESPONSE]}
         return self.sync_chat(messages, **chat_extra_params)  # type: ignore
 
-    @sync_api_endpoint("/chat/completions")
-    def sync_chat(self, messages: list[BaseLLMMessage], url: str, system_prompt: Optional[str] = None, **extra: Any) -> Optional[BaseLLMProviderResponse]:
-        error: dict[str, Any]
-        
-        if self._model_name not in O1_FAMILY_MODELS and system_prompt is not None:
-            messages = [BaseLLMMessage(role=LLMRole.SYSTEM, content=system_prompt)] + messages
+    @sync_api_endpoint(OpenAIConfig.CHAT_COMPLETIONS_ENDPOINT)
+    def sync_chat(self, messages: list[BaseLLMMessage], url: str, 
+                  system_prompt: Optional[str] = None, **extra: Any) -> Optional[BaseLLMProviderResponse]:
+        messages = self._prepare_messages(messages, system_prompt)
 
         try:
             request = OpenAIChatRequest(model=self._model_name, messages=messages, **extra)
             with requests.post(url, json=request.model_dump(), headers=self._headers) as response:
-                openai_response =  response.json()
-                if (error := openai_response.get("error")) is not None:
-                    if error.get('code') == 'rate_limit_exceeded':
-                        logger.debug(f'Rate limit exceeded')
-                        raise BaseLLMProviderRateLimitException()
-                    else:
-                        raise OpenAIProviderException('OpenAI error: ' + error.get('message'))
-                    
+                openai_response = response.json()
+                self._handle_error_response(openai_response)                    
                 return BaseLLMProviderResponse(response=openai_response["choices"][0]['message']['content'])
         except (BaseLLMProviderRateLimitException, OpenAIProviderException) as e:
             raise e
@@ -123,3 +102,17 @@ class OpenAIProvider(BaseLLMProvider):
     
     async def close(self) -> None:
         await self._session.close()
+
+    def _prepare_messages(self, messages: list[BaseLLMMessage], 
+                          system_prompt: Optional[str] = None) -> list[BaseLLMMessage]:
+        if system_prompt and self._model_name not in OpenAIConfig.O1_FAMILY_MODELS:
+            return [BaseLLMMessage(role=LLMRole.SYSTEM, content=system_prompt)] + messages
+        return messages
+    
+    @staticmethod
+    def _handle_error_response(response_data: dict[str, Any]) -> None:
+        if error := response_data.get("error"):
+            if error.get("code") == "rate_limit_exceeded":
+                raise BaseLLMProviderRateLimitException("Rate limit exceeded")
+            raise OpenAIProviderException(f"OpenAI error: {error.get('message', 'Unknown error')}")
+
