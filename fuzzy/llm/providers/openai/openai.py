@@ -44,7 +44,7 @@ class OpenAIProvider(BaseLLMProvider):
         self._base_url = OpenAIConfig.API_BASE_URL
 
         try:
-            self._tokenizer = tiktoken.encoding_for_model(model_name=model)
+            self._tokenizer: Optional[tiktoken.Encoding] = tiktoken.encoding_for_model(model_name=model)
             self.tokens_handler = TokensHandler(tokenizer=self._tokenizer)
         except Exception as ex:
             logger.warning(f"Tokenizer not initialized: for model {model}, some attacks might not function properly")

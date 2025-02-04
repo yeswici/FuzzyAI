@@ -11,7 +11,7 @@ class OpenAIChatRequest(RemoveNoneModel):
     model: str
     max_tokens: Optional[int] = 100
     max_completion_tokens: Optional[int] = 100
-    temperature: float = 1.0
+    temperature: Optional[float] = 1.0
     top_p: Optional[float] = None
 
     @model_validator(mode='after')
