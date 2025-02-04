@@ -9,8 +9,6 @@ from fuzzy.utils.flavor_manager import FlavorManager
 
 logger = logging.getLogger(__name__)
 
-COT_TAG = "<think>"
-
 def pre_classify_hook(func: Any) -> Any:
     @wraps(func)
     async def async_wrapper(self, *args: Any, **kwargs: Any) -> Any: # type: ignore
