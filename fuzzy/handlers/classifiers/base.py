@@ -56,7 +56,9 @@ class BaseClassifier(abc.ABC):
         if 'text' not in extra:
             method_signature = inspect.signature(self._classify)
             if "text" not in method_signature.parameters:
-                raise ValueError("text parameter is missing")
+                logger.debug("text parameter is not defined on classify method signature, won't preprocess")
+                return n_args, extra
+            
             text_param_index = list(method_signature.parameters.keys()).index('text')
             n_args = replace_nth(n_args, text_param_index, remove_cot(n_args[text_param_index]))
         else:
