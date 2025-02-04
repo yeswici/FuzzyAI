@@ -29,8 +29,9 @@ class BaseClassifier(abc.ABC):
     """
     Base class for classifiers.
     """
-    def __init__(self, **extra: Any) -> None:
+    def __init__(self, truncate_cot: bool, **extra: Any) -> None:
         self._name = str()
+        self._truncate_cot = truncate_cot
 
     """
     Run the classification logic. Explicitly extract the needed parameter in the function signature.
@@ -50,7 +51,10 @@ class BaseClassifier(abc.ABC):
     def _sync_classify(self, *args: Any, **extra: Any) -> Any: ...
     
     def _preprocess(self, *args: Any, **extra: Any) -> tuple[tuple[Any, ...], dict[Any, Any]]:
-        logger.debug("Preprocessing classifier arguments")
+        if not self._truncate_cot:
+            return args, extra
+        
+        logger.info("Preprocessing classifier arguments")
         n_args = args
 
         if 'text' not in extra:

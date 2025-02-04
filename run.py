@@ -107,6 +107,7 @@ async def main() -> None:
     
     parser.add_argument('-c', '--classifier', help=f'Add a classifier (default: har), any of:\n\n{classifiers_help}', action="append", type=str, default=[])
     parser.add_argument('-cm', '--classifier_model', help=f'Defines which model to use for classification (default: use the attacked model)', type=str, default=None)
+    parser.add_argument('-tc', '--truncate-cot', help='Remove CoT (Chain Of Thought) when classifying results (default: true)', action='store_true', default=True)
     parser.add_argument('-N', f'--{PARAMETER_MAX_TOKENS}', help='Max tokens to generate when generating LLM response (default: 100)', 
                         type=int, default=100)
 
@@ -219,7 +220,7 @@ async def main() -> None:
         if args.classifier_model not in args.model + args.auxiliary_model:
             logger.info('Adding auxiliary model for classifier: ' + args.classifier_model)
             fuzzer.add_llm(args.classifier_model, **extra_copy)
-            
+
     extra['model'] = set(extra['model']) # Remove duplicates
 
     try:
