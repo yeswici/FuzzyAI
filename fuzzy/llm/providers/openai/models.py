@@ -16,11 +16,14 @@ class OpenAIChatRequest(RemoveNoneModel):
 
     @model_validator(mode='after')
     def switch_max_tokens(self) -> 'OpenAIChatRequest':
-        if "o1" in self.model:
+        if "o1"  or "o3" in self.model:
             self.max_completion_tokens = self.max_tokens
             self.max_tokens = None
         else:
             self.max_completion_tokens = None
+
+        if "o3" in self.model:
+            self.temperature = None
             
         return self
 

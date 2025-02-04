@@ -25,7 +25,7 @@ class OpenAIConfig:
     API_BASE_URL = "https://api.openai.com/v1"
     CHAT_COMPLETIONS_ENDPOINT = "/chat/completions"
     API_KEY_ENV_VAR = "OPENAI_API_KEY"
-    O1_FAMILY_MODELS = {"o1-mini", "o1-preview"}
+    O1_FAMILY_MODELS = {"o1-mini", "o1-preview", "o3-mini"}
 
 @llm_provider_fm.flavor(LLMProvider.OPENAI)
 class OpenAIProvider(BaseLLMProvider):
@@ -42,12 +42,12 @@ class OpenAIProvider(BaseLLMProvider):
         
         self._session = aiohttp.ClientSession(headers=self._headers)
         self._base_url = OpenAIConfig.API_BASE_URL
-        self._tokenizer = tiktoken.encoding_for_model(model_name=model)
-        self.tokens_handler = TokensHandler(tokenizer=self._tokenizer)
+        #self._tokenizer = tiktoken.encoding_for_model(model_name=model)
+        #self.tokens_handler = TokensHandler(tokenizer=self._tokenizer)
 
     @classmethod
     def get_supported_models(cls) -> Union[list[str], str]:
-        return ["gpt-3.5-turbo", "gpt-4", "gpt-4-turbo", "gpt-4o", "o1-mini", "o1-preview"]
+        return ["gpt-3.5-turbo", "gpt-4", "gpt-4-turbo", "gpt-4o", "o1-mini", "o1-preview", "o3-mini"]
 
     
     @api_endpoint(OpenAIConfig.CHAT_COMPLETIONS_ENDPOINT)
@@ -64,9 +64,13 @@ class OpenAIProvider(BaseLLMProvider):
             request = OpenAIChatRequest(model=self._model_name, messages=messages, **extra)
             async with self._session.post(url, json=request.model_dump()) as response:
                 openai_response = await response.json()
+
                 self._handle_error_response(openai_response)
-                    
-                return BaseLLMProviderResponse(response=openai_response["choices"][0]['message']['content'])
+                choice = openai_response["choices"][0]
+                if choice.get('finish_reason') == 'length':
+                    logger.warning('OpenAI response was truncated! Please increase the token limit by setting -N=<max tokens>')
+
+                return BaseLLMProviderResponse(response=choice['message']['content'])
         except (BaseLLMProviderRateLimitException, OpenAIProviderException) as e:
             raise e
         except Exception as e:            
