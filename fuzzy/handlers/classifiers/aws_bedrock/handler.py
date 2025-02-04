@@ -69,10 +69,10 @@ class AWSBedrockClassifier(BaseClassifier):
             "us.anthropic.claude-3-5-sonnet-20241022-v2:0",
         ]
 
-    async def classify(self, *args: Any, **extra: Any) -> Any:
+    async def _classify(self, *args: Any, **extra: Any) -> Any:
         raise NotImplementedError
 
-    def sync_classify(self, text: str, **extra: Any) -> Any:
+    def _sync_classify(self, text: str, **extra: Any) -> Any:
         logger.debug(f"Classifier <{self._name}> classifying text: {text}")
         max_tokens = extra.get("max_tokens")
         try:

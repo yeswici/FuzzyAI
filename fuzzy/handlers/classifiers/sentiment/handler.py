@@ -21,7 +21,7 @@ class HarmfulSentimentClassifier(BaseClassifier):
             model_name="facebook/bart-large-mnli", analysis_model_type=HarmfulAnalysis
         )
     
-    async def classify(self, text: str, **extra: Any) -> Any:
+    async def _classify(self, text: str, **extra: Any) -> Any:
         logger.debug(f"Classifier <{self._name}> classifying text: {text}")
 
         classification: HarmfulAnalysis = self._classifier.analyze_one(text) # type: ignore
@@ -29,7 +29,7 @@ class HarmfulSentimentClassifier(BaseClassifier):
         logger.debug(f"Classifier <{self._name}> classified text is harmful as {result}") 
         return result
     
-    def sync_classify(self, *args: Any, **extra: Any) -> Any:
+    def _sync_classify(self, *args: Any, **extra: Any) -> Any:
         raise NotImplementedError
 
         

@@ -214,6 +214,11 @@ async def main() -> None:
     for seed, qualified_model_name in enumerate(args.model + args.auxiliary_model):
         provider_seed: int = seed if args.max_workers > 1 else 0
         fuzzer.add_llm(qualified_model_name, seed=provider_seed, **extra_copy)
+    
+    if hasattr(args, 'classifier_model') and args.classifier_model:
+        if args.classifier_model not in args.model + args.auxiliary_model:
+            logger.info('Adding auxiliary model for classifier: ' + args.classifier_model)
+            fuzzer.add_llm(args.classifier_model, **extra_copy)
             
     extra['model'] = set(extra['model']) # Remove duplicates
 

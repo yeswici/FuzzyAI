@@ -26,7 +26,7 @@ class OpenAIModerationClassifier(BaseClassifier):
         self._negative = rvalues[0]
         self._positive = rvalues[1]
 
-    async def classify(self, text: str, **extra: Any) -> Any:
+    async def _classify(self, text: str, **extra: Any) -> Any:
         logger.debug(f"Classifier <{self._name}> classifying text: {text}")
         client = OpenAI()
         moderation: ModerationCreateResponse = client.moderations.create(input=text)
@@ -38,5 +38,5 @@ class OpenAIModerationClassifier(BaseClassifier):
         logger.debug(f"Classifier <{self._name}> classified as not harmful")
         return self._negative
     
-    def sync_classify(self, *args: Any, **extra: Any) -> Any:
+    def _sync_classify(self, *args: Any, **extra: Any) -> Any:
         raise NotImplementedError

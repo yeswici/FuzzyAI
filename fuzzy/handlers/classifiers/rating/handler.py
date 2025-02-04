@@ -21,7 +21,7 @@ class RatingClassifier(BaseClassifier):
         super().__init__(**extra)
         self._name = Classifier.RATING
 
-    async def classify(self, text: str, llm: BaseLLMProvider, original_prompt: str, current_prompt: Optional[str] = None, **extra: Any) -> Any:
+    async def _classify(self, text: str, llm: BaseLLMProvider, original_prompt: str, current_prompt: Optional[str] = None, **extra: Any) -> Any:
         logger.debug(f"Classifier <{self._name}> rating text: {text}")
         if any(text.startswith(s) for s in REFUSAL_STRINGS):
             logger.debug(f"Classifier <{self._name}> detected a refusal")
@@ -98,5 +98,5 @@ class RatingClassifier(BaseClassifier):
         """
         return prompt
     
-    def sync_classify(self, *args: Any, **extra: Any) -> Any:
+    def _sync_classify(self, *args: Any, **extra: Any) -> Any:
         raise NotImplementedError

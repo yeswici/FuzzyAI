@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from typing import Any
 
@@ -21,7 +22,7 @@ class LLMResponseSentimentClassifier(BaseClassifier):
         self._classifier = ZeroShotAnalyzer(model_name="facebook/bart-large-mnli", 
                                             analysis_model_type=LLMResponseSentimentAnalysis)
 
-    def sync_classify(self, *args: Any, **extra: Any) -> Any:
+    def _sync_classify(self, *args: Any, **extra: Any) -> Any:
         text = args[0]
         logger.debug(f"Classifier <{self._name}> classifying text: {text}")
 
@@ -31,4 +32,5 @@ class LLMResponseSentimentClassifier(BaseClassifier):
         logger.debug(f"Classifier <{self._name}> clf_result: {clf_result}, label: {classification.label}, helpful: {classification.helpful}, unable: {classification.unable}")
         return clf_result, classification.helpful
 
-    async def classify(self, text: str, **extra: Any) -> Any: ...
+    async def _classify(self, text: str, **extra: Any) -> Any:
+        return asyncio.to_thread(self.sync_classify, text, **extra)
