@@ -42,8 +42,14 @@ class OpenAIProvider(BaseLLMProvider):
         
         self._session = aiohttp.ClientSession(headers=self._headers)
         self._base_url = OpenAIConfig.API_BASE_URL
-        #self._tokenizer = tiktoken.encoding_for_model(model_name=model)
-        #self.tokens_handler = TokensHandler(tokenizer=self._tokenizer)
+
+        try:
+            self._tokenizer = tiktoken.encoding_for_model(model_name=model)
+            self.tokens_handler = TokensHandler(tokenizer=self._tokenizer)
+        except Exception as ex:
+            logger.warning(f"Tokenizer not initialized: for model {model}, some attacks might not function properly")
+            self.tokens_handler = None
+            self._tokenizer = None
 
     @classmethod
     def get_supported_models(cls) -> Union[list[str], str]:
