@@ -62,7 +62,7 @@ class AzureContentSafetyClassifier(BaseClassifier):
     def _get_azure_content_safety_url(self, action: str, version: str = "2024-02-15-preview") -> str:
         return f"{self._content_safety_endpoint}/contentsafety/text:{action}?api-version={version}"
 
-    async def classify(self, text: str, **extra: Any) -> Any:
+    async def _classify(self, text: str, **extra: Any) -> Any:
         logger.debug(f"Classifier <{self._name}> classifying text: {text}")
         try:
             mode = extra.get("mode", self._mode)
@@ -103,5 +103,5 @@ class AzureContentSafetyClassifier(BaseClassifier):
         except Exception as e:
             logger.error(f"An error occurred: {str(e)}")
 
-    def sync_classify(self, text: str, **extra: Any) -> Any:
+    def _sync_classify(self, text: str, **extra: Any) -> Any:
         raise NotImplementedError("Sync classify is not supported for Azure Content Safety Classifier")

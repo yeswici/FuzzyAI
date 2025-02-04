@@ -24,7 +24,7 @@ class CommitteeClassifier(BaseClassifier):
         self._prompts = [COH_PROMPT, CON_PROMPT, REL_PROMPT]
         self._harmful_classifier = HarmfulLLMClassifier(rvalues=(0, 5))
 
-    async def classify(self, text: str, original_prompt: str, llm: BaseLLMProvider, **extra: Any) -> Any:
+    async def _classify(self, text: str, original_prompt: str, llm: BaseLLMProvider, **extra: Any) -> Any:
         logger.debug(f"Classifier <{self._name}> classifying text: {text}")
 
         tasks = [self._create_task(p, text, original_prompt, llm) for p in self._prompts]
@@ -35,7 +35,7 @@ class CommitteeClassifier(BaseClassifier):
         # return the average score
         return sum(scores) / len(scores)
 
-    def sync_classify(self, *args: Any, **extra: Any) -> Any:
+    def _sync_classify(self, *args: Any, **extra: Any) -> Any:
         raise NotImplementedError
 
     def _create_task(self, prompt: str, text: str, original_prompt: str, llm: BaseLLMProvider) -> Coroutine[Any, Any, Any]:

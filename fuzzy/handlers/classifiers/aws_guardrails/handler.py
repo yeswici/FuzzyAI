@@ -43,10 +43,10 @@ class AWSGuardrailsClassifier(BaseClassifier):
     def _format_text(self, text: str) -> dict[str, dict[str, str]]:
         return {"text": {"text": text}}
 
-    async def classify(self, *args: Any, **extra: Any) -> Any:
+    async def _classify(self, *args: Any, **extra: Any) -> Any:
         raise NotImplementedError
 
-    def sync_classify(self, text: str, **extra: Any) -> Any:
+    def _sync_classify(self, text: str, **extra: Any) -> Any:
         source: str = extra.get("source", "INPUT")
         logger.debug(f"Classifier <{self._name}> classifying text: {text}")
         formatted_text = self._format_text(text)

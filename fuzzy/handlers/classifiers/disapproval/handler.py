@@ -20,7 +20,7 @@ class DisapprovalClassifier(BaseClassifier):
         self._threshold = threshold
         self._classifier = ZeroShotAnalyzer(model_name="facebook/bart-large-mnli", analysis_model_type=DisapprovalAnalysis)
 
-    def sync_classify(self, *args: Any, **extra: Any) -> Any:
+    def _sync_classify(self, *args: Any, **extra: Any) -> Any:
         text = args[0]
         logger.debug(f"Classifier <{self._name}> classifying text: {text}")
 
@@ -33,4 +33,4 @@ class DisapprovalClassifier(BaseClassifier):
         )
         return clf_result, classification.disapproval
 
-    async def classify(self, text: str, **extra: Any) -> Any: ...
+    async def _classify(self, text: str, **extra: Any) -> Any: ...

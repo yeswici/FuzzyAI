@@ -14,8 +14,8 @@ class ObviousNegativeClassifier(BaseClassifier):
         super().__init__(**extra)
         self._name = "OBVIOUS_NEGATIVE_CLASSIFIER"
 
-    async def classify(self, text: str, *args: Any, **extra: Any) -> Any:
+    async def _classify(self, text: str, *args: Any, **extra: Any) -> Any:
         return not any(text.lower().startswith(x) for x in self.OBVIOUS_NEGATIVE_RESPONSE)
     
-    def sync_classify(self, *args: Any, **extra: Any) -> Any:
+    def _sync_classify(self, *args: Any, **extra: Any) -> Any:
         return True

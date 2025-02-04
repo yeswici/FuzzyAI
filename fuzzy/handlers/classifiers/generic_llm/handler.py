@@ -31,7 +31,7 @@ class LLMEvaluatorClassifier(BaseClassifier):
         self._negative = rvalues[0]
         self._positive = rvalues[1]
 
-    async def classify(self, text: str, llm: BaseLLMProvider, **extra: Any) -> Any:
+    async def _classify(self, text: str, llm: BaseLLMProvider, **extra: Any) -> Any:
         logger.debug(f"Classifier <{self._name}> classifying text: {text}")
         full_prompt = self._prompt.format(input=text)
         
@@ -51,5 +51,5 @@ class LLMEvaluatorClassifier(BaseClassifier):
         
         return self._negative
     
-    def sync_classify(self, *args: Any, **extra: Any) -> Any:
+    def _sync_classify(self, *args: Any, **extra: Any) -> Any:
         raise NotImplementedError
