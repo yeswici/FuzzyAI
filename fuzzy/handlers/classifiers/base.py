@@ -54,7 +54,7 @@ class BaseClassifier(abc.ABC):
         if not self._truncate_cot:
             return args, extra
         
-        logger.info("Preprocessing classifier arguments")
+        logger.debug("Preprocessing classifier arguments")
         n_args = args
 
         if 'text' not in extra:

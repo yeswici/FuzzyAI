@@ -105,6 +105,7 @@ REPORT_TEMPLATE = '''
     <meta charset="UTF-8">
     <title>Fuzzer Report</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {{
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -158,6 +159,36 @@ REPORT_TEMPLATE = '''
             text-align: center;
             color: white;
         }}
+        .copy-icon {{
+            cursor: pointer;
+            color: #666;
+            margin-left: 8px;
+            transition: color 0.2s;
+        }}
+        
+        .copy-icon:hover {{
+            color: #000;
+        }}
+        
+        .tooltip {{
+            position: absolute;
+            background: #333;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }}
+        
+        td {{
+            position: relative;
+        }}
+        
+        .copy-success {{
+            color: #28a745;
+        }}
     </style>
 </head>
 <body>
@@ -181,7 +212,7 @@ REPORT_TEMPLATE = '''
             <div class="heatmap-container" id="heatmapContainer"></div>
         </div>
 
-        <div class="card">
+<div class="card">
             <h2>Harmful Prompts</h2>
             <table id="harmfulPromptsTable">
                 <thead>
@@ -209,7 +240,6 @@ REPORT_TEMPLATE = '''
             </table>
         </div>
     </div>
-
     <script>
         const reportData = {report_data};
 
@@ -289,25 +319,74 @@ REPORT_TEMPLATE = '''
                 }}).join('');
             table.appendChild(row);
         }});
+        
         heatmapContainer.appendChild(table);
 
+        // Function to create copy icon
+        function createCopyIcon(text) {{
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-copy copy-icon';
+            icon.setAttribute('title', 'Copy to clipboard');
+            
+            icon.addEventListener('click', async () => {{
+                try {{
+                    await navigator.clipboard.writeText(text);
+                    icon.classList.add('copy-success');
+                    icon.classList.remove('fa-copy');
+                    icon.classList.add('fa-check');
+                    
+                    setTimeout(() => {{
+                        icon.classList.remove('copy-success');
+                        icon.classList.remove('fa-check');
+                        icon.classList.add('fa-copy');
+                    }}, 1500);
+                }} catch (err) {{
+                    console.error('Failed to copy:', err);
+                }}
+            }});
+            
+            return icon;
+        }}
+
+        // Populate Harmful Prompts Table with copy icons
         const harmfulPromptsBody = document.querySelector('#harmfulPromptsTable tbody');
         reportData.harmfulPrompts.forEach(prompt => {{
             const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${{prompt.original}}</td>
-                <td>${{prompt.harmful}}</td>
-            `;
+            
+            // Original prompt cell
+            const originalCell = document.createElement('td');
+            originalCell.textContent = prompt.original;
+            originalCell.appendChild(createCopyIcon(prompt.original));
+            
+            // Harmful prompt cell
+            const harmfulCell = document.createElement('td');
+            harmfulCell.textContent = prompt.harmful;
+            harmfulCell.appendChild(createCopyIcon(prompt.harmful));
+            
+            row.appendChild(originalCell);
+            row.appendChild(harmfulCell);
             harmfulPromptsBody.appendChild(row);
         }});
 
+        // Populate Failed Prompts Table with copy icons
         const failedPromptsBody = document.querySelector('#failedPromptsTable tbody');
         reportData.failedPrompts.forEach(prompt => {{
             const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${{prompt.original}}</td>
-                <td>${{prompt.harmful || '-'}}</td>
-            `;
+            
+            // Original prompt cell
+            const originalCell = document.createElement('td');
+            originalCell.textContent = prompt.original;
+            originalCell.appendChild(createCopyIcon(prompt.original));
+            
+            // Failed prompt cell
+            const failedCell = document.createElement('td');
+            failedCell.textContent = prompt.harmful || '-';
+            if (prompt.harmful) {{
+                failedCell.appendChild(createCopyIcon(prompt.harmful));
+            }}
+            
+            row.appendChild(originalCell);
+            row.appendChild(failedCell);
             failedPromptsBody.appendChild(row);
         }});
     </script>
