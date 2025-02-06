@@ -196,9 +196,13 @@ elif st.session_state.step == 5:
     for k, v in ep.items():
         command.extend(["-e", f"{k}={v}"])
 
-    command.extend(["-t", f"\"{st.session_state.prompt}\""])
+    command.extend(["-t", f"{st.session_state.prompt}"])
+
 
     st.code(" ".join(command))
+    st.subheader("Edit before executing")
+    new_command = st.text_input("command", " ".join(command))
+    
     col1, col2, col3 = st.columns([1,1,1])
 
     with col1:
@@ -206,15 +210,20 @@ elif st.session_state.step == 5:
             st.session_state.step = st.session_state.step - 1
             st.rerun()
     with col2:
-        if st.button("Run"):
-            env = os.environ.copy()
-            env.update(st.session_state.env_vars)
-            try:
-                result = subprocess.run(command, capture_output=True, text=True, env=env)
-                st.code(result.stdout + result.stderr)
-            except Exception as e:
-                st.error(f"Error: {str(e)}")
+        run_button = st.button("Run")
     with col3:
         if st.button("Restart"):
             st.session_state.step = 1
             st.rerun()
+    
+    if run_button:
+        env = os.environ.copy()
+        env.update(st.session_state.env_vars)
+        try:
+            idx = new_command.split(" ").index("-t")
+            all_args = new_command.split(" ")[:idx+1]
+            all_args.append(" ".join(new_command.split(" ")[idx+1:]))
+            result = subprocess.run(all_args, capture_output=True, text=True, env=env)
+            st.code(result.stdout + result.stderr)
+        except Exception as e:
+            st.error(f"Error: {str(e)}")
