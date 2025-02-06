@@ -7,7 +7,7 @@ import backoff
 import requests
 import tiktoken
 
-from fuzzy.enums import LLMRole
+from fuzzy.enums import LLMRole, EnvironmentVariables
 from fuzzy.handlers.tokenizers.handler import TokensHandler  # type: ignore
 from fuzzy.llm.models import BaseLLMProviderResponse
 from fuzzy.llm.providers.base import (BaseLLMMessage, BaseLLMProvider,
@@ -27,7 +27,7 @@ class OpenAIProviderException(BaseLLMProviderException):
 class OpenAIConfig:
     API_BASE_URL = "https://api.openai.com/v1"
     CHAT_COMPLETIONS_ENDPOINT = "/chat/completions"
-    API_KEY_ENV_VAR = "OPENAI_API_KEY"
+    API_KEY_ENV_VAR = EnvironmentVariables.OPENAI_API_KEY.value
     O1_FAMILY_MODELS = {"o1-mini", "o1-preview", "o3-mini"}
 
 @llm_provider_fm.flavor(LLMProvider.OPENAI)

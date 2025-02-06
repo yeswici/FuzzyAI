@@ -6,7 +6,7 @@ import aiohttp
 import backoff
 import requests
 
-from fuzzy.enums import LLMRole
+from fuzzy.enums import LLMRole, EnvironmentVariables
 from fuzzy.llm.models import BaseLLMProviderResponse
 from fuzzy.llm.providers.ai21.models import AI21ChatRequest
 from fuzzy.llm.providers.base import (BaseLLMMessage, BaseLLMProvider,
@@ -26,14 +26,13 @@ AI21_API_BASE_URL = "https://api.ai21.com/studio/v1"
 
 @llm_provider_fm.flavor(LLMProvider.AI21)
 class AI21Provider(BaseLLMProvider):
-    AI21_API_KEY = "AI21_API_KEY"
     CHAT_COMPLETIONS_URL = f"{AI21_API_BASE_URL}/chat/completions"
 
     def __init__(self, model: str, **extra: Any):
         super().__init__(model=model, **extra)
 
-        if (api_key := os.environ.get(self.AI21_API_KEY)) is None:
-            raise BaseLLMProviderException(f"{self.AI21_API_KEY} not in os.environ")
+        if (api_key := os.environ.get(EnvironmentVariables.AI21_API_KEY.value)) is None:
+            raise BaseLLMProviderException(f"{EnvironmentVariables.AI21_API_KEY.value} not in os.environ")
 
         self._headers = {
             "Content-Type": "application/json",

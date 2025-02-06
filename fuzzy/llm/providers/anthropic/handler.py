@@ -5,6 +5,7 @@ from typing import Any, Optional, Union
 import aiohttp
 import backoff
 
+from fuzzy.enums import EnvironmentVariables
 from fuzzy.llm.models import BaseLLMProviderResponse
 from fuzzy.llm.providers.anthropic.models import (AnthropicGenerateOptions,
                                                   AnthropicMessagesRequest,
@@ -24,14 +25,12 @@ class AnthropicProviderException(BaseLLMProviderException):
 
 @llm_provider_fm.flavor(LLMProvider.ANTHROPIC)
 class AnthropicProvider(BaseLLMProvider):
-    ANTHROPIC_API_KEY = "ANTHROPIC_API_KEY"
-
     def __init__(self, model: str = "claude-2.1", url_override: Optional[str] = None, 
                  **extra: Any):
         super().__init__(model=model, **extra)
 
-        if (api_key := os.environ.get(self.ANTHROPIC_API_KEY)) is None:
-            raise BaseLLMProviderException(f"{self.ANTHROPIC_API_KEY} not in os.environ")
+        if (api_key := os.environ.get(EnvironmentVariables.ANTHROPIC_API_KEY.value)) is None:
+            raise BaseLLMProviderException(f"{EnvironmentVariables.ANTHROPIC_API_KEY.value} not in os.environ")
         
         self._session = aiohttp.ClientSession(headers={
             "Content-Type": "application/json",

@@ -5,7 +5,7 @@ from typing import Any, Optional, Type, Union
 
 import boto3
 
-from fuzzy.enums import LLMRole
+from fuzzy.enums import LLMRole, EnvironmentVariables
 from fuzzy.llm.models import BaseLLMProviderResponse
 from fuzzy.llm.providers.base import (BaseLLMMessage, BaseLLMProvider,
                                       BaseLLMProviderException,
@@ -29,21 +29,17 @@ class AwsBedrockException(BaseLLMProviderException):
 
 @llm_provider_fm.flavor(LLMProvider.AWS_BEDROCK)
 class AwsBedrockProvider(BaseLLMProvider):
-    AWS_SECRET_ACCESS_KEY = "AWS_SECRET_ACCESS_KEY"
-    AWS_ACCESS_KEY_ID = "AWS_ACCESS_KEY_ID"
-    AWS_DEFAULT_REGION = "AWS_DEFAULT_REGION"
-
     def __init__(self, model: str = "anthropic.claude-v2:1", **extra: Any):
         super().__init__(model=model, **extra)
 
-        if self.AWS_SECRET_ACCESS_KEY not in os.environ:
-            raise AwsBedrockException(f"{self.AWS_SECRET_ACCESS_KEY} not in os.environ")
+        if EnvironmentVariables.AWS_ACCESS_KEY_ID.value not in os.environ:
+            raise AwsBedrockException(f"{EnvironmentVariables.AWS_ACCESS_KEY_ID.value} not in os.environ")
 
-        if self.AWS_ACCESS_KEY_ID not in os.environ:
-            raise AwsBedrockException(f"{self.AWS_ACCESS_KEY_ID} not in os.environ")
+        if EnvironmentVariables.AWS_DEFAULT_REGION.value not in os.environ:
+            raise AwsBedrockException(f"{EnvironmentVariables.AWS_DEFAULT_REGION.value} not in os.environ")
 
-        if self.AWS_DEFAULT_REGION not in os.environ:
-            raise AwsBedrockException(f"{self.AWS_DEFAULT_REGION} not in os.environ")
+        if EnvironmentVariables.AWS_SECRET_ACCESS_KEY.value not in os.environ:
+            raise AwsBedrockException(f"{EnvironmentVariables.AWS_SECRET_ACCESS_KEY.value} not in os.environ")
         
         self._model_family = BedrockModelFamily(model.split(".")[0])
         if self._model_family not in MODEL_FAMILY_MAPPING:

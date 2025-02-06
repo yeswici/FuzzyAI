@@ -1,6 +1,7 @@
 import os
 import subprocess
 import streamlit as st
+from fuzzy.enums import EnvironmentVariables
 from fuzzy.handlers.attacks.base import attack_handler_fm
 from fuzzy.handlers.attacks.enums import FuzzerAttackMode
 from fuzzy.handlers.classifiers.base import classifiers_fm
@@ -36,7 +37,8 @@ if 'selected_classifiers' not in st.session_state:
     st.session_state.selected_classifiers = []
     
 st.sidebar.header("Environment Settings")
-new_env_key = st.sidebar.text_input("Environment Variable Name")
+api_keys = [x.value for x in EnvironmentVariables]
+new_env_key = st.sidebar.selectbox("Name", options=api_keys)
 new_env_value = st.sidebar.text_input("Value")
 if st.sidebar.button("Add Variable"):
     if new_env_key and new_env_value:
@@ -110,40 +112,65 @@ elif st.session_state.step == 2:
     st.session_state.selected_attacks = selected_attacks
     st.session_state.extra_params = st.text_area("Extra Attack Parameters (line-separated key values pairs)", placeholder="KEY1=VALUE1\nKEY2=VALUE2")
 
-    if st.button("Next"):
-        if not selected_attacks:
-            st.error("Please select at least one attack mode")
-            st.stop()
-        if st.session_state.extra_params:
-            try:
-                for kvp in st.session_state.extra_params.split("\n"):
-                    if "=" not in kvp:
-                        st.error("Invalid extra parameters format")
-                        st.stop()
-                    k, v = kvp.split("=")
-            except:
-                st.error("Invalid extra parameters format")
-                st.stop()
+    col1, col2 = st.columns([1,1])
 
-        st.session_state.step = 3
-        st.rerun()
+    with col1:
+        if st.button("Back"):
+            st.session_state.step = st.session_state.step - 1
+            st.rerun()
+
+    with col2:
+        if st.button("Next"):
+            if not selected_attacks:
+                st.error("Please select at least one attack mode")
+                st.stop()
+            if st.session_state.extra_params:
+                try:
+                    for kvp in st.session_state.extra_params.split("\n"):
+                        if "=" not in kvp:
+                            st.error("Invalid extra parameters format")
+                            st.stop()
+                        k, v = kvp.split("=")
+                except:
+                    st.error("Invalid extra parameters format")
+                    st.stop()
+
+            st.session_state.step = 3
+            st.rerun()
 
 elif st.session_state.step == 3:
     st.header("Step 3: Classifier Selection")
     classifiers = {classifier.value: classifiers_fm[classifier].description() for classifier in Classifier}
     selected_classifiers = st.multiselect("Select Classifiers", options=classifiers.keys(), format_func=lambda x: f"{x} - {classifiers[x]}")
-    if st.button("Next"):
-        st.session_state.selected_classifiers = selected_classifiers
-        st.session_state.step = 4
-        st.rerun()
+
+    col1, col2 = st.columns([1,1])
+
+    with col1:
+        if st.button("Back"):
+            st.session_state.step = st.session_state.step - 1
+            st.rerun()
+
+    with col2:
+        if st.button("Next"):
+            st.session_state.selected_classifiers = selected_classifiers
+            st.session_state.step = 4
+            st.rerun()
 
 elif st.session_state.step == 4:
     st.header("Prompt selection")
     prompt = st.text_area("Enter prompt")
-    if st.button("Next"):
-        st.session_state.prompt = prompt
-        st.session_state.step = 5
-        st.rerun()
+
+    col1, col2 = st.columns([1,1])
+    with col1:
+        if st.button("Back"):
+            st.session_state.step = st.session_state.step - 1
+            st.rerun()
+
+    with col2:
+        if st.button("Next"):
+            st.session_state.prompt = prompt
+            st.session_state.step = 5
+            st.rerun()
 
 elif st.session_state.step == 5:
     st.header("Step 4: Execution")
@@ -172,14 +199,22 @@ elif st.session_state.step == 5:
     command.extend(["-t", f"\"{st.session_state.prompt}\""])
 
     st.code(" ".join(command))
-    if st.button("Run"):
-        env = os.environ.copy()
-        env.update(st.session_state.env_vars)
-        try:
-            result = subprocess.run(command, capture_output=True, text=True, env=env)
-            st.code(result.stdout + result.stderr)
-        except Exception as e:
-            st.error(f"Error: {str(e)}")
-    if st.button("Restart"):
-        st.session_state.step = 1
-        st.rerun()
+    col1, col2, col3 = st.columns([1,1,1])
+
+    with col1:
+        if st.button("Back"):
+            st.session_state.step = st.session_state.step - 1
+            st.rerun()
+    with col2:
+        if st.button("Run"):
+            env = os.environ.copy()
+            env.update(st.session_state.env_vars)
+            try:
+                result = subprocess.run(command, capture_output=True, text=True, env=env)
+                st.code(result.stdout + result.stderr)
+            except Exception as e:
+                st.error(f"Error: {str(e)}")
+    with col3:
+        if st.button("Restart"):
+            st.session_state.step = 1
+            st.rerun()

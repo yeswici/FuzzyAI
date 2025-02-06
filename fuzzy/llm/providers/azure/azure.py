@@ -4,7 +4,7 @@ from typing import Any, Optional, Union
 
 import aiohttp
 
-from fuzzy.enums import LLMRole
+from fuzzy.enums import LLMRole, EnvironmentVariables
 from fuzzy.llm.models import BaseLLMProviderResponse
 from fuzzy.llm.providers.azure.models import (AzureGenerateOptions,
                                               AzureMessage, AzureRequest)
@@ -22,17 +22,14 @@ AZURE_ENDPOINT_URL = "{endpoint}/openai/deployments/{model}/chat/completions?api
 
 @llm_provider_fm.flavor(LLMProvider.AZURE)
 class AzureProvider(BaseLLMProvider):
-    AZURE_OPENAI_API_KEY = "AZURE_OPENAI_API_KEY"
-    AZURE_OPENAI_ENDPOINT = "AZURE_OPENAI_ENDPOINT"
-
     def __init__(self, model: str, **extra: Any):
         super().__init__(model=model, **extra)
 
-        if (api_key := os.environ.get(self.AZURE_OPENAI_API_KEY)) is None:
-            raise BaseLLMProviderException(f"{self.AZURE_OPENAI_API_KEY} not in os.environ")
+        if (api_key := os.environ.get(EnvironmentVariables.AZURE_OPENAI_API_KEY.value)) is None:
+            raise BaseLLMProviderException(f"{EnvironmentVariables.AZURE_OPENAI_API_KEY.value} not in os.environ")
         
-        if (endpoint := os.environ.get(self.AZURE_OPENAI_ENDPOINT)) is None:
-            raise BaseLLMProviderException(f"{self.AZURE_OPENAI_ENDPOINT} not in os.environ")
+        if (endpoint := os.environ.get(EnvironmentVariables.AZURE_OPENAI_ENDPOINT.value)) is None:
+            raise BaseLLMProviderException(f"{EnvironmentVariables.AZURE_OPENAI_ENDPOINT.value} not in os.environ")
         
         self._base_url = AZURE_ENDPOINT_URL.format(endpoint=endpoint, 
                                                    model=self._model_name, 

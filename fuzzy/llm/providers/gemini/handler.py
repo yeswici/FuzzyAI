@@ -5,7 +5,7 @@ from typing import Any, Optional, Union
 import aiohttp
 import backoff
 
-from fuzzy.enums import LLMRole
+from fuzzy.enums import LLMRole, EnvironmentVariables
 from fuzzy.llm.models import BaseLLMProviderResponse
 from fuzzy.llm.providers.base import (BaseLLMMessage, BaseLLMProvider,
                                       BaseLLMProviderException,
@@ -26,13 +26,11 @@ GEMINI_API_BASE_URL = "https://generativelanguage.googleapis.com/v1/models/"
 
 @llm_provider_fm.flavor(LLMProvider.GEMINI)
 class GeminiProvider(BaseLLMProvider):
-    API_KEY = "API_KEY"
-
     def __init__(self, model: str, safety_settings: Optional[list[SafetySetting]] = None, **extra: Any):
         super().__init__(model=model, **extra)
 
-        if (api_key := os.environ.get(self.API_KEY)) is None:
-            raise GeminiProviderException(f"{self.API_KEY} not in os.environ")
+        if (api_key := os.environ.get(EnvironmentVariables.GEMINI_API_KEY.value)) is None:
+            raise GeminiProviderException(f"{EnvironmentVariables.GEMINI_API_KEY.value} not in os.environ")
 
         self._session = aiohttp.ClientSession(headers={
             "Content-Type": "application/json",

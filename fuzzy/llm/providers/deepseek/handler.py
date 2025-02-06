@@ -5,7 +5,7 @@ from typing import Any, Optional, Union
 import aiohttp
 import backoff
 
-from fuzzy.enums import LLMRole
+from fuzzy.enums import LLMRole, EnvironmentVariables
 from fuzzy.llm.models import BaseLLMProviderResponse
 from fuzzy.llm.providers.base import (BaseLLMMessage, BaseLLMProvider,
                                       BaseLLMProviderException,
@@ -25,14 +25,13 @@ class DeepSeekProviderException(BaseLLMProviderException):
 
 @llm_provider_fm.flavor(LLMProvider.DEEPSEEK)
 class DeepSeekProvider(BaseLLMProvider):
-    DEEPSEEK_API_KEY = "DEEPSEEK_API_KEY"
     CHAT_COMPLETIONS_URL = f"{DEEPSEEK_API_BASE_URL}/chat/completions"
 
     def __init__(self, model: str, **extra: Any):
         super().__init__(model=model, **extra)
 
-        if (api_key := os.environ.get(self.DEEPSEEK_API_KEY)) is None:
-            raise BaseLLMProviderException(f"{self.DEEPSEEK_API_KEY} not in os.environ")
+        if (api_key := os.environ.get(EnvironmentVariables.DEEPSEEK_API_KEY.value)) is None:
+            raise BaseLLMProviderException(f"{EnvironmentVariables.DEEPSEEK_API_KEY.value} not in os.environ")
 
         self._headers = {
             "Content-Type": "application/json",
