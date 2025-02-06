@@ -213,12 +213,12 @@ REPORT_TEMPLATE = '''
         </div>
 
 <div class="card">
-            <h2>Harmful Prompts</h2>
+            <h2>Jailbroken Prompts</h2>
             <table id="harmfulPromptsTable">
                 <thead>
                     <tr>
                         <th>Original Prompt</th>
-                        <th>Harmful Prompt</th>
+                        <th>Adversarial Prompt</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -319,7 +319,7 @@ REPORT_TEMPLATE = '''
                 }}).join('');
             table.appendChild(row);
         }});
-        
+
         heatmapContainer.appendChild(table);
 
         // Function to create copy icon
