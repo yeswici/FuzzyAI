@@ -1,20 +1,16 @@
 import json
 import logging
 from datetime import datetime
-from typing import Any, Optional, Type, Union
+from typing import Any, Dict, Optional, Type, Union
 
-import plotly.express as px
-import plotly.graph_objects as go
 from tabulate import tabulate
 
 from fuzzy.llm.providers.base import BaseLLMProvider, llm_provider_fm
 from fuzzy.llm.providers.enums import LLMProvider
 from fuzzy.models.fuzzer_result import FuzzerResult
 
+CURRENT_TIMESTAMP = datetime.now().strftime("%Y%m%d_%H%M%S")
 logger = logging.getLogger(__name__)
-
-CURRENT_TIMESTAMP = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-REPORT_TEMPLATE = """<!DOCTYPE html><html lang="en" data-bs-theme="dark"><head><title>Fuzzer Report</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"></head><body>{content}<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script></body></html>"""
 
 def llm_provider_model_sanity(provider: str, model: str) -> None:
     """
@@ -101,89 +97,325 @@ def print_report(report: FuzzerResult) -> None:
     except Exception as e:
         logger.error("Can't generating report")
 
+# Define the template with double curly braces for JavaScript/CSS and single for Python
+REPORT_TEMPLATE = '''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fuzzer Report</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }}
+        .container {{
+            max-width: 1200px;
+            margin: 0 auto;
+        }}
+        .card {{
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }}
+        .chart-container {{
+            position: relative;
+            height: 400px;
+            width: 100%;
+        }}
+        table {{
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }}
+        th, td {{
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }}
+        th {{
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }}
+        tr:hover {{
+            background-color: #f8f9fa;
+        }}
+        h1, h2 {{
+            color: #333;
+            margin-top: 0;
+        }}
+        .heatmap-container {{
+            margin: 20px 0;
+            overflow-x: auto;
+        }}
+        .heatmap-cell {{
+            padding: 10px;
+            text-align: center;
+            color: white;
+        }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h2>Model Success Rate</h2>
+            <div class="chart-container">
+                <canvas id="modelSuccessChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Attack Mode Success Rate</h2>
+            <div class="chart-container">
+                <canvas id="attackSuccessChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Success Rate Heatmap</h2>
+            <div class="heatmap-container" id="heatmapContainer"></div>
+        </div>
+
+        <div class="card">
+            <h2>Harmful Prompts</h2>
+            <table id="harmfulPromptsTable">
+                <thead>
+                    <tr>
+                        <th>Original Prompt</th>
+                        <th>Harmful Prompt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>Failed Prompts</h2>
+            <table id="failedPromptsTable">
+                <thead>
+                    <tr>
+                        <th>Original Prompt</th>
+                        <th>Failed Prompt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const reportData = {report_data};
+
+        new Chart(document.getElementById('modelSuccessChart'), {{
+            type: 'bar',
+            data: {{
+                labels: reportData.modelSuccessRate.map(item => item.name),
+                datasets: [{{
+                    label: 'Success Rate (%)',
+                    data: reportData.modelSuccessRate.map(item => item.value),
+                    backgroundColor: 'rgba(54, 162, 235, 0.8)'
+                }}]
+            }},
+            options: {{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {{
+                    title: {{
+                        display: true,
+                        text: 'Model Success Rate'
+                    }}
+                }},
+                scales: {{
+                    y: {{
+                        beginAtZero: true,
+                        max: 100
+                    }}
+                }}
+            }}
+        }});
+
+        new Chart(document.getElementById('attackSuccessChart'), {{
+            type: 'bar',
+            data: {{
+                labels: reportData.attackSuccessRate.map(item => item.name),
+                datasets: [{{
+                    label: 'Success Rate (%)',
+                    data: reportData.attackSuccessRate.map(item => item.value),
+                    backgroundColor: 'rgba(75, 192, 192, 0.8)'
+                }}]
+            }},
+            options: {{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {{
+                    title: {{
+                        display: true,
+                        text: 'Attack Mode Success Rate'
+                    }}
+                }},
+                scales: {{
+                    y: {{
+                        beginAtZero: true,
+                        max: 100
+                    }}
+                }}
+            }}
+        }});
+
+        const heatmapContainer = document.getElementById('heatmapContainer');
+        const table = document.createElement('table');
+        table.style.width = '100%';
+        
+        const headerRow = document.createElement('tr');
+        headerRow.innerHTML = '<th></th>' + reportData.heatmap.models.map(model => 
+            `<th>${{model}}</th>`
+        ).join('');
+        table.appendChild(headerRow);
+        
+        reportData.heatmap.attacks.forEach((attack, i) => {{
+            const row = document.createElement('tr');
+            row.innerHTML = `<td>${{attack}}</td>` + 
+                reportData.heatmap.data[i].map(value => {{
+                    const intensity = Math.floor(value * 255);
+                    const bgcolor = `rgb(${{255-intensity}}, ${{255-intensity}}, 255)`;
+                    return `<td class="heatmap-cell" style="background-color: ${{bgcolor}}">${{(value * 100).toFixed(1)}}%</td>`;
+                }}).join('');
+            table.appendChild(row);
+        }});
+        heatmapContainer.appendChild(table);
+
+        const harmfulPromptsBody = document.querySelector('#harmfulPromptsTable tbody');
+        reportData.harmfulPrompts.forEach(prompt => {{
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${{prompt.original}}</td>
+                <td>${{prompt.harmful}}</td>
+            `;
+            harmfulPromptsBody.appendChild(row);
+        }});
+
+        const failedPromptsBody = document.querySelector('#failedPromptsTable tbody');
+        reportData.failedPrompts.forEach(prompt => {{
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${{prompt.original}}</td>
+                <td>${{prompt.harmful || '-'}}</td>
+            `;
+            failedPromptsBody.appendChild(row);
+        }});
+    </script>
+</body>
+</html>
+'''
+
 def generate_report(report: FuzzerResult) -> None:
     try:
-        template = "plotly_dark"
-        model_total_prompts: dict[str, int] = {}
-        model_success: dict[str, int] = {}
-        heatmap_matrix: dict[str, dict[str, float]] = {}
-
-        # Calculate model success rate
-        for entry in report.attacking_techniques or []:
-            for model_entry in entry.models:
-                model_total_prompts[model_entry.name] = model_total_prompts.get(model_entry.name, 0) + len(model_entry.harmful_prompts) + len(model_entry.failed_prompts)
-                model_success[model_entry.name] = model_success.get(model_entry.name, 0) + len(model_entry.harmful_prompts)
-
-                # Calculate the success rate per attack mode per model
-                if model_total_prompts.get(model_entry.name, 0) > 0:
-                    heatmap_matrix[model_entry.name] = heatmap_matrix.get(model_entry.name, {})
-                    heatmap_matrix[model_entry.name][entry.attack_mode] = model_success[model_entry.name] / model_total_prompts[model_entry.name]
-
-        data = [[heatmap_matrix[model][attack.attack_mode] for model in heatmap_matrix.keys()] for attack in report.attacking_techniques] # type: ignore
-
-        heatmap = px.imshow(data,
-                    labels=dict(x="MODEL NAME", y="ATTACK MODE", color="ASR"),
-                    x=list(heatmap_matrix.keys()),
-                    y=[attack.attack_mode for attack in report.attacking_techniques], # type: ignore
-                )
-            
-        # Plot a bar graph with plotly.express
-        model_success_rate = {model: (success / total if total > 0 else 1) * 100 for model, success in model_success.items() for model2, total in model_total_prompts.items() if model == model2}
-        model_success_graph = px.bar(x=list(model_success_rate.keys()), y=list(model_success_rate.values()), labels=["SUCCESS RATE", "MODEL NAME"], title="MODEL ASR")
-        
-        # Calculate success rate by attack mode
-        attack_total: dict[str, int] = {}
-        attack_success: dict[str, int] = {}
-
-        for entry in report.attacking_techniques or []:
-            attack_total[entry.attack_mode] = 0
-            attack_success[entry.attack_mode] = 0
-            for model_entry in entry.models:
-                attack_total[entry.attack_mode] += len(model_entry.harmful_prompts) + len(model_entry.failed_prompts)
-                attack_success[entry.attack_mode] += len(model_entry.harmful_prompts)
-
-        # Plot a bar graph with plotly.express
-        attack_success_rate = {attack: (success / total if total > 0 else 1) * 100 for attack, success in attack_success.items() for attack2, total in attack_total.items() if attack == attack2}
-        attack_success_graph = px.bar(x=list(attack_success_rate.keys()), y=list(attack_success_rate.values()), labels=["SUCCESS RATE", "ATTACK MODE"], title="ASR by attack mode")
-
-        # Curate a table of harmful_prompts with plotly
+        # Process data for the report
+        model_success_rate = []
+        attack_success_rate = []
         harmful_prompts = []
-        for entry in report.attacking_techniques or []:
-            for model_entry in entry.models:
-                for prompt in model_entry.harmful_prompts:
-                    harmful_prompts.append((prompt.original_prompt, prompt.harmful_prompt))
-
-        success_table = go.Figure(data=[go.Table(header=dict(values=['ORIGINAL PROMPTS', 'ADVERSARIAL PROMPTS'],), name="JAILBROKEN PROMPTS",
-                        cells=dict(values=[[x[0] for x in harmful_prompts], [x[1] for x in harmful_prompts]]))
-                            ])
-
         failed_prompts = []
+        
+        # Calculate model success rates
+        model_total_prompts: Dict[str, int] = {}
+        model_success: Dict[str, int] = {}
+        
+        # Calculate heatmap data
+        heatmap_data = []
+        models = []
+        attacks = []
+        
         for entry in report.attacking_techniques or []:
+            attacks.append(entry.attack_mode)
+            row_data = []
+            
             for model_entry in entry.models:
+                if model_entry.name not in models:
+                    models.append(model_entry.name)
+                
+                total = len(model_entry.harmful_prompts) + len(model_entry.failed_prompts)
+                success = len(model_entry.harmful_prompts)
+                
+                # Add to model totals
+                model_total_prompts[model_entry.name] = model_total_prompts.get(model_entry.name, 0) + total
+                model_success[model_entry.name] = model_success.get(model_entry.name, 0) + success
+                
+                # Add to heatmap
+                success_rate = success / total if total > 0 else 0
+                row_data.append(success_rate)
+                
+                # Collect prompts
+                for prompt in model_entry.harmful_prompts:
+                    harmful_prompts.append({
+                        "original": prompt.original_prompt,
+                        "harmful": prompt.harmful_prompt
+                    })
                 for prompt in model_entry.failed_prompts:
-                    failed_prompts.append((prompt.original_prompt, prompt.harmful_prompt or "-"))
+                    failed_prompts.append({
+                        "original": prompt.original_prompt,
+                        "harmful": prompt.harmful_prompt
+                    })
+            
+            heatmap_data.append(row_data)
 
-        fail_table = go.Figure(data=[go.Table(header=dict(values=['ORIGINAL', 'ADVERSARIAL PROMPT'],), name="FAILED PROMPTS",
-                    cells=dict(values=[[x[0] for x in failed_prompts], [x[1] for x in failed_prompts]]))
-                        ])
-        
-        for fig in [model_success_graph, attack_success_graph, success_table, fail_table, heatmap]:
-            fig.update_layout(template=template)
-        
-        content = str()
-        content += "<h1>JAILBROKEN PROMPTS</h1>"
-        content += success_table.to_html(full_html=False, include_plotlyjs='cdn')
-        content += heatmap.to_html(full_html=False, include_plotlyjs=False)
-        content += model_success_graph.to_html(full_html=False, include_plotlyjs=False)
-        content += attack_success_graph.to_html(full_html=False, include_plotlyjs=False)
-        content += "<h1>FAILED PROMPTS</h1>"
-        content += fail_table.to_html(full_html=False, include_plotlyjs=False)
+        # Convert to format needed for Chart.js
+        for model_name, total in model_total_prompts.items():
+            success_rate = (model_success[model_name] / total * 100) if total > 0 else 0
+            model_success_rate.append({
+                "name": model_name,
+                "value": round(success_rate, 2)
+            })
 
-        html_data = REPORT_TEMPLATE.format(content=content)
-        with open(f'results/{CURRENT_TIMESTAMP}/report.html', 'w') as f:
+        # Calculate attack mode success rates
+        attack_totals: Dict[str, int] = {}
+        attack_successes: Dict[str, int] = {}
+        
+        for entry in report.attacking_techniques or []:
+            mode = entry.attack_mode
+            attack_totals[mode] = 0
+            attack_successes[mode] = 0
+            
+            for model_entry in entry.models:
+                attack_totals[mode] += len(model_entry.harmful_prompts) + len(model_entry.failed_prompts)
+                attack_successes[mode] += len(model_entry.harmful_prompts)
+
+        for mode, total in attack_totals.items():
+            success_rate = (attack_successes[mode] / total * 100) if total > 0 else 0
+            attack_success_rate.append({
+                "name": mode,
+                "value": round(success_rate, 2)
+            })
+
+        # Prepare the report data
+        report_data = {
+            "modelSuccessRate": model_success_rate,
+            "attackSuccessRate": attack_success_rate,
+            "harmfulPrompts": harmful_prompts,
+            "failedPrompts": failed_prompts,
+            "heatmap": {
+                "data": heatmap_data,
+                "models": models,
+                "attacks": attacks
+            }
+        }
+
+        # Generate the HTML report using string formatting
+        html_data = REPORT_TEMPLATE.format(report_data=json.dumps(report_data))
+        
+        # Save the report
+        output_path = f'results/{CURRENT_TIMESTAMP}/report.html'
+        with open(output_path, 'w') as f:
             f.write(html_data)
+            
+        logger.info(f"Report generated at {output_path}")
+        
     except Exception as ex:
-        logger.error("Error generating report")
-        return
-    
-    logger.info(f"Report generated at results/{CURRENT_TIMESTAMP}/report.html")
+        logger.error(f"Error generating report: {str(ex)}")
+        raise

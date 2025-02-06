@@ -1,16 +1,17 @@
-import streamlit as st
-import subprocess
-import json
-from typing import List, Dict
-import tempfile
 import re
+import subprocess
+import tempfile
+from typing import Dict, List
 
-from fuzzy.handlers.classifiers.base import classifiers_fm
-from fuzzy.handlers.attacks.enums import FuzzerAttackMode
-from fuzzy.llm.providers.enums import LLMProvider
-from fuzzy.llm.providers.base import llm_provider_fm
+import streamlit as st
+
 from fuzzy.handlers.attacks.base import attack_handler_fm
+from fuzzy.handlers.attacks.enums import FuzzerAttackMode
+from fuzzy.handlers.classifiers.base import classifiers_fm
 from fuzzy.handlers.classifiers.enums import Classifier
+from fuzzy.llm.providers.base import llm_provider_fm
+from fuzzy.llm.providers.enums import LLMProvider
+
 
 def load_model_options() -> Dict[str, List[str]]:
     """Returns a dictionary of model categories and their options."""

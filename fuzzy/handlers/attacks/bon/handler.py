@@ -3,8 +3,11 @@ from typing import Any, Callable, Optional, Sequence, Type
 
 from pydantic import BaseModel, Field
 
-from fuzzy.handlers.attacks.base import BaseAttackTechniqueHandler, attack_handler_fm
-from fuzzy.handlers.attacks.bon.utils import character_noising, character_scrambling, random_capitalization
+from fuzzy.handlers.attacks.base import (BaseAttackTechniqueHandler,
+                                         attack_handler_fm)
+from fuzzy.handlers.attacks.bon.utils import (character_noising,
+                                              character_scrambling,
+                                              random_capitalization)
 from fuzzy.handlers.attacks.enums import FuzzerAttackMode
 from fuzzy.handlers.attacks.models import AttackResultEntry
 from fuzzy.llm.providers.base import BaseLLMProvider

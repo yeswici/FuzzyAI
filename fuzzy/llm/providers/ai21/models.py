@@ -1,6 +1,5 @@
 from typing import Optional
 
-
 from fuzzy.llm.providers.base import BaseLLMMessage
 from fuzzy.models.base_models import RemoveNoneModel
 

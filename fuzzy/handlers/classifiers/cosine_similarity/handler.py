@@ -4,7 +4,8 @@ from typing import Any
 
 from fuzzy.handlers.classifiers.base import BaseClassifier, classifiers_fm
 from fuzzy.handlers.classifiers.enums import Classifier
-from fuzzy.handlers.sentence_similarity_analyzer import CosineSimilarityAnalysis, SentenceSimilarityAnalyzer
+from fuzzy.handlers.sentence_similarity_analyzer import (
+    CosineSimilarityAnalysis, SentenceSimilarityAnalyzer)
 
 logger = logging.getLogger(__name__)
 

@@ -4,7 +4,9 @@ import re
 from typing import Any, Coroutine
 
 from fuzzy.handlers.classifiers.base import BaseClassifier, classifiers_fm
-from fuzzy.handlers.classifiers.committee.prompts import COH_PROMPT, CON_PROMPT, REL_PROMPT
+from fuzzy.handlers.classifiers.committee.prompts import (COH_PROMPT,
+                                                          CON_PROMPT,
+                                                          REL_PROMPT)
 from fuzzy.handlers.classifiers.enums import Classifier
 from fuzzy.handlers.classifiers.harmful_llm.handler import HarmfulLLMClassifier
 from fuzzy.llm.models import BaseLLMProviderResponse

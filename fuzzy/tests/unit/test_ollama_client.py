@@ -4,7 +4,9 @@ from unittest.mock import AsyncMock
 import pytest
 from aiohttp import web
 
-from fuzzy.llm.providers.ollama.ollama import OllamaChatResponse, OllamaGenerateResponse, OllamaProvider
+from fuzzy.llm.providers.ollama.ollama import (OllamaChatResponse,
+                                               OllamaGenerateResponse,
+                                               OllamaProvider)
 
 
 @dataclasses.dataclass

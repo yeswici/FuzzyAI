@@ -4,10 +4,13 @@ from typing import Any, Optional, Union
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-from fuzzy.handlers.text_generation.llm_text_generator import LLMTextGenerationHandler
+from fuzzy.handlers.text_generation.llm_text_generator import \
+    LLMTextGenerationHandler
 from fuzzy.handlers.tokenizers.handler import TokensHandler  # type: ignore
 from fuzzy.llm.models import BaseLLMProviderResponse
-from fuzzy.llm.providers.base import BaseLLMMessage, BaseLLMProvider, BaseLLMProviderException, llm_provider_fm
+from fuzzy.llm.providers.base import (BaseLLMMessage, BaseLLMProvider,
+                                      BaseLLMProviderException,
+                                      llm_provider_fm)
 from fuzzy.llm.providers.enums import LLMProvider
 from fuzzy.llm.providers.local.models import LocalGenerateOptions
 

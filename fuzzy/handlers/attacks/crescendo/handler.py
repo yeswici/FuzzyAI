@@ -3,16 +3,18 @@ from typing import Any, Final, Optional, Type
 
 from pydantic import BaseModel, Field
 
-from fuzzy.enums import LLMRole
 from fuzzy.consts import DEFAULT_OPEN_SOURCE_MODEL
-from fuzzy.handlers.attacks.base import (BaseAttackTechniqueHandler, BaseAttackTechniqueHandlerException,
+from fuzzy.enums import LLMRole
+from fuzzy.handlers.attacks.base import (BaseAttackTechniqueHandler,
+                                         BaseAttackTechniqueHandlerException,
                                          attack_handler_fm)
-from fuzzy.handlers.attacks.crescendo.prompts import (QUESTION_GENERATION_PROMPT_TEMPLATE_PREFIX,
-                                                      QUESTION_GENERATION_CONCISE_QUESTIONS,
-                                                      QUESTION_GENERATION_PROMPT_TEMPLATE)
+from fuzzy.handlers.attacks.crescendo.prompts import (
+    QUESTION_GENERATION_CONCISE_QUESTIONS, QUESTION_GENERATION_PROMPT_TEMPLATE,
+    QUESTION_GENERATION_PROMPT_TEMPLATE_PREFIX)
 from fuzzy.handlers.attacks.enums import FuzzerAttackMode
 from fuzzy.handlers.attacks.models import AttackResultEntry
-from fuzzy.llm.providers.base import BaseLLMProvider, BaseLLMProviderException, BaseLLMMessage
+from fuzzy.llm.providers.base import (BaseLLMMessage, BaseLLMProvider,
+                                      BaseLLMProviderException)
 
 logger = logging.getLogger(__name__)
 

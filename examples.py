@@ -6,7 +6,8 @@ import logging
 from fuzzy.fuzzer import Fuzzer
 from fuzzy.handlers.attacks.enums import FuzzerAttackMode
 from fuzzy.handlers.attacks.genetic.handler import GeneticAttackParams
-from fuzzy.handlers.classifiers.disapproval.handler import DisapprovalClassifier
+from fuzzy.handlers.classifiers.disapproval.handler import \
+    DisapprovalClassifier
 from fuzzy.handlers.classifiers.harmful_llm.handler import HarmfulLLMClassifier
 from fuzzy.handlers.classifiers.rating.handler import RatingClassifier
 from fuzzy.llm.providers.enums import LLMProvider

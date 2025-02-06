@@ -4,7 +4,8 @@ from typing import Any, Optional
 from fuzzy.llm.models import BaseLLMProviderResponse
 from fuzzy.llm.providers.base import llm_provider_fm
 from fuzzy.llm.providers.enums import LLMProvider, LLMProviderExtraParams
-from fuzzy.llm.providers.local.local_llm import LocalProvider, LocalProviderException
+from fuzzy.llm.providers.local.local_llm import (LocalProvider,
+                                                 LocalProviderException)
 
 logger = logging.getLogger(__name__)
 

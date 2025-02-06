@@ -7,7 +7,9 @@ import aiohttp
 from jsonpath_ng import parse
 
 from fuzzy.llm.models import BaseLLMProviderResponse
-from fuzzy.llm.providers.base import BaseLLMMessage, BaseLLMProvider, BaseLLMProviderException, llm_provider_fm
+from fuzzy.llm.providers.base import (BaseLLMMessage, BaseLLMProvider,
+                                      BaseLLMProviderException,
+                                      llm_provider_fm)
 from fuzzy.llm.providers.enums import LLMProvider
 from fuzzy.llm.providers.rest.utils import parse_http_request
 

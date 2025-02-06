@@ -5,9 +5,9 @@ import logging
 import shlex
 from typing import Any, Optional
 
-from dotenv import load_dotenv
 import aiofiles
 import aiofiles.os
+from dotenv import load_dotenv
 
 from fuzzy.consts import PARAMETER_MAX_TOKENS, WIKI_LINK
 from fuzzy.fuzzer import Fuzzer

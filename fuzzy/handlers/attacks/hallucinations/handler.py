@@ -3,7 +3,8 @@ from typing import Any, Optional
 
 from pydantic import BaseModel
 
-from fuzzy.handlers.attacks.base import BaseAttackTechniqueHandler, attack_handler_fm
+from fuzzy.handlers.attacks.base import (BaseAttackTechniqueHandler,
+                                         attack_handler_fm)
 from fuzzy.handlers.attacks.enums import FuzzerAttackMode
 from fuzzy.handlers.attacks.hallucinations.prompt import PROMPT_TEMPLATE
 from fuzzy.handlers.attacks.models import AttackResultEntry

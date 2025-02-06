@@ -6,8 +6,11 @@ import aiohttp
 
 from fuzzy.enums import LLMRole
 from fuzzy.llm.models import BaseLLMProviderResponse
-from fuzzy.llm.providers.azure.models import AzureGenerateOptions, AzureMessage, AzureRequest
-from fuzzy.llm.providers.base import BaseLLMMessage, BaseLLMProvider, BaseLLMProviderException, llm_provider_fm
+from fuzzy.llm.providers.azure.models import (AzureGenerateOptions,
+                                              AzureMessage, AzureRequest)
+from fuzzy.llm.providers.base import (BaseLLMMessage, BaseLLMProvider,
+                                      BaseLLMProviderException,
+                                      llm_provider_fm)
 from fuzzy.llm.providers.enums import LLMProvider
 
 logger = logging.getLogger(__name__)

@@ -2,7 +2,8 @@ from typing import Any
 
 import motor.motor_asyncio
 
-from fuzzy.consts import DATABASE_NAME, FIELD_NAME_PROMPT, PROMPT_COLLECTION_NAME
+from fuzzy.consts import (DATABASE_NAME, FIELD_NAME_PROMPT,
+                          PROMPT_COLLECTION_NAME)
 from fuzzy.db.mongodb import MongoDBHandler, MongoDocument
 from fuzzy.models.prompt import BasePrompt
 

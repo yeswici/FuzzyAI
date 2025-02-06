@@ -7,10 +7,14 @@ import backoff
 
 from fuzzy.enums import LLMRole
 from fuzzy.llm.models import BaseLLMProviderResponse
-from fuzzy.llm.providers.base import (BaseLLMMessage, BaseLLMProvider, BaseLLMProviderException,
-                                      BaseLLMProviderRateLimitException, llm_provider_fm)
+from fuzzy.llm.providers.base import (BaseLLMMessage, BaseLLMProvider,
+                                      BaseLLMProviderException,
+                                      BaseLLMProviderRateLimitException,
+                                      llm_provider_fm)
 from fuzzy.llm.providers.enums import LLMProvider
-from fuzzy.llm.providers.gemini.models import GenerateContentRequest, GenerateContentResponse, SafetySetting
+from fuzzy.llm.providers.gemini.models import (GenerateContentRequest,
+                                               GenerateContentResponse,
+                                               SafetySetting)
 from fuzzy.llm.providers.shared.decorators import api_endpoint
 
 logger = logging.getLogger(__name__)

@@ -1,7 +1,8 @@
 import abc
+import logging
 from enum import Enum
 from typing import Any, Optional, Type
-import logging
+
 from pydantic import BaseModel, model_validator
 from transformers import pipeline
 

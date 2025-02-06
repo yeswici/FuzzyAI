@@ -2,7 +2,8 @@ from typing import Any
 
 import motor.motor_asyncio
 
-from fuzzy.consts import ADVERSARIAL_SUFFIX_COLLECTION_NAME, DATABASE_NAME, FIELD_NAME_SUFFIX
+from fuzzy.consts import (ADVERSARIAL_SUFFIX_COLLECTION_NAME, DATABASE_NAME,
+                          FIELD_NAME_SUFFIX)
 from fuzzy.db.mongodb import MongoDBHandler, MongoDocument
 
 

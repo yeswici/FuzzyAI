@@ -3,10 +3,13 @@ from typing import Any, Optional
 
 from pydantic import BaseModel
 
-from fuzzy.handlers.attacks.base import BaseAttackTechniqueHandler, attack_handler_fm
+from fuzzy.handlers.attacks.base import (BaseAttackTechniqueHandler,
+                                         attack_handler_fm)
 from fuzzy.handlers.attacks.enums import FuzzerAttackMode
 from fuzzy.handlers.attacks.models import AttackResultEntry
-from fuzzy.handlers.attacks.piglatin.utils import english_to_pig_latin, is_pig_latin, pig_latin_to_english
+from fuzzy.handlers.attacks.piglatin.utils import (english_to_pig_latin,
+                                                   is_pig_latin,
+                                                   pig_latin_to_english)
 from fuzzy.llm.providers.base import BaseLLMProvider
 
 logger = logging.getLogger(__name__)

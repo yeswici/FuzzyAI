@@ -4,7 +4,8 @@ from typing import Any, Optional, Type
 
 from pydantic import BaseModel, Field
 
-from fuzzy.handlers.attacks.base import BaseAttackTechniqueHandler, attack_handler_fm
+from fuzzy.handlers.attacks.base import (BaseAttackTechniqueHandler,
+                                         attack_handler_fm)
 from fuzzy.handlers.attacks.enums import FuzzerAttackMode
 from fuzzy.handlers.attacks.models import AttackResultEntry
 from fuzzy.handlers.attacks.taxonomy.prompts import PERSUASION_PROMPT

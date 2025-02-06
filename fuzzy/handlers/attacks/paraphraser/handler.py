@@ -7,11 +7,15 @@ from pydantic import BaseModel, Field, ValidationError
 
 from fuzzy.consts import DEFAULT_OPEN_SOURCE_MODEL
 from fuzzy.enums import LLMRole
-from fuzzy.handlers.attacks.base import AttackBreakWhen, BaseAttackTechniqueHandler, attack_handler_fm
+from fuzzy.handlers.attacks.base import (AttackBreakWhen,
+                                         BaseAttackTechniqueHandler,
+                                         attack_handler_fm)
 from fuzzy.handlers.attacks.enums import FuzzerAttackMode
 from fuzzy.handlers.attacks.paraphraser.enums import PersuasiveActor
-from fuzzy.handlers.attacks.paraphraser.models import PersuasiveIterationTargetOutput, PersusiveIterationResponse
-from fuzzy.handlers.attacks.paraphraser.prompts import get_attacker_system_prompt
+from fuzzy.handlers.attacks.paraphraser.models import (
+    PersuasiveIterationTargetOutput, PersusiveIterationResponse)
+from fuzzy.handlers.attacks.paraphraser.prompts import \
+    get_attacker_system_prompt
 from fuzzy.handlers.attacks.proto import AttackResultEntry
 from fuzzy.handlers.classifiers.enums import Classifier
 from fuzzy.llm.providers.base import BaseLLMMessage

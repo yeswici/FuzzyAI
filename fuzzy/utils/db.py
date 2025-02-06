@@ -6,8 +6,10 @@ import aiofiles.os
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from fuzzy.db.mongodb import MongoDocument
-from fuzzy.handlers.db.adv_prompts import AdversarialPromptDTO, AdversarialPromptsHandler
-from fuzzy.handlers.db.adv_suffixes import AdversarialSuffixDTO, AdversarialSuffixesHandler
+from fuzzy.handlers.db.adv_prompts import (AdversarialPromptDTO,
+                                           AdversarialPromptsHandler)
+from fuzzy.handlers.db.adv_suffixes import (AdversarialSuffixDTO,
+                                            AdversarialSuffixesHandler)
 
 logger = logging.getLogger(__name__)
 

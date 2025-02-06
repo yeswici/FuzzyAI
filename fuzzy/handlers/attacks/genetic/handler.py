@@ -1,16 +1,19 @@
 # type: ignore
 import logging
-from typing import Any, Optional, Type, Union
+from typing import Any, Optional, Union
 
 import numpy as np
 import pygad
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
-from fuzzy.handlers.attacks.base import BaseAttackTechniqueHandler, attack_handler_fm
+from fuzzy.handlers.attacks.base import (BaseAttackTechniqueHandler,
+                                         attack_handler_fm)
 from fuzzy.handlers.attacks.enums import FuzzerAttackMode
 from fuzzy.handlers.attacks.models import AttackResultEntry
-from fuzzy.handlers.classifiers.cosine_similarity.handler import CosineSimilarityClassifier
-from fuzzy.handlers.classifiers.disapproval.handler import DisapprovalClassifier
+from fuzzy.handlers.classifiers.cosine_similarity.handler import \
+    CosineSimilarityClassifier
+from fuzzy.handlers.classifiers.disapproval.handler import \
+    DisapprovalClassifier
 from fuzzy.handlers.db.adv_prompts import AdversarialPromptDTO
 from fuzzy.handlers.tokenizers.handler import TokensHandler
 from fuzzy.llm.models import BaseLLMProviderResponse

@@ -11,10 +11,12 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from fuzzy.consts import DATETIME_FORMAT
 from fuzzy.handlers.attacks.base import attack_handler_fm
 from fuzzy.handlers.attacks.enums import FuzzerAttackMode
-from fuzzy.handlers.attacks.proto import AttackSummary, BaseAttackTechniqueHandlerProto
+from fuzzy.handlers.attacks.proto import (AttackSummary,
+                                          BaseAttackTechniqueHandlerProto)
 from fuzzy.handlers.classifiers.base import BaseClassifier
 from fuzzy.handlers.db.adv_attacks import AdversarialAttacksHandler
-from fuzzy.handlers.db.adv_prompts import AdversarialPromptDTO, AdversarialPromptsHandler
+from fuzzy.handlers.db.adv_prompts import (AdversarialPromptDTO,
+                                           AdversarialPromptsHandler)
 from fuzzy.handlers.db.adv_suffixes import AdversarialSuffixesHandler
 from fuzzy.llm.providers.base import BaseLLMProvider
 from fuzzy.llm.providers.enums import LLMProvider

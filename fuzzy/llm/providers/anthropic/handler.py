@@ -6,10 +6,13 @@ import aiohttp
 import backoff
 
 from fuzzy.llm.models import BaseLLMProviderResponse
-from fuzzy.llm.providers.anthropic.models import (AnthropicGenerateOptions, AnthropicMessagesRequest,
+from fuzzy.llm.providers.anthropic.models import (AnthropicGenerateOptions,
+                                                  AnthropicMessagesRequest,
                                                   AnthropicMessagesResponse)
-from fuzzy.llm.providers.base import (BaseLLMMessage, BaseLLMProvider, BaseLLMProviderException,
-                                      BaseLLMProviderRateLimitException, llm_provider_fm)
+from fuzzy.llm.providers.base import (BaseLLMMessage, BaseLLMProvider,
+                                      BaseLLMProviderException,
+                                      BaseLLMProviderRateLimitException,
+                                      llm_provider_fm)
 from fuzzy.llm.providers.enums import LLMProvider
 from fuzzy.llm.providers.shared.decorators import api_endpoint
 

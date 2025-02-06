@@ -5,7 +5,8 @@ import pytest
 from aiohttp import web
 
 from fuzzy.llm.providers.anthropic.handler import AnthropicProvider
-from fuzzy.llm.providers.anthropic.models import AnthropicMessage, AnthropicMessagesResponse
+from fuzzy.llm.providers.anthropic.models import (AnthropicMessage,
+                                                  AnthropicMessagesResponse)
 from fuzzy.llm.providers.base import BaseLLMProviderResponse
 
 

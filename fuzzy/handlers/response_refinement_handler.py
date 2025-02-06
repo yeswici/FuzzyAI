@@ -1,7 +1,9 @@
-from fuzzy.llm.providers.base import BaseLLMProvider, BaseLLMMessage, BaseLLMProviderResponse
-from typing import Optional
-from fuzzy.enums import LLMRole
 import logging
+from typing import Optional
+
+from fuzzy.enums import LLMRole
+from fuzzy.llm.providers.base import (BaseLLMMessage, BaseLLMProvider,
+                                      BaseLLMProviderResponse)
 
 logger = logging.getLogger(__name__)
 IMPROVE_PROMPT = "Be more specific about each step"

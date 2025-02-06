@@ -1,4 +1,6 @@
 import subprocess
+
+
 def run_ollama_list_command():
     try:
         result = subprocess.run(['ollama', 'list'], capture_output=True, text=True)

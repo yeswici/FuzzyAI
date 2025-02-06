@@ -12,10 +12,12 @@ from pydantic import BaseModel
 from pydantic_core import PydanticUndefinedType, ValidationError
 from tqdm import tqdm
 
-from fuzzy.handlers.attacks.proto import AttackResultEntry, AttackSummary, BaseAttackTechniqueHandlerProto
+from fuzzy.handlers.attacks.proto import (AttackResultEntry, AttackSummary,
+                                          BaseAttackTechniqueHandlerProto)
 from fuzzy.handlers.classifiers.base import BaseClassifier
 from fuzzy.handlers.db.adv_prompts import AdversarialPromptDTO
-from fuzzy.handlers.response_refinement_handler import RefinementException, ResponseRefinementHandler
+from fuzzy.handlers.response_refinement_handler import (
+    RefinementException, ResponseRefinementHandler)
 from fuzzy.llm.models import BaseLLMProviderResponse
 from fuzzy.llm.providers.base import BaseLLMProvider
 from fuzzy.utils.flavor_manager import FlavorManager

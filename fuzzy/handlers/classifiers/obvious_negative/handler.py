@@ -1,4 +1,5 @@
 from typing import Any
+
 from fuzzy.handlers.classifiers.base import BaseClassifier, classifiers_fm
 from fuzzy.handlers.classifiers.enums import Classifier
 

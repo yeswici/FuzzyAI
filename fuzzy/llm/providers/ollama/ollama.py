@@ -8,10 +8,16 @@ import aiohttp
 from fuzzy.consts import OLLAMA_BASE_PORT
 from fuzzy.enums import LLMRole
 from fuzzy.llm.models import BaseLLMProviderResponse
-from fuzzy.llm.providers.base import BaseLLMMessage, BaseLLMProvider, BaseLLMProviderException, llm_provider_fm
+from fuzzy.llm.providers.base import (BaseLLMMessage, BaseLLMProvider,
+                                      BaseLLMProviderException,
+                                      llm_provider_fm)
 from fuzzy.llm.providers.enums import LLMProvider
-from fuzzy.llm.providers.ollama.models import (OllamaChatMessage, OllamaChatRequest, OllamaChatResponse,
-                                               OllamaGenerateRequest, OllamaGenerateResponse, OllamaOptions)
+from fuzzy.llm.providers.ollama.models import (OllamaChatMessage,
+                                               OllamaChatRequest,
+                                               OllamaChatResponse,
+                                               OllamaGenerateRequest,
+                                               OllamaGenerateResponse,
+                                               OllamaOptions)
 from fuzzy.llm.providers.shared.decorators import api_endpoint
 
 logger = logging.getLogger(__name__)

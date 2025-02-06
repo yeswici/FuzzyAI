@@ -4,7 +4,6 @@ from typing import Any, Optional, Union
 
 import boto3
 
-from fuzzy.handlers.classifiers.aws_guardrails.handler import AWSGuardrailsClassifier
 from fuzzy.handlers.classifiers.base import BaseClassifier, classifiers_fm
 from fuzzy.handlers.classifiers.enums import Classifier
 

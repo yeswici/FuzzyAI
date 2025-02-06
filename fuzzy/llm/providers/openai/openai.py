@@ -10,11 +10,14 @@ import tiktoken
 from fuzzy.enums import LLMRole
 from fuzzy.handlers.tokenizers.handler import TokensHandler  # type: ignore
 from fuzzy.llm.models import BaseLLMProviderResponse
-from fuzzy.llm.providers.base import (BaseLLMMessage, BaseLLMProvider, BaseLLMProviderException,
-                                      BaseLLMProviderRateLimitException, llm_provider_fm)
+from fuzzy.llm.providers.base import (BaseLLMMessage, BaseLLMProvider,
+                                      BaseLLMProviderException,
+                                      BaseLLMProviderRateLimitException,
+                                      llm_provider_fm)
 from fuzzy.llm.providers.enums import LLMProvider, LLMProviderExtraParams
 from fuzzy.llm.providers.openai.models import OpenAIChatRequest
-from fuzzy.llm.providers.shared.decorators import api_endpoint, sync_api_endpoint
+from fuzzy.llm.providers.shared.decorators import (api_endpoint,
+                                                   sync_api_endpoint)
 
 logger = logging.getLogger(__name__)
 
