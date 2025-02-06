@@ -9,7 +9,7 @@ from fuzzy.llm.providers.base import BaseLLMProvider, llm_provider_fm
 from fuzzy.llm.providers.enums import LLMProvider
 from fuzzy.models.fuzzer_result import FuzzerResult
 
-CURRENT_TIMESTAMP = datetime.now().strftime("%Y%m%d_%H%M%S")
+CURRENT_TIMESTAMP = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 logger = logging.getLogger(__name__)
 
 def llm_provider_model_sanity(provider: str, model: str) -> None:
@@ -194,6 +194,19 @@ REPORT_TEMPLATE = '''
 <body>
     <div class="container">
         <div class="card">
+            <h2>Jailbroken Prompts</h2>
+            <table id="harmfulPromptsTable">
+                <thead>
+                    <tr>
+                        <th>Original Prompt</th>
+                        <th>Adversarial Prompt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div class="card">
             <h2>Model Success Rate</h2>
             <div class="chart-container">
                 <canvas id="modelSuccessChart"></canvas>
@@ -210,20 +223,6 @@ REPORT_TEMPLATE = '''
         <div class="card">
             <h2>Success Rate Heatmap</h2>
             <div class="heatmap-container" id="heatmapContainer"></div>
-        </div>
-
-<div class="card">
-            <h2>Jailbroken Prompts</h2>
-            <table id="harmfulPromptsTable">
-                <thead>
-                    <tr>
-                        <th>Original Prompt</th>
-                        <th>Adversarial Prompt</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
         </div>
 
         <div class="card">
