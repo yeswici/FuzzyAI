@@ -149,4 +149,10 @@ class RestProvider(BaseLLMProvider):
         await self._session.close()
     
     async def chat(self, messages: list[BaseLLMMessage], **extra: Any) -> BaseLLMProviderResponse | None:
+        raise Exception("Chat is not supported for REST providers.")
+    
+    async def sync_chat(self, messages, **extra):
+        raise Exception("Chat is not supported for REST providers.")
+    
+    async def sync_generate(self, prompt, **extra):
         raise NotImplementedError
