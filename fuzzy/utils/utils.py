@@ -100,25 +100,24 @@ def print_report(report: FuzzerResult) -> None:
 # Define the template with double curly braces for JavaScript/CSS and single for Python
 REPORT_TEMPLATE = '''
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <title>Fuzzer Report</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {{
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             margin: 0;
             padding: 20px;
-            background: #f5f5f5;
         }}
         .container {{
             max-width: 1200px;
             margin: 0 auto;
         }}
         .card {{
-            background: white;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             padding: 20px;
@@ -140,14 +139,12 @@ REPORT_TEMPLATE = '''
             border-bottom: 1px solid #ddd;
         }}
         th {{
-            background-color: #f8f9fa;
             font-weight: 600;
         }}
         tr:hover {{
-            background-color: #f8f9fa;
+            background-color: #535965;
         }}
         h1, h2 {{
-            color: #333;
             margin-top: 0;
         }}
         .heatmap-container {{
@@ -157,7 +154,6 @@ REPORT_TEMPLATE = '''
         .heatmap-cell {{
             padding: 10px;
             text-align: center;
-            color: white;
         }}
         .copy-icon {{
             cursor: pointer;
@@ -167,13 +163,12 @@ REPORT_TEMPLATE = '''
         }}
         
         .copy-icon:hover {{
-            color: #000;
+            color: white;
         }}
         
         .tooltip {{
             position: absolute;
             background: #333;
-            color: white;
             padding: 4px 8px;
             border-radius: 4px;
             font-size: 12px;

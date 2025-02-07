@@ -1,10 +1,11 @@
 import json
 import logging
 import os
-from typing import Any, Callable, Optional, Union
+from typing import Any, Callable, Coroutine, Optional, Union
 
 import aiohttp
 from jsonpath_ng import parse
+import requests
 
 from fuzzy.llm.models import BaseLLMProviderResponse
 from fuzzy.llm.providers.base import (BaseLLMMessage, BaseLLMProvider,
@@ -68,11 +69,27 @@ class RestProvider(BaseLLMProvider):
 
         self._url = f"{scheme}://{host}:{port}{self._path}"
 
+        # Initialize both async and sync sessions
         self._session = aiohttp.ClientSession(headers=self._headers)
+        self._sync_session = requests.Session()
+        self._sync_session.headers.update(self._headers)
 
     @classmethod
     def get_supported_models(cls) -> Union[list[str], str]:
         return "<Path to raw HTTP request file>"
+    
+    def _prepare_request_payload(self, prompt: str) -> str:
+        """
+        Prepare the request payload by replacing the prompt token.
+        
+        Args:
+            prompt (str): The input prompt to generate a response.
+            
+        Returns:
+            str: The prepared request payload
+        """
+        sanitized_prompt = json.dumps(prompt)[:-1][1:]
+        return self._body.replace(self._prompt_token, sanitized_prompt)
     
     def _parse_http_file(self, raw_http_file: str) -> None:
         """
@@ -101,9 +118,29 @@ class RestProvider(BaseLLMProvider):
 
         self._body = parsed_http["body"]
     
+    def _process_response(self, raw_response: dict[str, Any]) -> Optional[BaseLLMProviderResponse]:
+        """
+        Process the response from the API using JSONPath.
+        
+        Args:
+            raw_response (dict): The raw response from the API
+            
+        Returns:
+            Optional[BaseLLMProviderResponse]: The processed response
+        """
+        jsonpath_expr = parse(self._response_jsonpath)
+        logger.debug("Raw response: %s", raw_response)
+        logger.debug("Extracting response using JSONPath: %s", self._response_jsonpath)
+
+        result = [match.value for match in jsonpath_expr.find(raw_response)]
+        if result:
+            return BaseLLMProviderResponse(response=result[0])
+        logger.warning("No response found in the JSONPath: %s", self._response_jsonpath)
+        return None
+    
     async def generate(self, prompt: str, **extra: Any) -> Optional[BaseLLMProviderResponse]:
         """
-        Generates a response from the language model using a REST API.
+        Generates a response from the language model using async REST API.
 
         Args:
             prompt (str): The input prompt to generate a response.
@@ -111,48 +148,54 @@ class RestProvider(BaseLLMProvider):
 
         Returns:
             Optional[BaseLLMProviderResponse]: The generated response.
-
         """
-        response: Optional[BaseLLMProviderResponse] = None
-        
-        logger.debug("Generating prompt: %s", prompt)
+        logger.debug("Generating prompt (async): %s", prompt)
         try:
-            http_response: aiohttp.ClientResponse
-            method: Callable[..., aiohttp.ClientResponse] = getattr(self._session, self._method.lower())
-            sanitized_prompt = json.dumps(prompt)[:-1][1:]
-            payload = self._body.replace(self._prompt_token, sanitized_prompt)
-            http_response = await method(url=self._url, json=json.loads(payload)) # type: ignore
+            method: Callable[..., Coroutine[Any, Any, Any]] = getattr(self._session, self._method.lower())
+            payload = self._prepare_request_payload(prompt)          
+            http_response = await method(url=self._url, json=json.loads(payload))
             http_response.raise_for_status()
-
+            
             raw_response = await http_response.json()
-            jsonpath_expr = parse(self._response_jsonpath)
-
-            logger.debug("Raw response: %s", raw_response)
-            logger.debug("Extracting response using JSONPath: %s", self._response_jsonpath)
-
-            # Extract the data
-            result = [match.value for match in jsonpath_expr.find(raw_response)]
-            # Since we expect only one result, we can just get the first one
-            if result:
-                response = BaseLLMProviderResponse(response=result[0])
-            else:
-                logger.warning("No response found in the JSONPath: %s", self._response_jsonpath)
-                response = None
+            return self._process_response(raw_response)
+            
         except Exception as e:
             logger.error("Error generating response: %s", e)
             raise RestProviderException(f"Error generating prompt: {e}")
-        
-        logger.debug("Generated response: %s", response)
-        return response
+
+    def sync_generate(self, prompt: str, **extra: Any) -> Optional[BaseLLMProviderResponse]:
+        """
+        Generates a response from the language model using synchronous REST API.
+
+        Args:
+            prompt (str): The input prompt to generate a response.
+            **extra (Any): Additional arguments to be passed to the REST API.
+
+        Returns:
+            Optional[BaseLLMProviderResponse]: The generated response.
+        """
+        logger.debug("Generating prompt (sync): %s", prompt)
+        try:
+            method: Callable[..., requests.Response] = getattr(self._sync_session, self._method.lower())
+            payload = self._prepare_request_payload(prompt)
+            
+            http_response = method(url=self._url, json=json.loads(payload))
+            http_response.raise_for_status()
+            
+            raw_response = http_response.json()
+            return self._process_response(raw_response)
+            
+        except Exception as e:
+            logger.error("Error generating response: %s", e)
+            raise RestProviderException(f"Error generating prompt: {e}")
 
     async def close(self) -> None:
         await self._session.close()
+        self._sync_session.close()
     
     async def chat(self, messages: list[BaseLLMMessage], **extra: Any) -> BaseLLMProviderResponse | None:
         raise Exception("Chat is not supported for REST providers.")
     
-    async def sync_chat(self, messages, **extra):
+    async def sync_chat(self, messages, **extra) -> None:
         raise Exception("Chat is not supported for REST providers.")
     
-    async def sync_generate(self, prompt, **extra):
-        raise NotImplementedError
