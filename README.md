@@ -93,6 +93,7 @@ Explore detailed usage instructions in the [Wiki](https://github.com/cyberark/Fu
    Or use the Web UI
 
 ## Web UI (Experimental)
+![FZAI](resources/webui.png)
 
 1. Run the Web UI (make sure you complete steps #1 and #2 from above):
    ```bash
