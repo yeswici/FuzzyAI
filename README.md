@@ -28,10 +28,7 @@ The FuzzyAI Fuzzer is a powerful tool for automated LLM fuzzing. It is designed 
 4. Optional: Install [ollama](https://ollama.com/download/), and download a model for local usage:
    ``` # Running the command will download and install (if not) llama3.1, which is about 4.7 GB in size and is an 8B parameters model. Llama3.1 hat can be substituted with any other open-source model that is supported by ollama.
    ollama pull llama3.1
-   ```
-   Optional: Verify that ollama is installed correctly:
-   ```bash
-   ollama show llama3.1  
+   ollama show llama3.1 # verify model installation
    ```
    
    Alternativly, you can use the Web UI
