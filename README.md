@@ -31,7 +31,8 @@ The FuzzyAI Fuzzer is a powerful tool for automated LLM fuzzing. It is designed 
    /exit  
    ```
    Optional: Verify that ollama is installed correctly:
-   ```ollama show llama3  
+   ```bash
+   ollama show llama3.1  
    ```
    
    Alternativly, you can use the Web UI
