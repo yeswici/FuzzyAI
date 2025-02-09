@@ -31,7 +31,7 @@ The FuzzyAI Fuzzer is a powerful tool for automated LLM fuzzing. It is designed 
    /exit  
    ```
    Optional: Verify that ollama is installed correctly:
-   ``` ollama show llama3  
+   ```ollama show llama3  
    ```
    
    Alternativly, you can use the Web UI
@@ -107,7 +107,6 @@ OPENAI_API_KEYT=sk-3fa1... python run.py -a def -x openai/gpt-4 -e classifier_mo
 - **Seamless Integration**: Easily incorporate into your development and testing workflows.
 - **Extensible Architecture**: Customize and expand the fuzzer to meet your unique requirements.
 
-                          | Send the prompt to the model as-is                                                                                                                                          |                                                                                 |
 ## Supported models
 FuzzyAI supports various models across top providers, including:
 
@@ -143,8 +142,8 @@ Easily add support for additional models by following our <a href="https://githu
 | Best-of-n jailbreaking | Uses input variations to repeatedly elicit harmful responses, exploiting model sensitivity | [arXiv:2412.03556](https://arxiv.org/abs/2412.03556) |
 | Back To The Past                             | Modifies the prompt by adding a profession-based prefix and a past-related suffix                                                                                           |                                                                                 |
 | Please                                       | Modifies the prompt by adding please as a prefix and suffix                                                                                                                   |                                                                                 |
-| Thought Experiment                           | Modifies the prompt by adding a thought experiment-related prefix. In addition, adds "precautions have been taken care of" suffix                                                  |                                                                                 |
-| Default            
+| Thought Experiment                           | Modifies the prompt by adding a thought experiment-related prefix. In addition, adds "precautions have been taken care of" suffix                                                  |                                                                                 
+| Default                                      | Send the prompt to the model as-is 
 
 ## Supported Cloud APIs
 - **OpenAI**
