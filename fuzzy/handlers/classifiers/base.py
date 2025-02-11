@@ -55,6 +55,13 @@ class BaseClassifier(abc.ABC):
     @abc.abstractmethod
     def _sync_classify(self, *args: Any, **extra: Any) -> Any: ...
     
+    """
+    In most cases, the classifier will return a boolean value. This method will be used to determine if the value is a jailbreak or not.
+    Override to provide custom logic.
+    """
+    def is_jailbreak(self, value: Any) -> bool:
+        return bool(value)
+
     def _preprocess(self, *args: Any, **extra: Any) -> tuple[tuple[Any, ...], dict[Any, Any]]:
         if not self._truncate_cot:
             return args, extra

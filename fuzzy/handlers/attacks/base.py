@@ -257,7 +257,7 @@ class BaseAttackTechniqueHandler(BaseAttackTechniqueHandlerProto, Generic[T]):
     
     async def _classify(self, classifier: BaseClassifier, llm_response: BaseLLMProviderResponse, llm: BaseLLMProvider, **extra: Any) -> dict[str, int]:
         classifier_result = await classifier.classify(text=llm_response.response, llm=llm, **extra)
-        return {classifier.name: 1 if classifier_result else 0}
+        return {classifier.name: 1 if classifier.is_jailbreak(classifier_result) else 0}
     
     def _get_classifier(self, classifier_type: Classifier) -> Optional[BaseClassifier]:
         return next((classifier for classifier in self._classifiers if classifier._classifier_type == classifier_type), None)
