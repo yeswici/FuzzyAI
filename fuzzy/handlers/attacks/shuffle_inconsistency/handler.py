@@ -10,7 +10,6 @@ from fuzzy.handlers.attacks.enums import FuzzerAttackMode
 from fuzzy.handlers.attacks.models import AttackResultEntry
 from fuzzy.handlers.classifiers import HarmfulScoreLLMClassifier, HarmScore
 from fuzzy.handlers.classifiers.enums import Classifier
-from fuzzy.llm.providers.base import BaseLLMProvider
 
 logger = logging.getLogger(__name__)
 
