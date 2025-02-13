@@ -1,15 +1,16 @@
 import logging
 import random
-from typing import Any, Optional, Type, List, Tuple
 from dataclasses import dataclass
+from typing import Any, List, Optional, Tuple, Type
+
 from pydantic import BaseModel, Field
+
 from fuzzy.handlers.attacks.base import BaseAttackTechniqueHandler, attack_handler_fm
 from fuzzy.handlers.attacks.enums import FuzzerAttackMode
 from fuzzy.handlers.attacks.models import AttackResultEntry
-from fuzzy.llm.providers.base import BaseLLMProvider
 from fuzzy.handlers.classifiers import HarmfulScoreLLMClassifier, HarmScore
 from fuzzy.handlers.classifiers.enums import Classifier
-
+from fuzzy.llm.providers.base import BaseLLMProvider
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +45,7 @@ class ShuffleInconsistencyAttackHandler(BaseAttackTechniqueHandler[ShuffleAttack
         if not any(isinstance(c, supported_classifiers) for c in self._classifiers):
             raise ValueError(
                 f"Shuffle Inconsistency attack mode supported classifiers are: "
-                f"{supported_classifiers}. {classifier.name} is not supported."
+                f"{supported_classifiers}. available classifiers: {self._classifiers}"
             )
 
     def _tokenize(self, text: str) -> List[str]:
@@ -72,8 +73,11 @@ class ShuffleInconsistencyAttackHandler(BaseAttackTechniqueHandler[ShuffleAttack
             response = await llm.generate(text, **self._extra)
 
             # Classify the response using the classifier
-            if response and hasattr(response, 'response'):
-                score = await self._get_classifier(Classifier.HARM_SCORE_LLM)._classify(
+            if response and response.response:
+                if (classifier := self._get_classifier(Classifier.HARM_SCORE_LLM)) is None:
+                    raise ValueError("HarmfulScoreLLMClassifier not found")
+                
+                score = await classifier._classify(
                     response.response, llm
                 )
                 return score, response.response
@@ -143,8 +147,8 @@ class ShuffleInconsistencyAttackHandler(BaseAttackTechniqueHandler[ShuffleAttack
             return AttackResultEntry(
                 original_prompt=prompt,
                 current_prompt=best_attempt.shuffled_text,
-                response=final_response.response if hasattr(final_response, 'response') else final_response,
-                meta={
+                response=final_response.response if final_response else str(),
+                extra={
                     "harm_score": best_score.value,
                     "harm_level": best_score.name,
                     "shuffle_indices": best_attempt.shuffled_indices,
@@ -157,7 +161,7 @@ class ShuffleInconsistencyAttackHandler(BaseAttackTechniqueHandler[ShuffleAttack
                 original_prompt=prompt,
                 current_prompt=latest_attempt.shuffled_text,
                 response=latest_llm_response,
-                meta={
+                extra={
                     "harm_score": latest_attempt.harm_score.value,
                     "harm_level": latest_attempt.harm_score.name,
                     "shuffle_indices": latest_attempt.shuffled_indices,
