@@ -9,6 +9,7 @@ from .default.handler import DefaultAttackHandler
 from .genetic.handler import GeneticAttackTechniqueHandler
 from .gpt_fuzzer.handler import GPTFuzzerAttackHandler
 from .hallucinations.handler import HallucinationsAttackHandler
+from .history_framing.handler import HistoryFramingAttackhandler
 from .manyshot.handler import ManyShotAttackHandler
 from .paraphraser.handler import PresuasiveParaphraser
 from .piglatin.handler import PigLatinAttackHandler
