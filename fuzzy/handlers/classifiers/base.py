@@ -33,7 +33,7 @@ class BaseClassifier(abc.ABC):
     """
     Base class for classifiers.
     """
-    def __init__(self, classifier: Classifier, truncate_cot: bool, **extra: Any) -> None:
+    def __init__(self, classifier: Classifier, truncate_cot: bool = True, **extra: Any) -> None:
         self._name = str()
         self._classifier_type = classifier
         self._truncate_cot = truncate_cot
