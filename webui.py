@@ -10,6 +10,7 @@ from fuzzy.handlers.classifiers.base import classifiers_fm
 from fuzzy.handlers.classifiers.enums import Classifier
 from fuzzy.llm.providers.base import llm_provider_fm
 from fuzzy.llm.providers.enums import LLMProvider
+from utils import get_ollama_models, run_ollama_list_command
 
 st.set_page_config(
     page_title="FuzzyAI Web UI",
@@ -19,24 +20,23 @@ st.set_page_config(
 
 st.sidebar.image("resources/logo.png", width=175)
 
-if 'env_vars' not in st.session_state:
-    st.session_state.env_vars = {}
-if 'verbose' not in st.session_state:
-    st.session_state.verbose = False
-if 'db_address' not in st.session_state:
-    st.session_state.db_address = "127.0.0.1"
-if 'max_workers' not in st.session_state:
-    st.session_state.max_workers = 1
-if 'max_tokens' not in st.session_state:
-    st.session_state.max_tokens = 100
-if 'extra_params' not in st.session_state:
-    st.session_state.extra_params = {}
-if 'selected_models' not in st.session_state:
-    st.session_state.selected_models = []
-if 'selected_attacks' not in st.session_state:
-    st.session_state.selected_attacks = []
-if 'selected_classifiers' not in st.session_state:
-    st.session_state.selected_classifiers = []
+defaults = {
+    "env_vars": {},
+    "verbose": False,
+    "db_address": "127.0.0.1",
+    "max_workers": 1,
+    "max_tokens": 100,
+    "truncate_cot": True,
+    "extra_params": {},
+    "selected_models": [],
+    "selected_models_aux": [],
+    "selected_attacks": [],
+    "selected_classifiers": [],
+}
+
+for key, value in defaults.items():
+    if key not in st.session_state:
+        st.session_state[key] = value
     
 st.sidebar.header("Environment Settings")
 api_keys = [x.value for x in EnvironmentVariables]
@@ -77,41 +77,59 @@ if 'step' not in st.session_state:
     st.session_state.step = 1
 
 if st.session_state.step == 1:
+    ollama_models: list[str] = []
+
+    def on_model_select(category, select_key, models: str):
+        def on_change():
+            st.session_state[models].append(f"{category}/{st.session_state[select_key]}")
+        return on_change
+    
     st.header("Step 1: Model Selection")
+    st.subheader("Select target models for the attack")
     model_options = {provider.value: llm_provider_fm[provider].get_supported_models() for provider in LLMProvider}
     
-    # Declare a multiselect that shows models across categories, including Ollama models with tags
-    all_selected_models = st.session_state.get('selected_models', [])
-
     # Category selection
-    category = st.selectbox("Select Model Category", options=model_options.keys())
+    category = st.selectbox("Select Model Category", options=model_options.keys(), index=None)
 
     # If 'ollama' is selected, show input for model tag
     if category == "ollama":
-        ollama_model_tag = st.text_input("Enter Ollama Model Tag", value="")
-        if ollama_model_tag:
-            # Add Ollama model with the tag to the available models list
-            ollama_model = f"ollama/{ollama_model_tag}"
-            all_selected_models.append(ollama_model)
-    else:
-        # Add models from other categories
-        models = st.multiselect(f"Select {category} Models", options=model_options[category])
-        all_selected_models.extend([f"{category}/{model}" for model in models])
-        all_selected_models = list(set(all_selected_models))
+        ollama_models = get_ollama_models()
+        model_options[category] = ollama_models
+
+    if category:
+        st.selectbox(f"Select {category} Models", options=model_options[category], index=None, 
+                        key='model', on_change=on_model_select(category, 'model', 'selected_models'))
 
     # Always visible multiselect to see and manage all selected models
     st.session_state.selected_models = st.multiselect(
         "Selected Models", 
-        options=all_selected_models,
-        default=all_selected_models
+        options=st.session_state.selected_models,
+        default=st.session_state.selected_models
+    )
+
+    st.subheader("Select auxiliary models")
+    st.markdown("Auxiliary models are optional and can be used for additional tasks such as classification or other purposes. If you don't need any auxiliary models, you can skip this selection.")
+    # Category selection
+    category_aux = st.selectbox("Select Model Category", options=model_options.keys(), key="cat_aux", index=None)
+
+    if category_aux == "ollama" and not ollama_models:
+        model_options[category] = get_ollama_models()
+
+    if category_aux:
+        st.selectbox(f"Select {category_aux} Models", options=model_options[category_aux], 
+                        index=None, key='model_aux', on_change=on_model_select(category, 'model_aux', 'selected_models_aux'))
+
+    # Always visible multiselect to see and manage all selected models
+    st.session_state.selected_models_aux = st.multiselect(
+        "Selected Auxiliary Models", 
+        options=st.session_state.selected_models_aux,
+        default=st.session_state.selected_models_aux
     )
 
     if st.button("Next"):
         if not st.session_state.selected_models:
             st.error("Please select at least one model")
             st.stop()
-        
-        st.session_state.selected_models = all_selected_models
         st.session_state.step = 2
         st.rerun()
 
@@ -201,8 +219,11 @@ elif st.session_state.step == 5:
     if st.session_state.verbose:
         command.append("-v")
 
-    for model in st.session_state.selected_models:
+    for model in list(set(st.session_state.selected_models)):
         command.extend(["-m", model])
+
+    for model in list(set(st.session_state.selected_models_aux)):
+        command.extend(["-x", model])
 
     for attack in st.session_state.selected_attacks:
         command.extend(["-a", attack])
