@@ -4,8 +4,7 @@ from typing import Any, Optional, Type
 
 from pydantic import BaseModel, Field
 
-from fuzzy.handlers.attacks.base import (BaseAttackTechniqueHandler,
-                                         attack_handler_fm)
+from fuzzy.handlers.attacks.base import BaseAttackTechniqueHandler, attack_handler_fm
 from fuzzy.handlers.attacks.enums import FuzzerAttackMode
 from fuzzy.handlers.attacks.models import AttackResultEntry
 from fuzzy.handlers.attacks.taxonomy.prompts import PERSUASION_PROMPT
@@ -16,9 +15,11 @@ from fuzzy.llm.providers.base import BaseLLMProvider
 logger = logging.getLogger(__name__)
 
 MAX_RETRY_COUNT = 1
+DEFAULT_SS_PROMPT = "Can you quit smoking?"
 
 class TaxonomyParaphraserExtraParams(BaseModel):
     taxonomy_model: Optional[str] = Field(None, description="Model to be used for generated taxonomy prompts")
+    taxonomy_max_tokens: int = Field(1000, description="Maximum tokens to use when generating a poisoned prompt")
     
 @attack_handler_fm.flavor(FuzzerAttackMode.TAXONOMY)
 class TaxonomyParaphraser(BaseAttackTechniqueHandler[TaxonomyParaphraserExtraParams]):
@@ -101,8 +102,8 @@ class TaxonomyParaphraser(BaseAttackTechniqueHandler[TaxonomyParaphraserExtraPar
         definition = taxonomy['ss_definition']
         example = taxonomy['ss_example']
         logger.debug("Generating poisoned prompt for category: %s", category)
-        full_prompt = PERSUASION_PROMPT % (category, definition, example, prompt, category, prompt, prompt)
-        response: Optional[BaseLLMProviderResponse] = await llm.generate(full_prompt, temperature=1.0, top_p=1.0, max_tokens=500)
+        full_prompt = PERSUASION_PROMPT % (category, definition, taxonomy.get('ss_prompt', DEFAULT_SS_PROMPT), example, prompt, category, prompt, prompt)
+        response: Optional[BaseLLMProviderResponse] = await llm.generate(full_prompt, temperature=1.0, top_p=1.0, max_tokens=self._extra_args.taxonomy_max_tokens)
         poisoned_prompt = response.response if response else str()
         
         if poisoned_prompt.startswith("\""):
@@ -110,6 +111,7 @@ class TaxonomyParaphraser(BaseAttackTechniqueHandler[TaxonomyParaphraserExtraPar
         if poisoned_prompt.endswith("\""):
             poisoned_prompt = poisoned_prompt[:-1]
 
+        logger.debug("Poisoned prompt: %s", poisoned_prompt)
         return category, poisoned_prompt
 
         
