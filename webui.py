@@ -45,8 +45,29 @@ new_env_value = st.sidebar.text_input("Value")
 if st.sidebar.button("Add Variable"):
     if new_env_key and new_env_value:
         st.session_state.env_vars[new_env_key] = new_env_value
-for key, value in st.session_state.env_vars.items():
-    st.sidebar.write(f"{key}: {value}")
+
+# Create a container for the table
+with st.sidebar.container():
+    if st.session_state.env_vars:
+        # Create three columns for key, value, and delete button
+        cols = st.columns([2, 2, 1])
+        
+        # Headers
+        cols[0].markdown("**Key**")
+        cols[1].markdown("**Value**")
+        cols[2].markdown("**Action**")
+        
+        # Display each variable in a row
+        for key, value in dict(st.session_state.env_vars).items():
+            col1, col2, col3 = st.columns([2, 2, 1])
+            col1.text(key)
+            #masked_value = '*' * len(value) if 'key' in key.lower() or 'token' in key.lower() else value
+            masked_value = value[:8] + "..."
+            col2.text(masked_value)
+            if col3.button("❌", key=f"delete_{key}"):
+                del st.session_state.env_vars[key]
+                st.rerun()
+
 st.session_state.verbose = st.sidebar.checkbox("Verbose Logging", value=st.session_state.verbose)
 st.session_state.db_address = st.sidebar.text_input("MongoDB Address", value=st.session_state.db_address)
 st.session_state.max_workers = st.sidebar.number_input("Max Workers", min_value=1, value=st.session_state.max_workers)
