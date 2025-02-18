@@ -83,7 +83,6 @@ class BaseAttackTechniqueHandler(BaseAttackTechniqueHandlerProto, Generic[T]):
         self._model_queue_map: dict[str, asyncio.Queue[BaseLLMProvider]] = self._create_model_queue_map([x._qualified_model_name for x in llms])
         self._refinement_handler = ResponseRefinementHandler(improve_attempts) if improve_attempts > 0 else None
 
-
         for llm in llms:
             self._model_queue_map[llm.qualified_model_name].put_nowait(llm)
 
@@ -93,6 +92,7 @@ class BaseAttackTechniqueHandler(BaseAttackTechniqueHandlerProto, Generic[T]):
             logger.error(f"You must provide the following extra arguments: {ex.errors()}", exc_info=True)
             raise RuntimeError("Invalid or missing extra arguments, please use --list-extra or see wiki") from ex
         
+        logger.debug(f"Initialized attack handler with extra params:\n:{self._extra_args.model_dump_json()}")
         self._extra = extra # Save raw extra, maybe we need to remove this
 
     """
