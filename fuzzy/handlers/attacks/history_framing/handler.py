@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 @attack_handler_fm.flavor(FuzzerAttackMode.HISTORY_FRAMING)
 class HistoryFramingAttackhandler(TaxonomyParaphraser):
     """
-    Taxonomy Paraphraser attack technique (https://arxiv.org/pdf/2401.06373)
+    History framing attack technique
     """
 
     def _load_taxonomy_dataset(self) -> None:
