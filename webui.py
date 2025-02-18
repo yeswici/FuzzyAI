@@ -25,7 +25,7 @@ defaults = {
     "verbose": False,
     "db_address": "127.0.0.1",
     "max_workers": 1,
-    "max_tokens": 100,
+    "max_tokens": 1000,
     "truncate_cot": True,
     "extra_params": {},
     "selected_models": [],
