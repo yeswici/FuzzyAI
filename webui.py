@@ -215,7 +215,21 @@ elif st.session_state.step == 4:
 
 elif st.session_state.step == 5:
     st.header("Step 5: Execution")
-    command = ["python", "run.py", "-d", st.session_state.db_address, "-w", str(st.session_state.max_workers), "-N", str(st.session_state.max_tokens)]
+    command = ["python", "run.py"]
+    
+    if st.session_state.db_address != defaults["db_address"]:
+        command.extend([
+            "-d", st.session_state.db_address
+        ])
+    if st.session_state.max_workers != defaults["max_workers"]:
+        command.extend([
+            "-w", str(st.session_state.max_workers)
+        ])
+    if st.session_state.max_tokens != defaults["max_tokens"]:
+        command.extend([
+            "-N", str(st.session_state.max_tokens)
+        ])
+        
     if st.session_state.verbose:
         command.append("-v")
 
