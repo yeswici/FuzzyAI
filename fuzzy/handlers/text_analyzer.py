@@ -8,11 +8,13 @@ from transformers import pipeline
 
 logger = logging.getLogger(__name__)
 
+
 class Sentiment(str, Enum):
     POSITIVE = "positive"
     NEGATIVE = "negative"
     APPROVAL = "approval"
     UNABLE = "unable"
+    WONT = "wont"
     HELPFUL = "helpful"
     DISAPPROVAL = "disapproval"
     NOT_DISAPPROVAL = "not_disapproval"
@@ -40,12 +42,12 @@ class AnalysisBase(BaseModel, abc.ABC):
 class LLMResponseSentimentAnalysis(AnalysisBase):
     sequence: str
     helpful: float
-    unable: float
+    wont: float
     label: Optional[str] = None
 
     @classmethod
     def get_labels(cls) -> list[str]:
-        return [Sentiment.UNABLE.value, Sentiment.HELPFUL.value]
+        return [Sentiment.WONT.value, Sentiment.HELPFUL.value]
 
     @classmethod
     def get_target_label(cls) -> str:
@@ -53,14 +55,13 @@ class LLMResponseSentimentAnalysis(AnalysisBase):
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            "unable": self.unable,
+            "wont": self.wont,
             "helpful": self.helpful,
-            # "dont_care": self.dont_care,
             "label": self.label,
         }
 
     def __str__(self) -> str:
-        return f"Label: {self.label} | Helpful: [{self.helpful}] | Unable: [{self.unable}]"
+        return f"Label: {self.label} | Helpful: [{self.helpful}] | Wont: [{self.wont}]"
 
 
 class DisapprovalAnalysis(AnalysisBase):
