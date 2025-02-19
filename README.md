@@ -41,6 +41,9 @@ The FuzzyAI Fuzzer is a powerful tool for automated LLM fuzzing. It is designed 
    streamlit run webui.py
    ```
 
+## Notebooks
+We've included interactive Jupyter notebooks you can use under [notebooks/](https://github.com/cyberark/FuzzyAI/tree/main/notebooks). For more information, see [notebooks wiki](https://github.com/cyberark/FuzzyAI/wiki#notebooks).
+
 ## Datasets
 
 We've included some datasets you can use under [resources/](https://github.com/cyberark/FuzzyAI/tree/main/resources). For more information, see [datasets wiki](https://github.com/cyberark/FuzzyAI/wiki#datasets).
