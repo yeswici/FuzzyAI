@@ -82,8 +82,8 @@ def print_report(report: FuzzerResult) -> None:
     RED = "\033[91m"
     RESET = "\033[0m"
     table_data = []
-    green = f"{GREEN}✔{RESET}"
-    red = f"{RED}\u2716{RESET}"
+    green = f"✅"
+    red = f"❌"
 
     for entry in report.attacking_techniques or []:
         for model_entry in entry.models:
