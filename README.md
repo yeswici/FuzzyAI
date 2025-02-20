@@ -113,7 +113,7 @@ FuzzyAI supports various models across top providers, including:
 | Provider     | Models                                                                                                   |
 |--------------|----------------------------------------------------------------------------------------------------------|
 | **Anthropic**| Claude (3.5, 3.0, 2.1)                                                                                   |
-| **OpenAI**   | GPT-4o, GPT-4o mini, GPT-4                                                                                 |
+| **OpenAI**   | GPT-4o, GPT-4o mini, GPT o3                                                                                 |
 | **Gemini**   | Gemini Pro, Gemini 1.5                                                                                  |
 | **Azure**    | GPT-4, GPT-3.5 Turbo                                                                                    |
 | **Bedrock**  | Claude (3.5, 3.0), Meta (LLaMa)                                                                             |
