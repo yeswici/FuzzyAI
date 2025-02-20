@@ -33,7 +33,7 @@ class LLMResponseSentimentClassifier(BaseClassifier):
         classification: LLMResponseSentimentAnalysis = self._classifier.analyze_one(text)  # type: ignore
         clf_result = classification.helpful > self._threshold
 
-        logger.debug(f"Classifier <{self._name}> clf_result: {clf_result}, label: {classification.label}, helpful: {classification.helpful}, unable: {classification.unable}")
+        logger.debug(f"Classifier <{self._name}> clf_result: {clf_result}, label: {classification.label}, helpful: {classification.helpful}, wont: {classification.wont}")
         return clf_result, classification.helpful
 
     async def _classify(self, text: str, **extra: Any) -> Any:

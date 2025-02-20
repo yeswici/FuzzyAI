@@ -41,6 +41,9 @@ The FuzzyAI Fuzzer is a powerful tool for automated LLM fuzzing. It is designed 
    streamlit run webui.py
    ```
 
+## Notebooks
+We've included interactive Jupyter notebooks you can use under [resources/notebooks/](https://github.com/cyberark/FuzzyAI/tree/main/resources/notebooks). For more information, see [notebooks wiki](https://github.com/cyberark/FuzzyAI/wiki#notebooks).
+
 ## Datasets
 
 We've included some datasets you can use under [resources/](https://github.com/cyberark/FuzzyAI/tree/main/resources). For more information, see [datasets wiki](https://github.com/cyberark/FuzzyAI/wiki#datasets).
@@ -110,7 +113,7 @@ FuzzyAI supports various models across top providers, including:
 | Provider     | Models                                                                                                   |
 |--------------|----------------------------------------------------------------------------------------------------------|
 | **Anthropic**| Claude (3.5, 3.0, 2.1)                                                                                   |
-| **OpenAI**   | GPT-4o, GPT-4o mini, GPT-4                                                                                 |
+| **OpenAI**   | GPT-4o, GPT-4o mini, GPT o3                                                                                 |
 | **Gemini**   | Gemini Pro, Gemini 1.5                                                                                  |
 | **Azure**    | GPT-4, GPT-3.5 Turbo                                                                                    |
 | **Bedrock**  | Claude (3.5, 3.0), Meta (LLaMa)                                                                             |
