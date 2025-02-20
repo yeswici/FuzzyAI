@@ -1,5 +1,6 @@
 import os
 import subprocess
+from typing import Optional
 
 import streamlit as st
 
@@ -10,7 +11,7 @@ from fuzzy.handlers.classifiers.base import classifiers_fm
 from fuzzy.handlers.classifiers.enums import Classifier
 from fuzzy.llm.providers.base import llm_provider_fm
 from fuzzy.llm.providers.enums import LLMProvider
-from utils import get_ollama_models, run_ollama_list_command
+from utils import get_ollama_models
 
 st.set_page_config(
     page_title="FuzzyAI Web UI",
@@ -32,6 +33,7 @@ defaults = {
     "selected_models_aux": [],
     "selected_attacks": [],
     "selected_classifiers": [],
+    "classifier_model": None
 }
 
 for key, value in defaults.items():
@@ -68,10 +70,29 @@ with st.sidebar.container():
                 del st.session_state.env_vars[key]
                 st.rerun()
 
+st.sidebar.header("Classifier Model")
+if st.session_state.selected_models_aux:
+    classifier_model = st.sidebar.selectbox(
+        "Select Classifier Model (optional)",
+        options=st.session_state.selected_models_aux,
+        index=None if st.session_state.classifier_model is None 
+        else st.session_state.selected_models_aux.index(st.session_state.classifier_model)
+    )
+    st.session_state.classifier_model = classifier_model
+else:
+    st.sidebar.selectbox(
+        "Select Classifier Model (optional)",
+        options=["No aux models available"],
+        disabled=True
+    )
+    st.session_state.classifier_model = None
+
+st.sidebar.header("Fuzzy settings")
 st.session_state.verbose = st.sidebar.checkbox("Verbose Logging", value=st.session_state.verbose)
 st.session_state.db_address = st.sidebar.text_input("MongoDB Address", value=st.session_state.db_address)
 st.session_state.max_workers = st.sidebar.number_input("Max Workers", min_value=1, value=st.session_state.max_workers)
 st.session_state.max_tokens = st.sidebar.number_input("Max Tokens", min_value=1, value=st.session_state.max_tokens)
+
 
 if 'step' not in st.session_state:
     st.session_state.step = 1
@@ -117,7 +138,7 @@ if st.session_state.step == 1:
 
     if category_aux:
         st.selectbox(f"Select {category_aux} Models", options=model_options[category_aux], 
-                        index=None, key='model_aux', on_change=on_model_select(category, 'model_aux', 'selected_models_aux'))
+                        index=None, key='model_aux', on_change=on_model_select(category_aux, 'model_aux', 'selected_models_aux'))
 
     # Always visible multiselect to see and manage all selected models
     st.session_state.selected_models_aux = st.multiselect(
@@ -244,6 +265,9 @@ elif st.session_state.step == 5:
 
     for classifier in st.session_state.selected_classifiers:
         command.extend(["-c", classifier])
+
+    if st.session_state.classifier_model:
+        command.extend(["--classifier-model", st.session_state.classifier_model])
 
     ep = {}
     if st.session_state.extra_params:

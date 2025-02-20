@@ -5,16 +5,12 @@ from typing import Any, Optional, Union
 import aiohttp
 import backoff
 
-from fuzzy.enums import LLMRole, EnvironmentVariables
+from fuzzy.enums import EnvironmentVariables, LLMRole
 from fuzzy.llm.models import BaseLLMProviderResponse
-from fuzzy.llm.providers.base import (BaseLLMMessage, BaseLLMProvider,
-                                      BaseLLMProviderException,
-                                      BaseLLMProviderRateLimitException,
-                                      llm_provider_fm)
+from fuzzy.llm.providers.base import (BaseLLMMessage, BaseLLMProvider, BaseLLMProviderException,
+                                      BaseLLMProviderRateLimitException, llm_provider_fm)
 from fuzzy.llm.providers.enums import LLMProvider
-from fuzzy.llm.providers.gemini.models import (GenerateContentRequest,
-                                               GenerateContentResponse,
-                                               SafetySetting)
+from fuzzy.llm.providers.gemini.models import GenerateContentRequest, GenerateContentResponse, SafetySetting
 from fuzzy.llm.providers.shared.decorators import api_endpoint
 
 logger = logging.getLogger(__name__)
@@ -42,7 +38,7 @@ class GeminiProvider(BaseLLMProvider):
 
     @classmethod
     def get_supported_models(cls) -> Union[list[str], str]:
-        return ["gemini-pro", "gemini-1.5-pro"]
+        return ["gemini-pro", "gemini-1.5-pro", "gemini-1.5-flash"]
     
     @backoff.on_exception(backoff.expo, BaseLLMProviderRateLimitException, max_value=10)
     @api_endpoint("generateContent")
