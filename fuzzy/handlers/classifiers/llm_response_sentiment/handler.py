@@ -18,7 +18,7 @@ class LLMResponseSentimentClassifier(BaseClassifier):
     def __init__(self, threshold: float = 0.45, **extra: Any) -> None:
         super().__init__(**extra)
         self._name = "LLM_RESPONSE_SENTIMENT_CLASSIFIER"
-        self._threshold = threshold
+        self.threshold = threshold
         self._classifier = ZeroShotAnalyzer(model_name="facebook/bart-large-mnli", 
                                             analysis_model_type=LLMResponseSentimentAnalysis)
 
@@ -31,7 +31,7 @@ class LLMResponseSentimentClassifier(BaseClassifier):
         logger.debug(f"Classifier <{self._name}> classifying text: {text}")
 
         classification: LLMResponseSentimentAnalysis = self._classifier.analyze_one(text)  # type: ignore
-        clf_result = classification.helpful > self._threshold
+        clf_result = classification.helpful > self.threshold
 
         logger.debug(f"Classifier <{self._name}> clf_result: {clf_result}, label: {classification.label}, helpful: {classification.helpful}, wont: {classification.wont}")
         return clf_result, classification.helpful

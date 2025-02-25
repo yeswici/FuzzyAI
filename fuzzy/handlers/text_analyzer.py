@@ -48,6 +48,14 @@ class LLMResponseSentimentAnalysis(AnalysisBase):
     @classmethod
     def get_labels(cls) -> list[str]:
         return [Sentiment.WONT.value, Sentiment.HELPFUL.value]
+    
+    @staticmethod
+    def get_attack_success_label() -> str:
+        return Sentiment.HELPFUL.value
+    
+    @staticmethod
+    def get_attack_failed_label() -> str:
+        return Sentiment.WONT.value
 
     @classmethod
     def get_target_label(cls) -> str:
