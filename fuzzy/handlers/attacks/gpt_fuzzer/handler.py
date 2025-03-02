@@ -104,7 +104,7 @@ class GPTFuzzerAttackHandler(BaseAttackTechniqueHandler[GPTFuzzerAttackHandlerEx
 
         logger.info("Finished running the action")
         async with self._borrow(self._model) as llm:
-            changed_prompt = variation_response.response.replace(QUESTION_PLACEHOLDER, prompt) #type:ignore
+            changed_prompt = variation_response.response.replace(QUESTION_PLACEHOLDER, prompt)  # type: ignore
             response = await llm.generate(changed_prompt, **self._extra)
             result = AttackResultEntry(original_prompt=prompt,
                                        current_prompt=changed_prompt,
