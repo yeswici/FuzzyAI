@@ -5,20 +5,17 @@ from pydantic import BaseModel, Field
 
 from fuzzy.consts import DEFAULT_OPEN_SOURCE_MODEL
 from fuzzy.enums import LLMRole
-from fuzzy.handlers.attacks.base import (BaseAttackTechniqueHandler,
-                                         BaseAttackTechniqueHandlerException,
+from fuzzy.handlers.attacks.base import (BaseAttackTechniqueHandler, BaseAttackTechniqueHandlerException,
                                          attack_handler_fm)
 from fuzzy.handlers.attacks.enums import FuzzerAttackMode
 from fuzzy.handlers.attacks.models import AttackResultEntry
-from fuzzy.handlers.attacks.word_game.word_game_prompts import (
-    HINTS_GENERATION_PROMPT, REPHRASING_PROMPT, WORD_GAME_PLUS_PROMPT,
-    WORD_GAME_PROMPT, WORD_IDENTIFICATION_PROMPT)
+from fuzzy.handlers.attacks.word_game.word_game_prompts import (HINTS_GENERATION_PROMPT, REPHRASING_PROMPT,
+                                                                WORD_GAME_PLUS_PROMPT, WORD_GAME_PROMPT,
+                                                                WORD_IDENTIFICATION_PROMPT)
 from fuzzy.llm.models import BaseLLMProviderResponse
 from fuzzy.llm.providers.base import BaseLLMMessage, BaseLLMProvider
-from fuzzy.utils.custom_logging_formatter import CustomFormatter
 
 logger = logging.getLogger(__name__)
-Formatter = CustomFormatter()
 
 DEFAULT_GAME_GENERATION_MODEL: Final[str] = DEFAULT_OPEN_SOURCE_MODEL
 
