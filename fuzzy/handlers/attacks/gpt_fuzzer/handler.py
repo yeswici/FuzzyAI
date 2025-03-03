@@ -6,20 +6,19 @@ from typing import Any, Final, Optional, Type
 from pydantic import BaseModel, Field
 
 from fuzzy.consts import DEFAULT_OPEN_SOURCE_MODEL
-from fuzzy.handlers.attacks.base import (BaseAttackTechniqueHandler,
-                                         BaseAttackTechniqueHandlerException,
+from fuzzy.handlers.attacks.base import (BaseAttackTechniqueHandler, BaseAttackTechniqueHandlerException,
                                          attack_handler_fm)
 from fuzzy.handlers.attacks.enums import FuzzerAttackMode
-from fuzzy.handlers.attacks.gpt_fuzzer.prompt_templates import (
-    ATTACKING_PROMPTS_TEMPLATES, CROSSOVER_ACTION_PROMPT, EXPAND_ACTION_PROMPT,
-    GENERATE_ACTION_PROMPT, REPHRASE_ACTION_PROMPT, SHORTEN_ACTION_PROMPT)
+from fuzzy.handlers.attacks.gpt_fuzzer.prompt_templates import (ATTACKING_PROMPTS_TEMPLATES, CROSSOVER_ACTION_PROMPT,
+                                                                EXPAND_ACTION_PROMPT, GENERATE_ACTION_PROMPT,
+                                                                REPHRASE_ACTION_PROMPT, SHORTEN_ACTION_PROMPT)
 from fuzzy.handlers.attacks.models import AttackResultEntry
 from fuzzy.llm.models import BaseLLMProviderResponse
 from fuzzy.llm.providers.base import BaseLLMProvider
 
 logger = logging.getLogger(__name__)
 
-QUESTION_PLACEHOLDER: Final[str] = "{INSERT_PROMPT_HERE}"
+QUESTION_PLACEHOLDER: Final[str] = "<INSERT_PROMPT_HERE>"
 
 GENERATE: Final[str] = "generate"
 CROSSOVER: Final[str] = "crossover"
@@ -105,7 +104,7 @@ class GPTFuzzerAttackHandler(BaseAttackTechniqueHandler[GPTFuzzerAttackHandlerEx
 
         logger.info("Finished running the action")
         async with self._borrow(self._model) as llm:
-            changed_prompt = variation_response.response.format(INSERT_PROMPT_HERE=prompt) #type:ignore
+            changed_prompt = variation_response.response.replace(QUESTION_PLACEHOLDER, prompt)  # type: ignore
             response = await llm.generate(changed_prompt, **self._extra)
             result = AttackResultEntry(original_prompt=prompt,
                                        current_prompt=changed_prompt,

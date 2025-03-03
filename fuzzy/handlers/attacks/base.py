@@ -23,7 +23,7 @@ from fuzzy.utils.flavor_manager import FlavorManager
 
 logger = logging.getLogger(__name__)
 
-T = TypeVar("T")
+T = TypeVar("T", bound=BaseModel)
 
 class NoArgs(BaseModel):
     ...
@@ -88,11 +88,11 @@ class BaseAttackTechniqueHandler(BaseAttackTechniqueHandlerProto, Generic[T]):
 
         try:
             self._extra_args: T = cast(T, self.extra_args_cls()(**extra))
+            logger.debug(f"Initialized attack handler with extra params:\n{self._extra_args.model_dump_json()}")
         except ValidationError as ex:
             logger.error(f"You must provide the following extra arguments: {ex.errors()}", exc_info=True)
             raise RuntimeError("Invalid or missing extra arguments, please use --list-extra or see wiki") from ex
         
-        logger.debug(f"Initialized attack handler with extra params:\n:{self._extra_args.model_dump_json()}")
         self._extra = extra # Save raw extra, maybe we need to remove this
 
     """
