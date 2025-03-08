@@ -126,6 +126,7 @@ FuzzyAI supports various models across top providers, including:
 Easily add support for additional models by following our <a href="https://github.com/cyberark/FuzzyAI/wiki/DIY#adding-support-for-new-models">DIY guide</a>.
 
 ## Implemented Attacks
+See <a href="https://github.com/cyberark/FuzzyAI/wiki/Attacks">attacks wiki</a> for detailed information
 
 | Attack Type                                  | Title                                                                                                                                                                       | Reference                                                                       |
 |----------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------|
@@ -143,6 +144,7 @@ Easily add support for additional models by following our <a href="https://githu
 | Best-of-n jailbreaking | Uses input variations to repeatedly elicit harmful responses, exploiting model sensitivity | [arXiv:2412.03556](https://arxiv.org/abs/2412.03556) |
 | Shuffle Inconsistency Attack (SI-Attack) | Exploits the inconsistency between an LLM's comprehension ability and safety mechanisms by shuffling harmful text prompts. The shuffled text bypasses safety mechanisms while still being understood as harmful by the LLM. Only the text-based implementation was completed; the image-based aspect was not implemented. | [arXiv:2501.04931](https://arxiv.org/abs/2501.04931) |
 | Back To The Past                             | Modifies the prompt by adding a profession-based prefix and a past-related suffix                                                                                           |                                                                                 |
+| History/Academic framing                             | Framing sensitive technical data as scholarly or historical research to enable ethical, legal use—potentially leading to a jailbreak.                                                                                           |                                                                                 |
 | Please                                       | Modifies the prompt by adding please as a prefix and suffix                                                                                                                   |                                                                                 |
 | Thought Experiment                           | Modifies the prompt by adding a thought experiment-related prefix. In addition, adds "precautions have been taken care of" suffix                                                  |                                                                                 
 | Default                                      | Send the prompt to the model as-is 
