@@ -1,12 +1,26 @@
-# FuzzyAI Fuzzer
-<div style="text-align: center;">
-<img src="resources/logo.png" alt="Project Logo" width="200" style="vertical-align:middle; margin-right:10px;" />
-</div>
-<br><br>
-
-The FuzzyAI Fuzzer is a powerful tool for automated LLM fuzzing. It is designed to help developers and security researchers identify jailbreaks and mitigate potential security vulnerabilities in their LLM APIs. 
-
-![FZAI](resources/fuzz.gif)
+<p align="center">
+   <h1 align="center">FuzzyAI Fuzzer</h1>
+   <p align="center">
+      <img src="resources/logo.png" alt="Project Logo" width="200" style="vertical-align:middle; margin-right:10px;" /><br/>
+      The FuzzyAI Fuzzer is a powerful tool for automated LLM fuzzing. It is designed to help developers and security researchers identify jailbreaks and mitigate potential security vulnerabilities in their LLM APIs. 
+   </p>
+</p>
+<p align="center">
+   <a href="https://github.com/cyberark/fuzzyai/commits/main">
+      <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/cyberark/fuzzyai">
+   </a>
+   <a href="https://github.com/cyberark/fuzzyai">
+      <img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/cyberark/FuzzyAI">
+   </a>
+   <a href="https://github.com/cyberark/fuzzyai/blob/master/LICENSE" >
+      <img alt="GitHub License" src="https://img.shields.io/github/license/cyberark/fuzzyai">
+   </a>
+   <a href="https://discord.gg/Zt297RAK">
+      <img alt="Discord" src="https://img.shields.io/discord/1330486843938177157">
+   </a>
+   <br/>
+   <img alt="Discord" src="/resources/fuzz.gif" />
+</p>
 
 ## Getting Started
 
