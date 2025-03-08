@@ -18,8 +18,9 @@
    <a href="https://discord.gg/Zt297RAK">
       <img alt="Discord" src="https://img.shields.io/discord/1330486843938177157">
    </a>
+   <br/><br/>
+   <img alt="fuzzgif" src="/resources/fuzz.gif" />
    <br/>
-   <img alt="Discord" src="/resources/fuzz.gif" />
 </p>
 
 ## Getting Started
