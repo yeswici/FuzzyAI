@@ -7,13 +7,10 @@ import backoff
 
 from fuzzy.enums import EnvironmentVariables
 from fuzzy.llm.models import BaseLLMProviderResponse
-from fuzzy.llm.providers.anthropic.models import (AnthropicGenerateOptions,
-                                                  AnthropicMessagesRequest,
+from fuzzy.llm.providers.anthropic.models import (AnthropicGenerateOptions, AnthropicMessagesRequest,
                                                   AnthropicMessagesResponse)
-from fuzzy.llm.providers.base import (BaseLLMMessage, BaseLLMProvider,
-                                      BaseLLMProviderException,
-                                      BaseLLMProviderRateLimitException,
-                                      llm_provider_fm)
+from fuzzy.llm.providers.base import (BaseLLMMessage, BaseLLMProvider, BaseLLMProviderException,
+                                      BaseLLMProviderRateLimitException, llm_provider_fm)
 from fuzzy.llm.providers.enums import LLMProvider
 from fuzzy.llm.providers.shared.decorators import api_endpoint
 
@@ -43,7 +40,7 @@ class AnthropicProvider(BaseLLMProvider):
 
     @classmethod
     def get_supported_models(cls) -> Union[list[str], str]:
-        return ["claude-2.1", "claude-3-haiku-20240307", "claude-3-opus-latest", "claude-3-sonnet-20240229", "claude-3-5-haiku-latest", "claude-3-5-sonnet-latest"]
+        return ["claude-2.1", "claude-3-haiku-20240307", "claude-3-opus-latest", "claude-3-sonnet-20240229", "claude-3-5-haiku-latest", "claude-3-5-sonnet-latest", "claude-3-7-sonnet-20250219"]
 
     @backoff.on_exception(backoff.expo, BaseLLMProviderRateLimitException, max_value=10)
     @api_endpoint("/messages")
