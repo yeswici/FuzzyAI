@@ -53,7 +53,7 @@ class OpenAIProvider(BaseLLMProvider):
 
     @classmethod
     def get_supported_models(cls) -> Union[list[str], str]:
-        return ["gpt-3.5-turbo", "gpt-4", "gpt-4-turbo", "gpt-4o", "o1-mini", "o1-preview", "o3-mini"]
+        return ["gpt-3.5-turbo", "gpt-4", "gpt-4-turbo", "gpt-4o", "o1-mini", "o1-preview", "o3-mini", "gpt-4.5-preview"]
 
     
     @api_endpoint(OpenAIConfig.CHAT_COMPLETIONS_ENDPOINT)
