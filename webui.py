@@ -1,8 +1,8 @@
 import os
 import subprocess
-from typing import Optional
 
 import streamlit as st
+from dotenv import load_dotenv
 
 from fuzzy.enums import EnvironmentVariables
 from fuzzy.handlers.attacks.base import attack_handler_fm
@@ -12,6 +12,8 @@ from fuzzy.handlers.classifiers.enums import Classifier
 from fuzzy.llm.providers.base import llm_provider_fm
 from fuzzy.llm.providers.enums import LLMProvider
 from utils import get_ollama_models
+
+load_dotenv()
 
 st.set_page_config(
     page_title="FuzzyAI Web UI",
@@ -48,6 +50,10 @@ if st.sidebar.button("Add Variable"):
     if new_env_key and new_env_value:
         st.session_state.env_vars[new_env_key] = new_env_value
 
+for x in EnvironmentVariables:
+    if x.value in os.environ:
+        st.session_state.env_vars[x.value] = os.environ[x.value]
+        
 # Create a container for the table
 with st.sidebar.container():
     if st.session_state.env_vars:
