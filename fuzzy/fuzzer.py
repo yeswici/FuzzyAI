@@ -7,16 +7,15 @@ from typing import Any, Optional, overload
 from uuid import uuid4
 
 from motor.motor_asyncio import AsyncIOMotorClient
+from pydantic import BaseModel
 
 from fuzzy.consts import DATETIME_FORMAT
-from fuzzy.handlers.attacks.base import attack_handler_fm
+from fuzzy.handlers.attacks.base import BaseAttackTechniqueHandler, attack_handler_fm
 from fuzzy.handlers.attacks.enums import FuzzerAttackMode
-from fuzzy.handlers.attacks.proto import (AttackSummary,
-                                          BaseAttackTechniqueHandlerProto)
+from fuzzy.handlers.attacks.proto import AttackSummary, BaseAttackTechniqueHandlerProto
 from fuzzy.handlers.classifiers.base import BaseClassifier
 from fuzzy.handlers.db.adv_attacks import AdversarialAttacksHandler
-from fuzzy.handlers.db.adv_prompts import (AdversarialPromptDTO,
-                                           AdversarialPromptsHandler)
+from fuzzy.handlers.db.adv_prompts import AdversarialPromptDTO, AdversarialPromptsHandler
 from fuzzy.handlers.db.adv_suffixes import AdversarialSuffixesHandler
 from fuzzy.llm.providers.base import BaseLLMProvider
 from fuzzy.llm.providers.enums import LLMProvider
@@ -177,6 +176,13 @@ class Fuzzer:
         Returns:
             BaseAttackTechniqueHandler: An instance of the attack technique handler.
         """
+        handler_cls: type[BaseAttackTechniqueHandler[BaseModel]] = attack_handler_fm[attack_mode]
+        if (auxiliary_models := handler_cls.default_auxiliary_models()) is not None:
+            for auxiliary_model in auxiliary_models:
+                if not any(llm.qualified_model_name == auxiliary_model for llm in self._llms):
+                    logger.info(f"Attack mode {attack_mode} defines a default auxiliary model {auxiliary_model}. Automatically adding it - see wiki for more details.")
+                    self.add_llm(auxiliary_model)
+
         return attack_handler_fm[attack_mode](llms=self._llms, model=model,
                                               classifiers=self._classifiers, **extra)
     

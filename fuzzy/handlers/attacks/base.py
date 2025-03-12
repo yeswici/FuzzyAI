@@ -133,6 +133,14 @@ class BaseAttackTechniqueHandler(BaseAttackTechniqueHandlerProto, Generic[T]):
         return result
 
     """
+    Get the default auxiliary models for the attack handler, if any
+    The fuzzer will automatically add these models to the LLM providers.
+    """
+    @classmethod
+    def default_auxiliary_models(cls) -> list[str]:
+        return []
+    
+    """
     Close the handler.
     """
     async def close(self) -> None:
