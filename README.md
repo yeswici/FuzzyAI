@@ -31,16 +31,20 @@
    ```
 
 2. Install dependencies using [Poetry](https://python-poetry.org/):
+   '''bash
+   python -m pip install art pygad motor
+   '''
+or
    ```bash
    poetry install
    poetry shell  # Activate virtual environment
    ```
 
-3. Run the fuzzer:
+4. Run the fuzzer:
    ```bash
    python run.py -h
    ```
-4. Optional: Install [ollama](https://ollama.com/download/), and download a model for local usage:
+5. Optional: Install [ollama](https://ollama.com/download/), and download a model for local usage:
    ``` # Running the command will download and install (if not) llama3.1, which is about 4.7 GB in size and is an 8B parameters model. Llama3.1 hat can be substituted with any other open-source model that is supported by ollama.
    ollama pull llama3.1
    ollama show llama3.1 # verify model installation
