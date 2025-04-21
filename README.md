@@ -31,6 +31,7 @@
    ```
 
 2. Install dependencies using [Poetry](https://python-poetry.org/):
+
    '''bash
    python -m pip install art pygad motor
    '''
